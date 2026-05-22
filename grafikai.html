@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Jurginiškiai — Tvarkaraštis</title>
+<meta name="theme-color" content="#1a1a1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tvarkaraštis">
+<link rel="manifest" href="manifest.json">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0f0f0f;
+    color: #e8e8e8;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 17px;
+    min-height: 100vh;
+    padding-bottom: 40px;
+    padding-top: var(--header-h, 90px);
+  }
+
+  header {
+    background: #1a1a1a;
+    border-bottom: 1px solid #333;
+    padding: 8px 12px 10px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+  }
+
+  #clock-bar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #f5e642;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .clock-dots {
+    flex: unset !important;
+    justify-content: center;
+  }
+
+  .clock-dots .day-dot {
+    background: #2a2a2a;
+    color: #e8e8e8;
+  }
+
+  .clock-dots .day-dot.sat,
+  .clock-dots .day-dot.sun {
+    color: #ff6a00;
+  }
+
+  .clock-dots .day-dot.on {
+    background: #2a2a2a;
+    color: #f5e642;
+    box-shadow: 0 0 0 1px #f5e642;
+  }
+
+  .clock-dots .day-dot.on.sat,
+  .clock-dots .day-dot.on.sun {
+    color: #ff6a00;
+    box-shadow: 0 0 0 1px #ff6a00;
+  }
+
+  .clock-dots .day-dot.holiday {
+    color: #ff3333;
+    box-shadow: 0 0 0 1px #ff3333;
+  }
+
+  .nd-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ff3333;
+    letter-spacing: 1px;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-radius: 0;
+    overflow: hidden;
+    border: 1px solid #333;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 10px 6px;
+    border: none;
+    background: #181818;
+    color: #999;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    -webkit-tap-highlight-color: transparent;
+    letter-spacing: 0.3px;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .tab-btn:first-child {
+    border-right: 1px solid #222;
+  }
+
+  .tab-btn.active-blue {
+    background: #1a3a5c;
+    color: #7ec8ff;
+    border-bottom: 2px solid #7ec8ff;
+  }
+
+  .tab-btn.active-orange {
+    background: #3a1f00;
+    color: #ff6a00;
+    border-bottom: 2px solid #ff6a00;
+  }
+
+  .tab-content {
+    display: none;
+    padding: 12px 12px 0;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  #tab-kaunas.active {
+    background: #0a1a2a;
+  }
+
+  #tab-jurginiskai.active {
+    background: #1a0d00;
+  }
+
+  .section-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #aaa;
+    text-transform: uppercase;
+    padding: 14px 4px 8px;
+  }
+
+  .schedule-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .trip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 12px 14px;
+    border-radius: 0;
+    background: #1c1c1c;
+    gap: 2px 0;
+  }
+
+  #tab-kaunas .trip {
+    background: #0d1f30;
+  }
+
+  #tab-kaunas .trip.platform-12 {
+    background: #1a1028;
+    border-left: 2px solid #c084fc;
+  }
+
+  #tab-kaunas .trip.platform-6 {
+    background: #1a1600;
+    border-left: 2px solid #facc15;
+  }
+
+  #tab-jurginiskai .trip {
+    background: #221200;
+  }
+
+  #tab-jurginiskai .trip.platform-tm {
+    background: #001a10;
+    border-left: 2px solid #39ff14;
+  }
+
+  .trip.weekend, .trip.saturday, .trip.sunday {
+    color: #ff6a00;
+  }
+
+  .trip.weekend .time, .trip.saturday .time, .trip.sunday .time {
+    color: #ff6a00;
+  }
+
+  .trip.weekend .day-dot, .trip.saturday .day-dot, .trip.sunday .day-dot {
+    color: #ff6a00;
+  }
+
+  .trip.weekend .stop-badge, .trip.saturday .stop-badge, .trip.sunday .stop-badge {
+    color: #ff6a00;
+    border-color: #ff6a00;
+  }
+
+  .trip.next {
+    box-shadow: 0 0 0 1px #39ff14;
+  }
+
+  .trip.next .time {
+    color: #39ff14;
+  }
+
+  .time {
+    font-size: 22px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: #fff;
+    letter-spacing: -0.5px;
+    flex-shrink: 0;
+  }
+
+  .time-left {
+    font-size: 12px;
+    color: #ccc;
+    margin-left: auto;
+    padding-left: 8px;
+    flex-shrink: 0;
+  }
+
+  .trip-row1 {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .trip-row2 {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-top: 2px;
+  }
+
+  .trip-row2:empty {
+    display: none;
+  }
+
+  .time-left.soon {
+    color: #39ff14;
+    font-weight: 700;
+  }
+
+  .time-left.past {
+    color: #888;
+  }
+
+  .trip.upcoming {
+    padding: 20px 14px;
+  }
+
+  .trip.upcoming .time {
+    font-size: 34px;
+  }
+
+  .trip.upcoming .days-label {
+    font-size: 15px;
+  }
+
+  .trip.upcoming .time-left {
+    font-size: 15px;
+  }
+
+  .days-dots {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .day-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    background: #2a2a2a;
+    color: #aaa;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .day-dot.on {
+    background: #555;
+    color: #fff;
+  }
+
+  .day-dot.today {
+    box-shadow: 0 0 0 1px #f5e642;
+  }
+
+  .day-dot.today.sat,
+  .day-dot.today.sun {
+    box-shadow: 0 0 0 1px #ff6a00;
+  }
+
+  .trip.weekend .day-dot.on,
+  .trip.saturday .day-dot.on,
+  .trip.sunday .day-dot.on,
+  .trip.all-days .day-dot.on.sat,
+  .trip.all-days .day-dot.on.sun {
+    background: #ff6a00;
+    color: #fff;
+  }
+
+  .stop-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 7px;
+    border-radius: 6px;
+    margin-right: 6px;
+    white-space: nowrap;
+  }
+
+  .stop-badge { background: #2a2a2a; color: #ccc; border: 1px solid #666; }
+
+
+  .platform-badge {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-right: 4px;
+  }
+
+  .platform-badge.p5   { background: #555; color: #6ee7b7; }
+  .platform-badge.p12  { background: #555; color: #c084fc; }
+  .platform-badge.p6   { background: #555; color: #facc15; }
+  .platform-badge.p106 { background: #555; color: #7ec8ff; width: auto; padding: 0 5px; }
+  .platform-badge.ptm  { background: #555; color: #39ff14; width: auto; padding: 0 5px; }
+
+  #no-more-banner {
+    text-align: center;
+    padding: 6px 12px;
+    color: #f5e642;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    border-top: 1px solid #f5e64240;
+  }
+
+  #last-trip-banner {
+    text-align: center;
+    padding: 5px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    border-top: 1px solid #ff6a0040;
+    color: #ff6a00;
+    display: none;
+  }
+
+  .time-now-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    color: #39ff14;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .time-now-line::before, .time-now-line::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #39ff1440;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div id="clock-bar"></div>
+  <div class="tabs">
+    <button class="tab-btn active-blue" onclick="switchTab('kaunas', this)">Kaunas → Juragiai</button>
+    <button class="tab-btn" onclick="switchTab('jurginiskai', this)">Juragiai → Kaunas</button>
+  </div>
+  <div id="last-trip-banner"></div>
+  <div id="no-more-banner" style="display:none"></div>
+</header>
+
+<!-- TAB: Kaunas → Juragiai -->
+<div id="tab-kaunas" class="tab-content active">
+  <div class="schedule-list" id="list-kaunas"></div>
+</div>
+
+<!-- TAB: Jurginiškiai → Kaunas -->
+<div id="tab-jurginiskai" class="tab-content">
+  <div class="schedule-list" id="list-jurginiskai"></div>
+</div>
+
+
+<script>
+// Duomenys: [laikas, dienų_masyvas]
+// Dienų masyvas: [Pr,A,T,K,Pn,Š,S] — true/false
+// JS weekday: 0=S, 1=Pr, 2=A, 3=T, 4=K, 5=Pn, 6=Š
+
+const WORKDAYS = [true,  true,  true,  true,  true,  false, false];
+const WEEKEND  = [false, false, false, false, false, true,  true ];
+const ALL_DAYS = [true,  true,  true,  true,  true,  true,  true ];
+
+const dataKaunas = [
+  ["04:30", WORKDAYS, "5"],   // 12345-
+  ["05:55", WORKDAYS, "5"],   // 12345-
+  ["06:25", WEEKEND,  "5"],   // -67
+  ["08:00", ALL_DAYS, "12"],  // 1234567
+  ["08:15", WORKDAYS, "5"],   // 12345-
+  ["08:30", WEEKEND,  "5"],   // -67
+  ["09:25", WORKDAYS, "5"],   // 12345-
+  ["09:55", WORKDAYS, "5"],   // 12345-
+  ["10:50", WORKDAYS, "5"],   // 12345-
+  ["10:55", WEEKEND,   "5"],   // --67 = tik sekmadienis
+  ["11:35", ALL_DAYS, "12"],  // 1234567
+  ["11:55", WORKDAYS, "5"],   // 12345-
+  ["12:00", ALL_DAYS, "12"],  // 1234567
+  ["12:35", WORKDAYS,  "5"],   // 12345
+  ["12:40", ALL_DAYS, "12"],  // 1234567
+  ["13:00", WEEKEND,  "5"],   // -67
+  ["13:00", WORKDAYS,  "6"],   // 12345
+  ["13:40", WORKDAYS,  "5"],   // 12345
+  ["14:35", WORKDAYS, "5"],   // 12345-
+  ["15:10", WORKDAYS, "5"],   // 12345-
+  ["15:15", WEEKEND,  "5"],   // -67
+  ["15:35", WORKDAYS, "5"],   // 12345-
+  ["16:25", WORKDAYS, "5"],   // 12345-
+  ["16:50", ALL_DAYS, "12"],  // 1234567
+  ["17:30", WORKDAYS, "5"],   // 12345-
+  ["18:40", WORKDAYS,  "5"],   // 12345
+];
+
+const dataJurginiskai = [
+  ["05:26", WORKDAYS,  "106"],  // 12345-
+  ["07:14", WORKDAYS,  "106"],  // 12345-
+  ["07:34", WEEKEND,   "106"],  // -67
+  ["08:05", WORKDAYS,  "106"],  // 12345-
+  ["09:28", ALL_DAYS,  "tm"],   // 1234567
+  ["09:31", WORKDAYS,  "106"],  // 12345-
+  ["09:44", WEEKEND,    "106"],  // ---67 = tik sekmadienis
+  ["10:36", WORKDAYS,  "106"],  // 12345-
+  ["11:06", ALL_DAYS,  "tm"],   // 1234567
+  ["11:06", WORKDAYS,  "106"],  // 12345-
+  ["12:03", WEEKEND,   "106"],  // -67
+  ["12:06", WORKDAYS,  "106"],  // 12345-
+  ["13:06", WORKDAYS,  "106"],  // 12345-
+  ["14:01", WORKDAYS,  "106"],  // 12345-
+  ["14:13", WEEKEND,    "106"],  // 67 = tik sekmadienis
+  ["14:16", WORKDAYS,  "106"],  // 12345-
+  ["14:48", ALL_DAYS,  "tm"],   // 1234567
+  ["15:01", WORKDAYS,  "106"],  // 12345-
+  ["15:52", WORKDAYS,  "106"],  // 12345-
+  ["16:23", WEEKEND,   "106"],  // -67
+  ["16:26", WORKDAYS,  "106"],  // 12345-
+  ["16:51", WORKDAYS,  "106"],  // 12345-
+  ["17:06", ALL_DAYS,  "tm"],   // 1234567
+  ["17:41", WORKDAYS,  "106"],  // 12345-
+  ["18:25", WORKDAYS,  "106"],  // 12345-
+  ["19:39", WORKDAYS,  "106"],  // 12345-
+  ["20:24", ALL_DAYS,  "tm"],   // 1234567
+];
+
+
+function getDayClass(days) {
+  const wd = days.slice(0,5).every(Boolean);
+  const sat = days[5];
+  const sun = days[6];
+  if (wd && sat && sun) return "all-days";
+  if (wd && !sat && !sun) return "workday";
+  if (!wd && sat && sun) return "weekend";
+  if (!wd && sat && !sun) return "saturday";
+  if (!wd && !sat && sun) return "sunday";
+  return "all-days";
+}
+
+
+function getTodayIdx(now) {
+  now = now || new Date();
+  const jsDay = now.getDay();
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  if (HOLIDAYS.includes(`${mm}-${dd}`)) return 5;
+  return jsDay === 0 ? 6 : jsDay - 1;
+}
+
+function renderDots(days, now) {
+  const labels = ["1","2","3","4","5","6","7"];
+  const todayIdx = getTodayIdx(now);
+  return days.map((on, i) => {
+    let cls = "day-dot" + (on ? " on" : "");
+    if (i === 5) cls += " sat";
+    if (i === 6) cls += " sun";
+    if (i === todayIdx) cls += " today";
+    return `<div class="${cls}">${labels[i]}</div>`;
+  }).join("");
+}
+
+function timeToMinutes(t) {
+  const [h, m] = t.split(":").map(Number);
+  return h * 60 + m;
+}
+
+const HOLIDAYS = [
+  "01-01", // Naujieji metai
+  "02-16", // Vasario 16-oji
+  "03-11", // Kovo 11-oji
+  "04-05", // Velykos 2026
+  "04-06", // Velykų pirmadienis 2026
+  "05-01", // Tarptautinė darbo diena
+  "06-24", // Joninės
+  "07-06", // Valstybės diena
+  "08-15", // Žolinė
+  "11-01", // Visų Šventųjų diena
+  "11-02", // Vėlinės
+  "12-24", // Kūčios
+  "12-25", // Kalėdos
+  "12-26", // Kalėdų antroji diena
+];
+
+function runsToday(days, now) {
+  return days[getTodayIdx(now)];
+}
+
+function renderList(data, containerId, now) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  // Use total seconds for accurate "dabar" detection within the same minute
+  const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+
+  // Next = first trip today that hasn't fully departed (departure minute still in future)
+  let nextIdx = -1;
+  let tripsLeft = 0;
+  let lastTripMin = 0;
+  for (let i = 0; i < data.length; i++) {
+    const [time, days] = data[i];
+    if (runsToday(days, now) && timeToMinutes(time) * 60 > nowSec) {
+      if (nextIdx === -1) nextIdx = i;
+      tripsLeft++;
+      lastTripMin = timeToMinutes(time);
+    }
+  }
+
+  const hasMoreToday = nextIdx !== -1;
+
+  let html = "";
+  let shownNextLine = false;
+
+  for (let i = 0; i < data.length; i++) {
+    const [time, days] = data[i];
+    const minSec = timeToMinutes(time) * 60;
+    const todayRuns = runsToday(days, now);
+    const isNext = i === nextIdx;
+
+    if (isNext && !shownNextLine) {
+      html += `<div class="time-now-line">Artimiausias</div>`;
+      shownNextLine = true;
+    }
+
+    const dayClass = getDayClass(days);
+    const diffSec = minSec - nowSec;
+    const diffMin = Math.round(diffSec / 60);
+    const isUpcoming = todayRuns && diffSec > 0;
+    const platform = data[i][2] || null;
+    const isAlt = platform && platform !== "5";
+    let classes = `trip ${dayClass}`;
+    if (isUpcoming) classes += " upcoming";
+    if (isNext) classes += " next";
+    if (isAlt) classes += ` platform-${platform}`;
+
+    const platformBadge = platform
+      ? `<div class="platform-badge p${platform}">${platform}</div>`
+      : "";
+
+    let timeLeftHtml = "";
+    if (todayRuns) {
+      if (diffSec > 0) {
+        const h = Math.floor(diffMin / 60);
+        const m = diffMin % 60;
+        const label = h > 0 ? `už ${h} val ${m} min` : `už ${m} min`;
+        const soon = diffMin <= 15 ? " soon" : "";
+        timeLeftHtml = `<div class="time-left${soon}">${label}</div>`;
+      } else if (diffSec > -60) {
+        timeLeftHtml = `<div class="time-left soon">dabar</div>`;
+      } else {
+        const pd = Math.abs(diffMin);
+        const ph = Math.floor(pd / 60);
+        const pm = pd % 60;
+        const plabel = ph > 0 ? `prieš ${ph} val ${pm} min` : `prieš ${pm} min`;
+        timeLeftHtml = `<div class="time-left past">${plabel}</div>`;
+      }
+    }
+
+    html += `
+      <div class="${classes}">
+        <div class="trip-row1">
+          <div class="time">${time}</div>
+          <div class="days-dots">${renderDots(days, now)}</div>
+        </div>
+        <div class="trip-row2">
+          ${platformBadge}
+          ${timeLeftHtml}
+        </div>
+      </div>`;
+  }
+
+  container.innerHTML = html;
+  container.dataset.noMore = hasMoreToday ? "0" : "1";
+  container.dataset.tripsLeft = tripsLeft;
+  container.dataset.lastMin = tripsLeft === 1 ? Math.round((lastTripMin * 60 - nowSec) / 60) : "";
+  updateNoMoreBanner();
+}
+
+function updateNoMoreBanner() {
+  const activeTab = document.querySelector(".tab-content.active");
+  const list = activeTab ? activeTab.querySelector(".schedule-list") : null;
+  const banner = document.getElementById("no-more-banner");
+  const lastBanner = document.getElementById("last-trip-banner");
+  if (!banner) return;
+
+  if (list && list.dataset.noMore === "1") {
+    banner.textContent = "Šiandien reisų nebėra";
+    banner.style.display = "block";
+    if (lastBanner) lastBanner.style.display = "none";
+  } else {
+    banner.style.display = "none";
+    // Show warning if only 1 trip left today
+    if (lastBanner && list && list.dataset.tripsLeft === "1") {
+      lastBanner.textContent = "Paskutinis autobusas šiandien — už " + list.dataset.lastMin + " min";
+      lastBanner.style.display = "block";
+    } else if (lastBanner) {
+      lastBanner.style.display = "none";
+    }
+  }
+}
+
+function switchTab(name, btn) {
+  document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
+  document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active-blue", "active-orange"));
+  document.getElementById("tab-" + name).classList.add("active");
+  btn.classList.add(name === "kaunas" ? "active-blue" : "active-orange");
+  updateNoMoreBanner();
+}
+
+function updateClock(now) {
+  const h = String(now.getHours()).padStart(2,"0");
+  const m = String(now.getMinutes()).padStart(2,"0");
+  const todayIdx = getTodayIdx(now);
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  const isHoliday = HOLIDAYS.includes(`${mm}-${dd}`);
+  const dots = [1,2,3,4,5,6,7].map((n, i) => {
+    const active = i === todayIdx;
+    let cls = "day-dot" + (active ? " on" : "");
+    if (i === 5) cls += " sat";
+    if (i === 6) cls += " sun";
+    if (active && isHoliday) cls += " holiday";
+    return `<div class="${cls}">${n}</div>`;
+  }).join("");
+  const ndLabel = isHoliday ? '<span class="nd-label">ND</span>' : "";
+  document.getElementById("clock-bar").innerHTML =
+    `${h}:${m}${ndLabel}<div class="days-dots clock-dots">${dots}</div>`;
+}
+
+function refresh() {
+  const now = new Date();
+  updateClock(now);
+  renderList(dataKaunas, "list-kaunas", now);
+  renderList(dataJurginiskai, "list-jurginiskai", now);
+  // Sync header height so body padding-top matches actual header
+  const header = document.querySelector("header");
+  if (header) {
+    document.documentElement.style.setProperty("--header-h", header.offsetHeight + "px");
+  }
+}
+
+function scheduleRefresh() {
+  const now = new Date();
+  // Align next tick to the start of the next minute
+  const msToNextMin = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
+  setTimeout(() => {
+    refresh();
+    setInterval(refresh, 60000);
+  }, msToNextMin);
+}
+
+refresh();
+scheduleRefresh();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js');
+}
+</script>
+
+</body>
+</html>
