@@ -351,6 +351,17 @@
   .platform-badge.p106 { background: #555; color: #7ec8ff; width: auto; padding: 0 5px; }
   .platform-badge.ptm  { background: #555; color: #39ff14; width: auto; padding: 0 5px; }
 
+  #holiday-banner {
+    text-align: center;
+    padding: 5px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: #ff3333;
+    border-top: 1px solid #ff333340;
+    display: none;
+  }
+
   #no-more-banner {
     text-align: center;
     padding: 6px 12px;
@@ -398,6 +409,7 @@
     <button class="tab-btn active-blue" onclick="switchTab('kaunas', this)">Kaunas → Juragiai</button>
     <button class="tab-btn" onclick="switchTab('jurginiskai', this)">Juragiai → Kaunas</button>
   </div>
+  <div id="holiday-banner"></div>
   <div id="last-trip-banner"></div>
   <div id="no-more-banner" style="display:none"></div>
 </header>
@@ -500,7 +512,7 @@ function getTodayIdx(now) {
   const jsDay = now.getDay();
   const mm = String(now.getMonth() + 1).padStart(2, "0");
   const dd = String(now.getDate()).padStart(2, "0");
-  if (HOLIDAYS.includes(`${mm}-${dd}`)) return 5;
+  if (HOLIDAYS.some(h => h.date === `${mm}-${dd}`)) return 5;
   return jsDay === 0 ? 6 : jsDay - 1;
 }
 
@@ -543,29 +555,33 @@ function easterDate(year) {
 function buildHolidays(year) {
   const [em, ed] = easterDate(year);
   const pad = n => String(n).padStart(2, "0");
-  // Easter Monday = Easter + 1 day
-  const easterDate2 = new Date(year, em - 1, ed + 1);
-  const em2 = easterDate2.getMonth() + 1;
-  const ed2 = easterDate2.getDate();
+  const easterMonday = new Date(year, em - 1, ed + 1);
+  const em2 = easterMonday.getMonth() + 1;
+  const ed2 = easterMonday.getDate();
   return [
-    "01-01", // Naujieji metai
-    "02-16", // Vasario 16-oji
-    "03-11", // Kovo 11-oji
-    `${pad(em)}-${pad(ed)}`,   // Velykos
-    `${pad(em2)}-${pad(ed2)}`, // Velykų pirmadienis
-    "05-01", // Tarptautinė darbo diena
-    "06-24", // Joninės
-    "07-06", // Valstybės diena
-    "08-15", // Žolinė
-    "11-01", // Visų Šventųjų diena
-    "11-02", // Vėlinės
-    "12-24", // Kūčios
-    "12-25", // Kalėdos
-    "12-26", // Kalėdų antroji diena
+    { date: "01-01", name: "Naujieji metai" },
+    { date: "02-16", name: "Vasario 16-oji" },
+    { date: "03-11", name: "Kovo 11-oji" },
+    { date: `${pad(em)}-${pad(ed)}`,   name: "Velykos" },
+    { date: `${pad(em2)}-${pad(ed2)}`, name: "Velykų pirmadienis" },
+    { date: "05-01", name: "Tarptautinė darbo diena" },
+    { date: "06-24", name: "Joninės" },
+    { date: "07-06", name: "Valstybės diena" },
+    { date: "08-15", name: "Žolinė" },
+    { date: "11-01", name: "Visų Šventųjų diena" },
+    { date: "11-02", name: "Vėlinės" },
+    { date: "12-24", name: "Kūčios" },
+    { date: "12-25", name: "Kalėdos" },
+    { date: "12-26", name: "Kalėdų antroji diena" },
   ];
 }
 
 const HOLIDAYS = buildHolidays(new Date().getFullYear());
+
+function getHolidayName(mmdd) {
+  const h = HOLIDAYS.find(h => h.date === mmdd);
+  return h ? h.name : null;
+}
 
 function runsToday(days, now) {
   return days[getTodayIdx(now)];
@@ -698,7 +714,7 @@ function updateClock(now) {
   const todayIdx = getTodayIdx(now);
   const mm = String(now.getMonth() + 1).padStart(2, "0");
   const dd = String(now.getDate()).padStart(2, "0");
-  const isHoliday = HOLIDAYS.includes(`${mm}-${dd}`);
+  const isHoliday = HOLIDAYS.some(h => h.date === `${mm}-${dd}`);
   const dots = [1,2,3,4,5,6,7].map((n, i) => {
     const active = i === todayIdx;
     let cls = "day-dot" + (active ? " on" : "");
@@ -710,6 +726,17 @@ function updateClock(now) {
   const ndLabel = isHoliday ? '<span class="nd-label">ND</span>' : "";
   document.getElementById("clock-bar").innerHTML =
     `${h}:${m}${ndLabel}<div class="days-dots clock-dots">${dots}</div>`;
+
+  const holidayBanner = document.getElementById("holiday-banner");
+  if (holidayBanner) {
+    const name = getHolidayName(`${mm}-${dd}`);
+    if (name) {
+      holidayBanner.textContent = name;
+      holidayBanner.style.display = "block";
+    } else {
+      holidayBanner.style.display = "none";
+    }
+  }
 }
 
 function refresh() {
