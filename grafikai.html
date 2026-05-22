@@ -235,6 +235,7 @@
   .trip-row1 {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     width: 100%;
     gap: 8px;
   }
@@ -279,8 +280,7 @@
     display: flex;
     flex-wrap: nowrap;
     gap: 2px;
-    flex: 1;
-    min-width: 0;
+    margin-left: auto;
   }
 
   .day-dot {
@@ -634,8 +634,9 @@ function renderList(data, containerId, now) {
     if (isNext) classes += " next";
     if (isAlt) classes += ` platform-${platform}`;
 
+    const pLabel = (platform && !["106","tm"].includes(platform)) ? platform + "a" : platform;
     const platformBadge = platform
-      ? `<div class="platform-badge p${platform}">${platform}</div>`
+      ? `<div class="platform-badge p${platform}">${pLabel}</div>`
       : "";
 
     let timeLeftHtml = "";
