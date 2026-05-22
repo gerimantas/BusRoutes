@@ -1,34 +1,55 @@
 # Grafikai — CONTEXT
 
 ## Purpose
-Bus schedule Kaunas ↔ Juragiai — single HTML file, optimized for mobile.
+Bus schedule Kaunas ↔ Juragiai — single HTML file PWA, optimized for mobile.
+
+## Live URL
+https://gerimantas.github.io/BusRoutes/grafikai.html
+
+## Repo
+https://github.com/gerimantas/BusRoutes
 
 ## Files
-- `grafikai.html` — main file, opened directly in browser
-- `Kaunas-JURAGIAI-Jurginiskiai.jpg` — source: Kaunas → Juragiai
-- `Jurginiskai-JURAGIAI-Kaunas.jpg` — source: Juragiai → Kaunas
+- `grafikai.html` — main app, all logic and styles
+- `manifest.json` — PWA manifest
+- `sw.js` — service worker, offline cache-first (bump `CACHE` version on each deploy)
+- `icon-192.png`, `icon-512.png` — PWA icons
+- `kaunas-juragiai_grafikas.md` — schedule source: Kaunas → Juragiai
+- `juragiai-kaunas_grafikas.md` — schedule source: Juragiai → Kaunas
 
 ## Status
-v2 — fully working, mobile-responsive.
+v3 — PWA, fully working, deployed to GitHub Pages.
 
 ## Features
-- 2 tabs: Kaunas→Juragiai (blue) / Juragiai→Kaunas (orange) — fixed header, sticky on scroll
-- Live clock with day-of-week dots (1–7), active day highlighted with neon yellow border
-- Sat/Sun dots always orange; holidays shown in red with "ND" label
-- Countdown to each departure (recalculates every minute)
+- 2 tabs: Kaunas→Juragiai (blue) / Juragiai→Kaunas (orange)
+- Fixed header, live clock with day-of-week dots
+- Countdown to each departure (seconds-accurate, aligned to minute boundary)
 - Nearest departure — neon green border
-- Upcoming trips 2× larger font; past trips shown with elapsed time
-- Sat/Sun trips — orange color
-- Public holidays treated as Saturday (weekend schedule applies)
-- 2-row trip card: row1 = time + day dots, row2 = stop badge + time remaining
-- No dimmed text — all labels at full visibility
+- Upcoming trips 2× larger font; past trips show elapsed time
+- Last trip of day warning banner (orange)
+- No more trips today banner (yellow)
+- Public holiday banner — shows holiday name in red
+- Sat/Sun trips — orange color; platform badges (5, 6, 12, 106, tarpmiestinis)
+- PWA: installable, works offline after first load
 
-## Holiday list
-Fixed dates in `HOLIDAYS` array (MM-DD). Velykos (Easter) must be updated yearly:
-- 2025: 04-20, 04-21
-- 2026: 04-05, 04-06
+## Schedule data
+Source PDFs: `kaunas-juragiai_0522.pdf`, `juragiai-kaunas_0522.pdf` (verified 2026-05-22)
+3 periodicities: `12345` = Pr–Pn, `ŠS` = Š–S, `1234567` = visos
+
+## Holiday logic
+- 14 public holidays per DK 160 str.
+- Easter (Velykos + pirmadienis) auto-calculated via Gauss algorithm each year
+- All holidays treated as weekend schedule (ŠS)
+- Holiday name shown in red banner in header
+
+## Update workflow
+1. Edit `grafikai.html` — `dataKaunas` / `dataJurginiskai`
+2. Bump `CACHE` version in `sw.js`: `tvarkarastis-v1` → `v2` etc.
+3. `git add . && git commit -m "..." && git push`
+4. GitHub Pages deploys in ~1 min, phones update automatically
 
 ## Possible improvements
+- Geolocation — auto-select tab by user location
+- Vibration alert when ≤ 2 min to departure
+- Share button for next departure
 - Seasonal schedules (school holidays, summer/winter)
-- PWA (offline support)
-- Auto-update Easter dates
