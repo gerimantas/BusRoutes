@@ -196,6 +196,7 @@
 
   #tab-kaunas .trip {
     background: #0d1f30;
+    box-shadow: 0 0 12px 4px #7ec8ff88;
   }
 
   #tab-kaunas .trip.platform-12 {
@@ -210,6 +211,7 @@
 
   #tab-jurginiskai .trip {
     background: #221200;
+    box-shadow: 0 0 12px 4px #ff6a0088;
   }
 
   #tab-jurginiskai .trip.platform-tm {
@@ -815,6 +817,7 @@ function toggleFilter() {
   header.classList.toggle("filter-off", !filterOn);
   btn.textContent = filterBtnLabel();
   applyFilter();
+  setTimeout(scrollToNext, 0);
 }
 
 function applyFilter() {
