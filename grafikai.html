@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="Tvarkaraštis">
 <link rel="manifest" href="manifest.json">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; text-transform: uppercase; }
 
   body {
     background: #0f0f0f;
@@ -37,7 +37,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     gap: 10px;
     font-size: 22px;
     font-weight: 700;
@@ -45,6 +45,33 @@
     margin-bottom: 8px;
     letter-spacing: 1px;
     font-variant-numeric: tabular-nums;
+  }
+
+  #clock-time {
+    flex: 1;
+    text-align: center;
+  }
+
+  #clock-day {
+    font-size: 14px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 5px;
+    background: #2a2a2a;
+    color: #f5e642;
+    box-shadow: 0 0 0 1px #f5e642;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+
+  #clock-day.weekend {
+    color: #ff6a00;
+    box-shadow: 0 0 0 1px #ff6a00;
+  }
+
+  #clock-day.holiday {
+    color: #ff3333;
+    box-shadow: 0 0 0 1px #ff3333;
   }
 
   .clock-dots {
@@ -99,7 +126,7 @@
     padding: 10px 6px;
     border: none;
     background: #181818;
-    color: #999;
+    color: #bbb;
     font-size: 15px;
     font-weight: 700;
     cursor: pointer;
@@ -146,7 +173,7 @@
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 1.5px;
-    color: #aaa;
+    color: #bbb;
     text-transform: uppercase;
     padding: 14px 4px 8px;
   }
@@ -209,6 +236,22 @@
 
   .trip.next {
     box-shadow: 0 0 0 1px #39ff14;
+    position: relative;
+    margin-top: 10px;
+  }
+
+  .trip.next::before {
+    content: 'ARTIMIAUSIAS';
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    font-weight: 600;
+    color: #39ff14;
+    background: inherit;
+    padding: 0 6px;
+    white-space: nowrap;
   }
 
   .trip.next .time {
@@ -226,7 +269,7 @@
 
   .time-left {
     font-size: 12px;
-    color: #ccc;
+    color: #ddd;
     margin-left: auto;
     padding-left: 8px;
     flex-shrink: 0;
@@ -257,7 +300,7 @@
   }
 
   .time-left.past {
-    color: #888;
+    color: #aaa;
   }
 
   .trip.upcoming {
@@ -329,7 +372,7 @@
     white-space: nowrap;
   }
 
-  .stop-badge { background: #2a2a2a; color: #ccc; border: 1px solid #666; }
+  .stop-badge { background: #2a2a2a; color: #ddd; border: 1px solid #888; }
 
 
   .platform-badge {
@@ -345,10 +388,10 @@
     margin-right: 4px;
   }
 
-  .platform-badge.p5   { background: #555; color: #6ee7b7; }
-  .platform-badge.p12  { background: #555; color: #c084fc; }
-  .platform-badge.p6   { background: #555; color: #facc15; }
-  .platform-badge.p106 { background: #555; color: #7ec8ff; width: auto; padding: 0 5px; }
+  .platform-badge.p5   { background: #555; color: #00ffcc; }
+  .platform-badge.p12  { background: #555; color: #df80ff; }
+  .platform-badge.p6   { background: #555; color: #ffcc00; }
+  .platform-badge.p106 { background: #555; color: #40c8ff; width: auto; padding: 0 5px; }
   .platform-badge.ptm  { background: #555; color: #39ff14; width: auto; padding: 0 5px; }
 
   #holiday-banner {
@@ -399,12 +442,46 @@
     height: 1px;
     background: #39ff1440;
   }
+
+  #filter-btn {
+    background: #2a2a2a;
+    color: #ddd;
+    border: 1px solid #666;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  #filter-btn.off {
+    background: #3a0000;
+    color: #39ff14;
+    border-color: #cc0000;
+  }
+
+  header.filter-off {
+    background: #1f0a0a;
+    border-bottom: 2px solid #cc0000;
+  }
+
+  .trip.filtered-out {
+    display: none;
+  }
 </style>
 </head>
 <body>
 
 <header>
-  <div id="clock-bar"></div>
+  <div id="clock-bar">
+    <button id="filter-btn" onclick="toggleFilter()"></button>
+    <span id="clock-time"></span>
+    <span id="clock-day"></span>
+  </div>
   <div class="tabs">
     <button class="tab-btn active-blue" onclick="switchTab('kaunas', this)">Kaunas → Juragiai</button>
     <button class="tab-btn" onclick="switchTab('jurginiskai', this)">Juragiai → Kaunas</button>
@@ -619,7 +696,6 @@ function renderList(data, containerId, now) {
     const isNext = i === nextIdx;
 
     if (isNext && !shownNextLine) {
-      html += `<div class="time-now-line">Artimiausias</div>`;
       shownNextLine = true;
     }
 
@@ -676,6 +752,7 @@ function renderList(data, containerId, now) {
   container.dataset.tripsLeft = tripsLeft;
   container.dataset.lastMin = tripsLeft === 1 ? Math.round((lastTripMin * 60 - nowSec) / 60) : "";
   updateNoMoreBanner();
+  applyFilter();
 }
 
 function updateNoMoreBanner() {
@@ -701,12 +778,67 @@ function updateNoMoreBanner() {
   }
 }
 
+function scrollToNext() {
+  const activeTab = document.querySelector(".tab-content.active") || document.body;
+  const next = activeTab.querySelector(".trip.next");
+  if (!next) return;
+  const header = document.querySelector("header");
+  const headerH = header ? header.offsetHeight : 90;
+  const top = next.getBoundingClientRect().top + window.scrollY - headerH - 8;
+  window.scrollTo({ top, behavior: "instant" });
+}
+
 function switchTab(name, btn) {
   document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
   document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active-blue", "active-orange"));
   document.getElementById("tab-" + name).classList.add("active");
   btn.classList.add(name === "kaunas" ? "active-blue" : "active-orange");
   updateNoMoreBanner();
+  setTimeout(scrollToNext, 0);
+}
+
+const DAY_LABELS = ["Pr","An","Tr","Kt","Pn","Š","S"];
+
+let filterOn = true;
+
+function filterBtnLabel() {
+  if (!filterOn) return "Visi laikai";
+  const todayIdx = getTodayIdx(new Date());
+  return (todayIdx === 5 || todayIdx === 6) ? "Š–S laikai" : "Pr–Pn laikai";
+}
+
+function toggleFilter() {
+  filterOn = !filterOn;
+  const btn = document.getElementById("filter-btn");
+  const header = document.querySelector("header");
+  btn.classList.toggle("off", !filterOn);
+  header.classList.toggle("filter-off", !filterOn);
+  btn.textContent = filterBtnLabel();
+  applyFilter();
+}
+
+function applyFilter() {
+  document.querySelectorAll(".trip").forEach(el => {
+    if (!filterOn) {
+      el.classList.remove("filtered-out");
+      return;
+    }
+    const todayIdx = getTodayIdx(new Date());
+    const isWeekend = todayIdx === 5 || todayIdx === 6;
+    const isWorkday = !isWeekend;
+    const isAllDays = el.classList.contains("all-days");
+    const isWorkdayTrip = el.classList.contains("workday");
+    const isWeekendTrip = el.classList.contains("weekend") || el.classList.contains("saturday") || el.classList.contains("sunday");
+    let show;
+    if (isAllDays) {
+      show = true;
+    } else if (isWorkday) {
+      show = isWorkdayTrip;
+    } else {
+      show = isWeekendTrip;
+    }
+    el.classList.toggle("filtered-out", !show);
+  });
 }
 
 function updateClock(now) {
@@ -715,18 +847,17 @@ function updateClock(now) {
   const todayIdx = getTodayIdx(now);
   const mm = String(now.getMonth() + 1).padStart(2, "0");
   const dd = String(now.getDate()).padStart(2, "0");
-  const isHoliday = HOLIDAYS.some(h => h.date === `${mm}-${dd}`);
-  const dots = [1,2,3,4,5,6,7].map((n, i) => {
-    const active = i === todayIdx;
-    let cls = "day-dot" + (active ? " on" : "");
-    if (i === 5) cls += " sat";
-    if (i === 6) cls += " sun";
-    if (active && isHoliday) cls += " holiday";
-    return `<div class="${cls}">${n}</div>`;
-  }).join("");
-  const ndLabel = isHoliday ? '<span class="nd-label">ND</span>' : "";
-  document.getElementById("clock-bar").innerHTML =
-    `${h}:${m}${ndLabel}<div class="days-dots clock-dots">${dots}</div>`;
+  const isHoliday = HOLIDAYS.some(hd => hd.date === `${mm}-${dd}`);
+  const isWeekend = todayIdx === 5 || todayIdx === 6;
+
+  document.getElementById("clock-time").textContent = `${h}:${m}`;
+
+  const dayEl = document.getElementById("clock-day");
+  dayEl.textContent = DAY_LABELS[todayIdx];
+  dayEl.className = isHoliday ? "holiday" : (isWeekend ? "weekend" : "");
+
+  const btn = document.getElementById("filter-btn");
+  if (btn) btn.textContent = filterBtnLabel();
 
   const holidayBanner = document.getElementById("holiday-banner");
   if (holidayBanner) {
@@ -763,6 +894,7 @@ function scheduleRefresh() {
 }
 
 refresh();
+setTimeout(scrollToNext, 50);
 scheduleRefresh();
 
 if ('serviceWorker' in navigator) {
