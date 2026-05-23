@@ -9,7 +9,7 @@ Suburban bus schedule Kaunas ↔ Juragiai / Jurginiškiai (Route 106) — single
 
 ## Technical Status
 *   **Current Version:** **v4 (Dynamic Visuals & Premium Integrations)**
-*   **Service Worker Cache:** **`tvarkarastis-v9`** (strictly bump cache version in `sw.js` on every HTML modification).
+*   **Service Worker Cache:** **`tvarkarastis-v20`** (strictly bump cache version in `sw.js` on every HTML modification).
 
 ---
 
@@ -59,6 +59,6 @@ Suburban bus schedule Kaunas ↔ Juragiai / Jurginiškiai (Route 106) — single
 
 ## 🚀 Deployment & Updates
 1.  Verify data changes locally.
-2.  Increment the `CACHE` name in `sw.js` (e.g. `tvarkarastis-v9`).
+2.  Increment the `CACHE` name in `sw.js` (e.g. `tvarkarastis-v20`).
 3.  Commit and push to `main` branch.
 4.  GitHub Pages will build and deploy. Client browsers will automatically detect the new service worker version, fetch the fresh cache, and perform a background page refresh to make the changes live.

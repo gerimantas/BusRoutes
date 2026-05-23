@@ -1,4 +1,4 @@
-const CACHE = 'tvarkarastis-v18';
+const CACHE = 'tvarkarastis-v20';
 const ASSETS = [
   './grafikai.html',
   './manifest.json',

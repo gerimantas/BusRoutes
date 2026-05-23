@@ -1,0 +1,9 @@
+# AI toolchain files — contain local paths, not for public repo
+SKILL.md
+CLAUDE.md
+
+# Generated files
+qr.png
+
+# Unused source materials
+notused/

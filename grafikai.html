@@ -6,6 +6,7 @@
 <title>Jurginiškiai — Tvarkaraštis</title>
 <meta name="description" content="Kauno ir Juragių priemiesčio autobusų (106 maršruto) tvarkaraštis. PWA programėlė greitam ir patogiam laiko sekimui telefone.">
 <meta name="theme-color" content="#1a1a1a">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; img-src 'self'; object-src 'none'; base-uri 'self'">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Tvarkaraštis">
@@ -158,40 +159,6 @@
     background: rgba(239, 68, 68, 0.08);
   }
 
-  .clock-dots .day-dot {
-    background: var(--bg-active);
-    color: var(--text-secondary);
-  }
-
-  .clock-dots .day-dot.sat,
-  .clock-dots .day-dot.sun {
-    color: var(--accent-wait);
-  }
-
-  .clock-dots .day-dot.on {
-    background: var(--bg-active);
-    color: var(--accent-wait);
-    box-shadow: 0 0 0 1px var(--accent-wait);
-  }
-
-  .clock-dots .day-dot.on.sat,
-  .clock-dots .day-dot.on.sun {
-    color: var(--accent-wait);
-    box-shadow: 0 0 0 1px var(--accent-wait);
-  }
-
-  .clock-dots .day-dot.holiday {
-    color: var(--accent-stop);
-    box-shadow: 0 0 0 1px var(--accent-stop);
-  }
-
-  .nd-label {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--accent-stop);
-    letter-spacing: 1px;
-  }
-
   .tabs {
     display: flex;
     gap: 0;
@@ -310,40 +277,6 @@
   #tab-jurginiskai .trip.platform-tm {
     background: #1c0f00;
     border-left: 3px solid #ffb347;
-  }
-
-  #tab-kaunas .trip.weekend, #tab-kaunas .trip.saturday, #tab-kaunas .trip.sunday {
-    color: #82cbff;
-  }
-
-  #tab-kaunas .trip.weekend .time, #tab-kaunas .trip.saturday .time, #tab-kaunas .trip.sunday .time {
-    color: #82cbff;
-  }
-
-  #tab-kaunas .trip.weekend .day-dot, #tab-kaunas .trip.saturday .day-dot, #tab-kaunas .trip.sunday .day-dot {
-    color: #82cbff;
-  }
-
-  #tab-kaunas .trip.weekend .stop-badge, #tab-kaunas .trip.saturday .stop-badge, #tab-kaunas .trip.sunday .stop-badge {
-    color: #82cbff;
-    border-color: rgba(126, 200, 255, 0.4);
-  }
-
-  #tab-jurginiskai .trip.weekend, #tab-jurginiskai .trip.saturday, #tab-jurginiskai .trip.sunday {
-    color: var(--accent-wait);
-  }
-
-  #tab-jurginiskai .trip.weekend .time, #tab-jurginiskai .trip.saturday .time, #tab-jurginiskai .trip.sunday .time {
-    color: var(--accent-wait);
-  }
-
-  #tab-jurginiskai .trip.weekend .day-dot, #tab-jurginiskai .trip.saturday .day-dot, #tab-jurginiskai .trip.sunday .day-dot {
-    color: var(--accent-wait);
-  }
-
-  #tab-jurginiskai .trip.weekend .stop-badge, #tab-jurginiskai .trip.saturday .stop-badge, #tab-jurginiskai .trip.sunday .stop-badge {
-    color: var(--accent-wait);
-    border-color: var(--accent-wait);
   }
 
   .trip.next {
@@ -736,7 +669,7 @@ const dataKaunas = [
   ["09:25", WORKDAYS, "5"],   // 12345-
   ["09:55", WORKDAYS, "5"],   // 12345-
   ["10:50", WORKDAYS, "5"],   // 12345-
-  ["10:55", WEEKEND,   "5"],   // --67 = tik sekmadienis
+  ["10:55", WEEKEND,   "5"],   // ŠS
   ["11:35", ALL_DAYS, "12"],  // 1234567
   ["11:55", WORKDAYS, "5"],   // 12345-
   ["12:00", ALL_DAYS, "12"],  // 1234567
@@ -762,7 +695,7 @@ const dataJurginiskai = [
   ["08:05", WORKDAYS,  "106"],  // 12345-
   ["09:28", ALL_DAYS,  "tm"],   // 1234567
   ["09:31", WORKDAYS,  "106"],  // 12345-
-  ["09:44", WEEKEND,    "106"],  // ---67 = tik sekmadienis
+  ["09:44", WEEKEND,    "106"],  // ŠS
   ["10:36", WORKDAYS,  "106"],  // 12345-
   ["11:06", ALL_DAYS,  "tm"],   // 1234567
   ["11:06", WORKDAYS,  "106"],  // 12345-
@@ -770,7 +703,7 @@ const dataJurginiskai = [
   ["12:06", WORKDAYS,  "106"],  // 12345-
   ["13:06", WORKDAYS,  "106"],  // 12345-
   ["14:01", WORKDAYS,  "106"],  // 12345-
-  ["14:13", WEEKEND,    "106"],  // 67 = tik sekmadienis
+  ["14:13", WEEKEND,    "106"],  // ŠS
   ["14:16", WORKDAYS,  "106"],  // 12345-
   ["14:48", ALL_DAYS,  "tm"],   // 1234567
   ["15:01", WORKDAYS,  "106"],  // 12345-
@@ -1064,21 +997,13 @@ function switchTab(name, btn, isManual) {
 let filterOn = true;
 let userInteracted = false;
 
-function filterBtnLabel(todayIdx) {
-  if (!filterOn) {
-    // Jei filtras išjungtas, rodo visas dienas (1-7)
-    return "1-7";
-  } else {
-    // Jei filtras įjungtas, rodo šiandienos tvarkaraščio būseną
-    const now = new Date();
-    const mm = String(now.getMonth() + 1).padStart(2, "0");
-    const dd = String(now.getDate()).padStart(2, "0");
-    const isHoliday = HOLIDAYS.some(hd => hd.date === `${mm}-${dd}`);
-    if (isHoliday) return "ND";
-    
-    todayIdx = todayIdx !== undefined ? todayIdx : getTodayIdx(now);
-    return (todayIdx === 5 || todayIdx === 6) ? "6-7" : "1-5";
-  }
+function filterBtnLabel(now, todayIdx) {
+  if (!filterOn) return "1-7";
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  if (HOLIDAYS.some(hd => hd.date === `${mm}-${dd}`)) return "ND";
+  todayIdx = todayIdx !== undefined ? todayIdx : getTodayIdx(now);
+  return (todayIdx === 5 || todayIdx === 6) ? "6-7" : "1-5";
 }
 
 function toggleFilter() {
@@ -1088,7 +1013,7 @@ function toggleFilter() {
   const header = document.querySelector("header");
   btn.classList.toggle("off", !filterOn);
   header.classList.toggle("filter-off", !filterOn);
-  btn.textContent = filterBtnLabel();
+  btn.textContent = filterBtnLabel(new Date());
   refresh();
   setTimeout(scrollToNext, 80);
 }
@@ -1110,7 +1035,7 @@ function updateClock(now) {
   dayEl.className = isHoliday ? "holiday" : (isWeekend ? "weekend" : "");
 
   const btn = document.getElementById("filter-btn");
-  if (btn) btn.textContent = filterBtnLabel(todayIdx);
+  if (btn) btn.textContent = filterBtnLabel(now, todayIdx);
 
   const holidayBanner = document.getElementById("holiday-banner");
   if (holidayBanner) {
