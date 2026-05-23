@@ -22,14 +22,19 @@ v3 — PWA, fully working, deployed to GitHub Pages.
 
 ## Features
 - 2 tabs: Kaunas→Juragiai (blue) / Juragiai→Kaunas (orange)
-- Fixed header, live clock with day-of-week dots
-- Countdown to each departure (seconds-accurate, aligned to minute boundary)
-- Nearest departure — neon green border
+- Fixed header: [Filtro mygtukas] [Laikas] [Dienos badge (Pr/An/Tr/Kt/Pn/Š/S)]
+- Day filter toggle: Pr–Pn laikai / Š–S laikai (ON, default) → Visi laikai (OFF)
+  - OFF: header tampa tamsiai raudonas su raudonu border
+  - Praėję laikai visada rodomi (pritempti) — aktualūs sekančiai dienai
+- Live clock, seconds-accurate countdown
+- Nearest departure — neon green border + "ARTIMIAUSIAS" label ant viršutinio borderio
+- Auto-scroll to nearest trip on load and on tab switch
 - Upcoming trips 2× larger font; past trips show elapsed time
 - Last trip of day warning banner (orange)
 - No more trips today banner (yellow)
 - Public holiday banner — shows holiday name in red
-- Sat/Sun trips — orange color; platform badges (5, 6, 12, 106, tarpmiestinis)
+- Sat/Sun trips — orange color; platform badges (5a, 6a, 12a, 106, tm) neon spalvos
+- All UI text uppercase
 - PWA: installable, works offline after first load
 
 ## Schedule data
@@ -47,6 +52,9 @@ Source PDFs: `kaunas-juragiai_0522.pdf`, `juragiai-kaunas_0522.pdf` (verified 20
 2. Bump `CACHE` version in `sw.js`: `tvarkarastis-v1` → `v2` etc.
 3. `git add . && git commit -m "..." && git push`
 4. GitHub Pages deploys in ~1 min, phones update automatically
+
+## SW Cache
+Current: `tvarkarastis-v3` — bump on every deploy that changes `grafikai.html`
 
 ## Possible improvements
 - Geolocation — auto-select tab by user location

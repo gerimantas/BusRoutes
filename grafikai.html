@@ -47,7 +47,7 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 17px;
     min-height: 100vh;
-    padding-bottom: 40px;
+    padding-bottom: 80vh;
     padding-top: var(--header-h, 90px);
   }
 
@@ -60,6 +60,19 @@
     left: 0;
     right: 0;
     z-index: 100;
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  header.theme-kaunas {
+    background: #0a1727;
+    border-bottom: 2px solid rgba(126, 200, 255, 0.6);
+    box-shadow: 0 4px 25px 2px rgba(126, 200, 255, 0.45), inset 0 -2px 15px rgba(126, 200, 255, 0.2);
+  }
+
+  header.theme-jurginiskai {
+    background: #1c0f00;
+    border-bottom: 2px solid rgba(245, 158, 11, 0.6);
+    box-shadow: 0 4px 25px 2px rgba(245, 158, 11, 0.45), inset 0 -2px 15px rgba(245, 158, 11, 0.2);
   }
 
   #clock-bar {
@@ -74,11 +87,29 @@
     margin-bottom: 8px;
     letter-spacing: 1px;
     font-variant-numeric: tabular-nums;
+    transition: color 0.3s ease;
+  }
+
+  header.theme-kaunas #clock-bar {
+    color: #82cbff;
+  }
+
+  header.theme-kaunas #clock-time {
+    text-shadow: 0 0 12px rgba(126, 200, 255, 0.6);
+  }
+
+  header.theme-jurginiskai #clock-bar {
+    color: var(--accent-wait);
+  }
+
+  header.theme-jurginiskai #clock-time {
+    text-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
   }
 
   #clock-time {
     flex: 1;
     text-align: center;
+    transition: text-shadow 0.3s ease;
   }
 
   #clock-day {
@@ -497,9 +528,9 @@
   }
 
   header.filter-off {
-    background: #180909;
-    border: 2px solid var(--accent-stop);
-    box-shadow: inset 0 0 25px rgba(239, 68, 68, 0.85), inset 0 0 50px rgba(239, 68, 68, 0.4);
+    background: #180909 !important;
+    border-bottom: 2px solid var(--accent-stop) !important;
+    box-shadow: inset 0 0 25px rgba(239, 68, 68, 0.85), inset 0 0 50px rgba(239, 68, 68, 0.4), 0 4px 20px rgba(239, 68, 68, 0.35) !important;
   }
 
   .trip.filtered-out {
@@ -510,7 +541,7 @@
 <body>
 <h1 class="visual-hidden">Jurginiškių priemiesčio autobusų tvarkaraštis Kaunas ↔ Juragiai</h1>
 
-<header>
+<header class="theme-kaunas">
   <div id="clock-bar">
     <button id="filter-btn" onclick="toggleFilter()"></button>
     <span id="clock-time"></span>
@@ -829,10 +860,22 @@ function scrollToNext() {
   const activeTab = document.querySelector(".tab-content.active") || document.body;
   const next = activeTab.querySelector(".trip.next");
   if (!next) return;
+
+  // Saugumo patikra: jei elementas dar pilnai neišdėstytas ekrane, palaukiame trumpą laiką
+  const rect = next.getBoundingClientRect();
+  if (rect.height === 0 || rect.top === 0) {
+    setTimeout(scrollToNext, 40);
+    return;
+  }
+
   const header = document.querySelector("header");
   const headerH = header ? header.offsetHeight : 90;
-  const top = next.getBoundingClientRect().top + window.scrollY - headerH - 8;
-  window.scrollTo({ top, behavior: "instant" });
+  
+  // Apskaičiuojame absoliutų Y tašką dokumente ir pritaikome saugų viršutinį atstumą (8px)
+  const elementAbsoluteTop = rect.top + window.pageYOffset;
+  const targetScrollY = elementAbsoluteTop - headerH - 8;
+
+  window.scrollTo({ top: targetScrollY, behavior: "instant" });
 }
 
 function switchTab(name, btn) {
@@ -840,8 +883,16 @@ function switchTab(name, btn) {
   document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active-blue", "active-orange"));
   document.getElementById("tab-" + name).classList.add("active");
   btn.classList.add(name === "kaunas" ? "active-blue" : "active-orange");
+  
+  const header = document.querySelector("header");
+  if (header) {
+    header.classList.remove("theme-kaunas", "theme-jurginiskai");
+    header.classList.add("theme-" + name);
+  }
+
   updateNoMoreBanner();
-  setTimeout(scrollToNext, 0);
+  // Padidinome laiką iki 80ms, kad naršyklė spėtų atlikti stilių perpynimą (reflow)
+  setTimeout(scrollToNext, 80);
 }
 
 let filterOn = true;
@@ -871,7 +922,7 @@ function toggleFilter() {
   header.classList.toggle("filter-off", !filterOn);
   btn.textContent = filterBtnLabel();
   refresh();
-  setTimeout(scrollToNext, 50);
+  setTimeout(scrollToNext, 80);
 }
 
 function updateClock(now) {
