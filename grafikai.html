@@ -474,60 +474,47 @@
     font-size: 15px;
   }
 
-  .days-dots {
+  .days-row {
     display: flex;
     flex-wrap: nowrap;
-    gap: 2px;
+    gap: 5px;
     margin-left: auto;
+    align-items: flex-end;
   }
 
-  .day-dot {
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
-    background: var(--bg-active);
-    color: var(--text-secondary);
+  .day-label {
     font-size: 13px;
     font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+    line-height: 1;
+    padding-bottom: 2px;
   }
 
-  .day-dot.on {
-    background: var(--bg-active);
-    color: var(--text-primary);
+  /* Kaunas paletė */
+  #tab-kaunas .day-label {
+    color: rgba(126, 200, 255, 0.45);
   }
 
-  #tab-kaunas .day-dot.today,
-  #tab-kaunas .day-dot.today.sat,
-  #tab-kaunas .day-dot.today.sun {
-    box-shadow: 0 0 0 1px #82cbff;
+  #tab-kaunas .trip.upcoming .day-label {
+    color: rgba(126, 200, 255, 0.65);
   }
 
-  #tab-jurginiskai .day-dot.today,
-  #tab-jurginiskai .day-dot.today.sat,
-  #tab-jurginiskai .day-dot.today.sun {
-    box-shadow: 0 0 0 1px var(--accent-wait);
+  #tab-kaunas .day-label.today {
+    color: #82cbff;
+    border-bottom: 2px solid #82cbff;
   }
 
-  #tab-kaunas .trip.weekend .day-dot.on,
-  #tab-kaunas .trip.saturday .day-dot.on,
-  #tab-kaunas .trip.sunday .day-dot.on,
-  #tab-kaunas .trip.all-days .day-dot.on.sat,
-  #tab-kaunas .trip.all-days .day-dot.on.sun {
-    background: #82cbff;
-    color: #061220;
+  /* Juragiai paletė */
+  #tab-jurginiskai .day-label {
+    color: rgba(245, 158, 11, 0.45);
   }
 
-  #tab-jurginiskai .trip.weekend .day-dot.on,
-  #tab-jurginiskai .trip.saturday .day-dot.on,
-  #tab-jurginiskai .trip.sunday .day-dot.on,
-  #tab-jurginiskai .trip.all-days .day-dot.on.sat,
-  #tab-jurginiskai .trip.all-days .day-dot.on.sun {
-    background: var(--accent-wait);
-    color: var(--bg-base);
+  #tab-jurginiskai .trip.upcoming .day-label {
+    color: rgba(245, 158, 11, 0.65);
+  }
+
+  #tab-jurginiskai .day-label.today {
+    color: #ffb347;
+    border-bottom: 2px solid #ffb347;
   }
 
   .stop-badge {
@@ -801,16 +788,14 @@ function getTodayIdx(now) {
   return jsDay === 0 ? 6 : jsDay - 1;
 }
 
-function renderDots(days, now) {
+function renderDays(days, now) {
   const labels = ["1","2","3","4","5","6","7"];
   const todayIdx = getTodayIdx(now);
   return days.map((on, i) => {
-    let cls = "day-dot" + (on ? " on" : "");
-    if (i === 5) cls += " sat";
-    if (i === 6) cls += " sun";
-    if (i === todayIdx) cls += " today";
-    return `<div class="${cls}">${labels[i]}</div>`;
-  }).join("");
+    if (!on) return "";
+    const cls = "day-label" + (i === todayIdx ? " today" : "");
+    return `<span class="${cls}">${labels[i]}</span>`;
+  }).filter(Boolean).join("");
 }
 
 function timeToMinutes(t) {
@@ -973,7 +958,7 @@ function renderList(data, containerId, now) {
       <div class="${classes}">
         <div class="trip-row1">
           <div class="time">${time}</div>
-          <div class="days-dots">${renderDots(days, now)}</div>
+          <div class="days-row">${renderDays(days, now)}</div>
         </div>
         <div class="trip-row2">
           ${platformBadge}
@@ -1100,7 +1085,8 @@ function updateClock(now) {
   document.getElementById("clock-time").textContent = `${h}:${m}`;
 
   const dayEl = document.getElementById("clock-day");
-  dayEl.textContent = todayIdx + 1;
+  const dayNum = todayIdx + 1;
+  dayEl.textContent = isHoliday ? `${dayNum} - ND` : dayNum;
   dayEl.className = isHoliday ? "holiday" : (isWeekend ? "weekend" : "");
 
   const btn = document.getElementById("filter-btn");
