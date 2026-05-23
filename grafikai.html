@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Jurginiškiai — Tvarkaraštis</title>
+<meta name="description" content="Kauno ir Juragių priemiesčio autobusų (106 maršruto) tvarkaraštis. PWA programėlė greitam ir patogiam laiko sekimui telefone.">
 <meta name="theme-color" content="#1a1a1a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -11,6 +12,17 @@
 <link rel="manifest" href="manifest.json">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; text-transform: uppercase; }
+
+  .visual-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+  }
 
   body {
     background: #0f0f0f;
@@ -477,6 +489,7 @@
 </style>
 </head>
 <body>
+<h1 class="visual-hidden">Jurginiškių priemiesčio autobusų tvarkaraštis Kaunas ↔ Juragiai</h1>
 
 <header>
   <div id="clock-bar">
@@ -655,7 +668,16 @@ function buildHolidays(year) {
   ];
 }
 
-const HOLIDAYS = buildHolidays(new Date().getFullYear());
+let currentYear = new Date().getFullYear();
+let HOLIDAYS = buildHolidays(currentYear);
+
+function checkYearUpdate(now) {
+  const year = now.getFullYear();
+  if (year !== currentYear) {
+    currentYear = year;
+    HOLIDAYS = buildHolidays(currentYear);
+  }
+}
 
 function getHolidayName(mmdd) {
   const h = HOLIDAYS.find(h => h.date === mmdd);
@@ -673,13 +695,13 @@ function renderList(data, containerId, now) {
   // Use total seconds for accurate "dabar" detection within the same minute
   const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
-  // Next = first trip today that hasn't fully departed (departure minute still in future)
+  // Next = first trip today that hasn't fully departed (keeps "nearest" status during its active "dabar" minute)
   let nextIdx = -1;
   let tripsLeft = 0;
   let lastTripMin = 0;
   for (let i = 0; i < data.length; i++) {
     const [time, days] = data[i];
-    if (runsToday(days, now) && timeToMinutes(time) * 60 > nowSec) {
+    if (runsToday(days, now) && (timeToMinutes(time) * 60 + 59) >= nowSec) {
       if (nextIdx === -1) nextIdx = i;
       tripsLeft++;
       lastTripMin = timeToMinutes(time);
@@ -707,10 +729,13 @@ function renderList(data, containerId, now) {
     const isUpcoming = todayRuns && diffSec > 0;
     const platform = data[i][2] || null;
     const isAlt = platform && platform !== "5";
+    const isFilteredOut = filterOn && !todayRuns;
+
     let classes = `trip ${dayClass}`;
     if (isUpcoming) classes += " upcoming";
     if (isNext) classes += " next";
     if (isAlt) classes += ` platform-${platform}`;
+    if (isFilteredOut) classes += " filtered-out";
 
     const pLabel = (platform && !["106","tm"].includes(platform)) ? platform + "a" : platform;
     const platformBadge = platform
@@ -754,7 +779,6 @@ function renderList(data, containerId, now) {
   container.dataset.tripsLeft = tripsLeft;
   container.dataset.lastMin = tripsLeft === 1 ? Math.round((lastTripMin * 60 - nowSec) / 60) : "";
   updateNoMoreBanner();
-  applyFilter();
 }
 
 function updateNoMoreBanner() {
@@ -803,9 +827,9 @@ const DAY_LABELS = ["Pr","An","Tr","Kt","Pn","Š","S"];
 
 let filterOn = true;
 
-function filterBtnLabel() {
+function filterBtnLabel(todayIdx) {
   if (!filterOn) return "Visi laikai";
-  const todayIdx = getTodayIdx(new Date());
+  todayIdx = todayIdx !== undefined ? todayIdx : getTodayIdx(new Date());
   return (todayIdx === 5 || todayIdx === 6) ? "Š–S laikai" : "Pr–Pn laikai";
 }
 
@@ -816,32 +840,8 @@ function toggleFilter() {
   btn.classList.toggle("off", !filterOn);
   header.classList.toggle("filter-off", !filterOn);
   btn.textContent = filterBtnLabel();
-  applyFilter();
-  setTimeout(scrollToNext, 0);
-}
-
-function applyFilter() {
-  document.querySelectorAll(".trip").forEach(el => {
-    if (!filterOn) {
-      el.classList.remove("filtered-out");
-      return;
-    }
-    const todayIdx = getTodayIdx(new Date());
-    const isWeekend = todayIdx === 5 || todayIdx === 6;
-    const isWorkday = !isWeekend;
-    const isAllDays = el.classList.contains("all-days");
-    const isWorkdayTrip = el.classList.contains("workday");
-    const isWeekendTrip = el.classList.contains("weekend") || el.classList.contains("saturday") || el.classList.contains("sunday");
-    let show;
-    if (isAllDays) {
-      show = true;
-    } else if (isWorkday) {
-      show = isWorkdayTrip;
-    } else {
-      show = isWeekendTrip;
-    }
-    el.classList.toggle("filtered-out", !show);
-  });
+  refresh();
+  setTimeout(scrollToNext, 50);
 }
 
 function updateClock(now) {
@@ -860,7 +860,7 @@ function updateClock(now) {
   dayEl.className = isHoliday ? "holiday" : (isWeekend ? "weekend" : "");
 
   const btn = document.getElementById("filter-btn");
-  if (btn) btn.textContent = filterBtnLabel();
+  if (btn) btn.textContent = filterBtnLabel(todayIdx);
 
   const holidayBanner = document.getElementById("holiday-banner");
   if (holidayBanner) {
@@ -876,6 +876,7 @@ function updateClock(now) {
 
 function refresh() {
   const now = new Date();
+  checkYearUpdate(now);
   updateClock(now);
   renderList(dataKaunas, "list-kaunas", now);
   renderList(dataJurginiskai, "list-jurginiskai", now);
@@ -901,7 +902,19 @@ setTimeout(scrollToNext, 50);
 scheduleRefresh();
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js');
+  navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(reg => {
+    reg.addEventListener('updatefound', () => {
+      const newWorker = reg.installing;
+      if (newWorker) {
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            // New version ready, reload to activate
+            window.location.reload();
+          }
+        });
+      }
+    });
+  });
 }
 </script>
 

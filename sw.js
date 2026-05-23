@@ -1,7 +1,9 @@
-const CACHE = 'tvarkarastis-v3';
+const CACHE = 'tvarkarastis-v4';
 const ASSETS = [
   './grafikai.html',
-  './manifest.json'
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', e => {
