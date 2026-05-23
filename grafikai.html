@@ -66,13 +66,13 @@
   header.theme-kaunas {
     background: #0a1727;
     border-bottom: 2px solid rgba(126, 200, 255, 0.6);
-    box-shadow: 0 4px 25px 2px rgba(126, 200, 255, 0.45), inset 0 -2px 15px rgba(126, 200, 255, 0.2);
+    box-shadow: inset 0 0 25px 2px rgba(126, 200, 255, 0.45), inset 0 -2px 15px rgba(126, 200, 255, 0.2);
   }
 
   header.theme-jurginiskai {
     background: #1c0f00;
     border-bottom: 2px solid rgba(245, 158, 11, 0.6);
-    box-shadow: 0 4px 25px 2px rgba(245, 158, 11, 0.45), inset 0 -2px 15px rgba(245, 158, 11, 0.2);
+    box-shadow: inset 0 0 25px 2px rgba(245, 158, 11, 0.45), inset 0 -2px 15px rgba(245, 158, 11, 0.2);
   }
 
   #clock-bar {
@@ -124,10 +124,23 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+  }
+
+  header.theme-kaunas #clock-day {
+    box-shadow: 0 0 0 1px #82cbff;
+  }
+
+  header.theme-kaunas #clock-day.weekend {
+    background: #82cbff;
+    color: #061220;
+    box-shadow: 0 0 0 1px #82cbff;
+  }
+
+  header.theme-jurginiskai #clock-day {
     box-shadow: 0 0 0 1px var(--accent-wait);
   }
 
-  #clock-day.weekend {
+  header.theme-jurginiskai #clock-day.weekend {
     background: var(--accent-wait);
     color: var(--bg-base);
     box-shadow: 0 0 0 1px var(--accent-wait);
@@ -256,48 +269,80 @@
 
   #tab-kaunas .trip {
     background: #0a1727;
-    box-shadow: 0 0 12px 4px rgba(126, 200, 255, 0.35);
+    border: 1px solid rgba(126, 200, 255, 0.12);
+    box-shadow: none;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  #tab-kaunas .trip.upcoming {
+    border-color: rgba(126, 200, 255, 0.35);
+    box-shadow: 0 4px 14px 2px rgba(126, 200, 255, 0.22);
   }
 
   #tab-kaunas .trip.platform-12 {
     background: #0a1727;
-    border-left: 2px solid #c084fc;
+    border-left: 3px solid #c084fc;
   }
 
   #tab-kaunas .trip.platform-6 {
     background: #0a1727;
-    border-left: 2px solid var(--accent-wait);
+    border-left: 3px solid var(--accent-wait);
   }
 
   #tab-jurginiskai .trip {
     background: #1c0f00;
-    box-shadow: 0 0 12px 4px rgba(245, 158, 11, 0.35);
+    border: 1px solid rgba(245, 158, 11, 0.12);
+    box-shadow: none;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  #tab-jurginiskai .trip.upcoming {
+    border-color: rgba(245, 158, 11, 0.35);
+    box-shadow: 0 4px 14px 2px rgba(245, 158, 11, 0.22);
   }
 
   #tab-jurginiskai .trip.platform-tm {
     background: #1c0f00;
-    border-left: 2px solid var(--accent-go);
+    border-left: 3px solid var(--accent-go);
   }
 
-  .trip.weekend, .trip.saturday, .trip.sunday {
+  #tab-kaunas .trip.weekend, #tab-kaunas .trip.saturday, #tab-kaunas .trip.sunday {
+    color: #82cbff;
+  }
+
+  #tab-kaunas .trip.weekend .time, #tab-kaunas .trip.saturday .time, #tab-kaunas .trip.sunday .time {
+    color: #82cbff;
+  }
+
+  #tab-kaunas .trip.weekend .day-dot, #tab-kaunas .trip.saturday .day-dot, #tab-kaunas .trip.sunday .day-dot {
+    color: #82cbff;
+  }
+
+  #tab-kaunas .trip.weekend .stop-badge, #tab-kaunas .trip.saturday .stop-badge, #tab-kaunas .trip.sunday .stop-badge {
+    color: #82cbff;
+    border-color: rgba(126, 200, 255, 0.4);
+  }
+
+  #tab-jurginiskai .trip.weekend, #tab-jurginiskai .trip.saturday, #tab-jurginiskai .trip.sunday {
     color: var(--accent-wait);
   }
 
-  .trip.weekend .time, .trip.saturday .time, .trip.sunday .time {
+  #tab-jurginiskai .trip.weekend .time, #tab-jurginiskai .trip.saturday .time, #tab-jurginiskai .trip.sunday .time {
     color: var(--accent-wait);
   }
 
-  .trip.weekend .day-dot, .trip.saturday .day-dot, .trip.sunday .day-dot {
+  #tab-jurginiskai .trip.weekend .day-dot, #tab-jurginiskai .trip.saturday .day-dot, #tab-jurginiskai .trip.sunday .day-dot {
     color: var(--accent-wait);
   }
 
-  .trip.weekend .stop-badge, .trip.saturday .stop-badge, .trip.sunday .stop-badge {
+  #tab-jurginiskai .trip.weekend .stop-badge, #tab-jurginiskai .trip.saturday .stop-badge, #tab-jurginiskai .trip.sunday .stop-badge {
     color: var(--accent-wait);
     border-color: var(--accent-wait);
   }
 
   .trip.next {
-    box-shadow: 0 0 0 1.5px var(--accent-go);
+    border: 1.5px solid var(--accent-go) !important;
+    box-shadow: 0 4px 20px 2px rgba(16, 185, 129, 0.3), 0 0 10px rgba(16, 185, 129, 0.15) !important;
     position: relative;
     margin-top: 10px;
   }
@@ -316,8 +361,14 @@
     white-space: nowrap;
   }
 
-  .trip.next .time {
-    color: var(--accent-go);
+  #tab-kaunas .trip.next .time {
+    color: var(--accent-go) !important;
+    text-shadow: 0 0 12px rgba(16, 185, 129, 0.5) !important;
+  }
+
+  #tab-jurginiskai .trip.next .time {
+    color: var(--accent-go) !important;
+    text-shadow: 0 0 12px rgba(16, 185, 129, 0.5) !important;
   }
 
   .time {
@@ -329,12 +380,54 @@
     flex-shrink: 0;
   }
 
+  #tab-kaunas .time {
+    color: #82cbff; /* Mėlyna bazinė laiko spalva */
+  }
+
+  #tab-kaunas .trip.upcoming .time {
+    color: #7ec8ff; /* Ryški mėlyna būsimiems reisams */
+    text-shadow: 0 0 12px rgba(126, 200, 255, 0.4);
+  }
+
+  #tab-jurginiskai .time {
+    color: #ffb347; /* Gintarinė bazinė laiko spalva */
+  }
+
+  #tab-jurginiskai .trip.upcoming .time {
+    color: #ff9d5c; /* Ryški gintarinė būsimiems reisams */
+    text-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+  }
+
   .time-left {
     font-size: 12px;
     color: var(--text-secondary);
     margin-left: auto;
     padding-left: 8px;
     flex-shrink: 0;
+  }
+
+  #tab-kaunas .time-left {
+    color: rgba(126, 200, 255, 0.7); /* Šviesiai mėlyna laiko likučio spalva */
+  }
+
+  #tab-kaunas .time-left.past {
+    color: rgba(126, 200, 255, 0.35); /* Prigesinta mėlyna praėjusiems */
+  }
+
+  #tab-kaunas .time-left.soon {
+    color: var(--accent-go); /* Paliekama žalia skubiam reikalui */
+  }
+
+  #tab-jurginiskai .time-left {
+    color: rgba(245, 158, 11, 0.7); /* Šviesiai gintarinė laiko likučio spalva */
+  }
+
+  #tab-jurginiskai .time-left.past {
+    color: rgba(245, 158, 11, 0.35); /* Prigesinta gintarinė praėjusiems */
+  }
+
+  #tab-jurginiskai .time-left.soon {
+    color: var(--accent-go); /* Paliekama žalia skubiam reikalui */
   }
 
   .trip-row1 {
@@ -407,20 +500,32 @@
     color: var(--text-primary);
   }
 
-  .day-dot.today {
+  #tab-kaunas .day-dot.today,
+  #tab-kaunas .day-dot.today.sat,
+  #tab-kaunas .day-dot.today.sun {
+    box-shadow: 0 0 0 1px #82cbff;
+  }
+
+  #tab-jurginiskai .day-dot.today,
+  #tab-jurginiskai .day-dot.today.sat,
+  #tab-jurginiskai .day-dot.today.sun {
     box-shadow: 0 0 0 1px var(--accent-wait);
   }
 
-  .day-dot.today.sat,
-  .day-dot.today.sun {
-    box-shadow: 0 0 0 1px var(--accent-wait);
+  #tab-kaunas .trip.weekend .day-dot.on,
+  #tab-kaunas .trip.saturday .day-dot.on,
+  #tab-kaunas .trip.sunday .day-dot.on,
+  #tab-kaunas .trip.all-days .day-dot.on.sat,
+  #tab-kaunas .trip.all-days .day-dot.on.sun {
+    background: #82cbff;
+    color: #061220;
   }
 
-  .trip.weekend .day-dot.on,
-  .trip.saturday .day-dot.on,
-  .trip.sunday .day-dot.on,
-  .trip.all-days .day-dot.on.sat,
-  .trip.all-days .day-dot.on.sun {
+  #tab-jurginiskai .trip.weekend .day-dot.on,
+  #tab-jurginiskai .trip.saturday .day-dot.on,
+  #tab-jurginiskai .trip.sunday .day-dot.on,
+  #tab-jurginiskai .trip.all-days .day-dot.on.sat,
+  #tab-jurginiskai .trip.all-days .day-dot.on.sun {
     background: var(--accent-wait);
     color: var(--bg-base);
   }
@@ -435,6 +540,18 @@
     background: var(--bg-active);
     color: var(--text-secondary);
     border: 1px solid var(--border-subtle);
+  }
+
+  #tab-kaunas .stop-badge {
+    color: rgba(126, 200, 255, 0.85);
+    border-color: rgba(126, 200, 255, 0.25);
+    background: rgba(10, 23, 39, 0.4);
+  }
+
+  #tab-jurginiskai .stop-badge {
+    color: rgba(245, 158, 11, 0.85);
+    border-color: rgba(245, 158, 11, 0.25);
+    background: rgba(28, 15, 0, 0.4);
   }
 
 
@@ -471,11 +588,9 @@
   #no-more-banner {
     text-align: center;
     padding: 6px 12px;
-    color: var(--accent-wait);
     font-size: 13px;
     font-weight: 700;
     letter-spacing: 0.5px;
-    border-top: 1px solid rgba(245, 158, 11, 0.25);
   }
 
   #last-trip-banner {
@@ -484,9 +599,19 @@
     font-size: 13px;
     font-weight: 700;
     letter-spacing: 0.3px;
-    border-top: 1px solid rgba(245, 158, 11, 0.25);
-    color: var(--accent-wait);
     display: none;
+  }
+
+  header.theme-kaunas #no-more-banner,
+  header.theme-kaunas #last-trip-banner {
+    color: #82cbff;
+    border-top: 1px solid rgba(126, 200, 255, 0.25);
+  }
+
+  header.theme-jurginiskai #no-more-banner,
+  header.theme-jurginiskai #last-trip-banner {
+    color: var(--accent-wait);
+    border-top: 1px solid rgba(245, 158, 11, 0.25);
   }
 
   .time-now-line {
@@ -521,17 +646,35 @@
     flex-shrink: 0;
   }
 
+  header.theme-kaunas #filter-btn {
+    color: #82cbff;
+    border-color: rgba(126, 200, 255, 0.35);
+  }
+
+  header.theme-jurginiskai #filter-btn {
+    color: var(--accent-wait);
+    border-color: rgba(245, 158, 11, 0.35);
+  }
+
   #filter-btn.off {
     background: #270808;
     color: var(--accent-stop);
     border-color: var(--accent-stop);
   }
 
-  header.filter-off {
-    background: #180909 !important;
+  header.theme-kaunas.filter-off {
+    background: #0f0714 !important;
     border-bottom: 2px solid var(--accent-stop) !important;
-    box-shadow: inset 0 0 25px rgba(239, 68, 68, 0.85), inset 0 0 50px rgba(239, 68, 68, 0.4), 0 4px 20px rgba(239, 68, 68, 0.35) !important;
+    box-shadow: inset 0 0 25px rgba(239, 68, 68, 0.8), inset 0 0 50px rgba(126, 200, 255, 0.2), 0 4px 20px rgba(239, 68, 68, 0.2) !important;
   }
+
+  header.theme-jurginiskai.filter-off {
+    background: #180500 !important;
+    border-bottom: 2px solid var(--accent-stop) !important;
+    box-shadow: inset 0 0 25px rgba(239, 68, 68, 0.8), inset 0 0 50px rgba(245, 158, 11, 0.2), 0 4px 20px rgba(239, 68, 68, 0.2) !important;
+  }
+
+
 
   .trip.filtered-out {
     display: none;
@@ -548,8 +691,8 @@
     <span id="clock-day"></span>
   </div>
   <div class="tabs">
-    <button class="tab-btn active-blue" onclick="switchTab('kaunas', this)">Kaunas → Juragiai</button>
-    <button class="tab-btn" onclick="switchTab('jurginiskai', this)">Juragiai → Kaunas</button>
+    <button class="tab-btn active-blue" onclick="switchTab('kaunas', this, true)">Kaunas → Juragiai</button>
+    <button class="tab-btn" onclick="switchTab('jurginiskai', this, true)">Juragiai → Kaunas</button>
   </div>
   <div id="holiday-banner"></div>
   <div id="last-trip-banner"></div>
@@ -675,6 +818,17 @@ function timeToMinutes(t) {
   return h * 60 + m;
 }
 
+// Iš anksto konvertuojame laiko eilutes į minutes nuo vidurnakčio
+function precalculateTripMinutes(data) {
+  for (let i = 0; i < data.length; i++) {
+    if (data[i].length === 3) {
+      data[i].push(timeToMinutes(data[i][0]));
+    }
+  }
+}
+precalculateTripMinutes(dataKaunas);
+precalculateTripMinutes(dataJurginiskai);
+
 // Gauss algorithm — returns [month, day] of Easter Sunday for given year
 function easterDate(year) {
   const a = year % 19;
@@ -742,19 +896,19 @@ function renderList(data, containerId, now) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  // Use total seconds for accurate "dabar" detection within the same minute
+  // Naudojame sekundes tiksliam „dabar“ aptikimui tos pačios minutės ribose
   const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
-  // Next = first trip today that hasn't fully departed (keeps "nearest" status during its active "dabar" minute)
+  // Next = pirmasis reisas šiandien, kuris dar pilnai neišvyko
   let nextIdx = -1;
   let tripsLeft = 0;
   let lastTripMin = 0;
   for (let i = 0; i < data.length; i++) {
-    const [time, days] = data[i];
-    if (runsToday(days, now) && (timeToMinutes(time) * 60 + 59) >= nowSec) {
+    const [time, days, platform, tripMin] = data[i];
+    if (runsToday(days, now) && (tripMin * 60 + 59) >= nowSec) {
       if (nextIdx === -1) nextIdx = i;
       tripsLeft++;
-      lastTripMin = timeToMinutes(time);
+      lastTripMin = tripMin;
     }
   }
 
@@ -764,8 +918,8 @@ function renderList(data, containerId, now) {
   let shownNextLine = false;
 
   for (let i = 0; i < data.length; i++) {
-    const [time, days] = data[i];
-    const minSec = timeToMinutes(time) * 60;
+    const [time, days, platform, tripMin] = data[i];
+    const minSec = tripMin * 60;
     const todayRuns = runsToday(days, now);
     const isNext = i === nextIdx;
 
@@ -777,7 +931,6 @@ function renderList(data, containerId, now) {
     const diffSec = minSec - nowSec;
     const diffMin = Math.round(diffSec / 60);
     const isUpcoming = todayRuns && diffSec > 0;
-    const platform = data[i][2] || null;
     const isAlt = platform && platform !== "5";
     const isFilteredOut = filterOn && !todayRuns;
 
@@ -795,9 +948,14 @@ function renderList(data, containerId, now) {
     let timeLeftHtml = "";
     if (todayRuns) {
       if (diffSec > 0) {
-        const h = Math.floor(diffMin / 60);
-        const m = diffMin % 60;
-        const label = h > 0 ? `už ${h} val ${m} min` : `už ${m} min`;
+        let label;
+        if (diffSec < 60) {
+          label = "už < 1 min";
+        } else {
+          const h = Math.floor(diffMin / 60);
+          const m = diffMin % 60;
+          label = h > 0 ? `už ${h} val ${m} min` : `už ${m} min`;
+        }
         const soon = diffMin <= 15 ? " soon" : "";
         timeLeftHtml = `<div class="time-left${soon}">${label}</div>`;
       } else if (diffSec > -60) {
@@ -828,7 +986,7 @@ function renderList(data, containerId, now) {
   container.dataset.noMore = hasMoreToday ? "0" : "1";
   container.dataset.tripsLeft = tripsLeft;
   container.dataset.lastMin = tripsLeft === 1 ? Math.round((lastTripMin * 60 - nowSec) / 60) : "";
-  container.dataset.nextMin = nextIdx !== -1 ? Math.round((timeToMinutes(data[nextIdx][0]) * 60 - nowSec) / 60) : "";
+  container.dataset.nextMin = nextIdx !== -1 ? Math.round((data[nextIdx][3] * 60 - nowSec) / 60) : "";
   container.dataset.nextTime = nextIdx !== -1 ? data[nextIdx][0] : "";
   updateNoMoreBanner();
 }
@@ -878,7 +1036,10 @@ function scrollToNext() {
   window.scrollTo({ top: targetScrollY, behavior: "instant" });
 }
 
-function switchTab(name, btn) {
+function switchTab(name, btn, isManual) {
+  if (isManual) {
+    userInteracted = true;
+  }
   document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
   document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active-blue", "active-orange"));
   document.getElementById("tab-" + name).classList.add("active");
@@ -896,6 +1057,7 @@ function switchTab(name, btn) {
 }
 
 let filterOn = true;
+let userInteracted = false;
 
 function filterBtnLabel(todayIdx) {
   if (!filterOn) {
@@ -915,6 +1077,7 @@ function filterBtnLabel(todayIdx) {
 }
 
 function toggleFilter() {
+  userInteracted = true;
   filterOn = !filterOn;
   const btn = document.getElementById("filter-btn");
   const header = document.querySelector("header");
@@ -985,15 +1148,28 @@ function refresh() {
   }
 }
 
+let refreshTimeout = null;
+let refreshInterval = null;
+
 function scheduleRefresh() {
+  if (refreshTimeout) clearTimeout(refreshTimeout);
+  if (refreshInterval) clearInterval(refreshInterval);
+
   const now = new Date();
   // Align next tick to the start of the next minute
   const msToNextMin = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
-  setTimeout(() => {
+  refreshTimeout = setTimeout(() => {
     refresh();
-    setInterval(refresh, 60000);
+    refreshInterval = setInterval(refresh, 60000);
   }, msToNextMin);
 }
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    refresh();
+    scheduleRefresh();
+  }
+});
 
 // Geolokacija: automatinis krypties (tabo) parinkimas pagal fizinį vartotojo atstumą
 function getDistance(lat1, lon1, lat2, lon2) {
@@ -1010,6 +1186,7 @@ function getDistance(lat1, lon1, lat2, lon2) {
 function autoSelectTabByLocation() {
   if (!navigator.geolocation) return;
   navigator.geolocation.getCurrentPosition(position => {
+    if (userInteracted) return; // Jei vartotojas jau atliko rankinius veiksmus, geolokacija skirtuko nekeičia
     const uLat = position.coords.latitude;
     const uLon = position.coords.longitude;
     
