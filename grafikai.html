@@ -54,7 +54,7 @@
   header {
     background: var(--bg-surface);
     border-bottom: 1px solid var(--border-subtle);
-    padding: 8px 12px 10px;
+    padding: 10px 16px 12px;
     position: fixed;
     top: 0;
     left: 0;
@@ -113,43 +113,49 @@
   }
 
   #clock-day {
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
-    background: var(--bg-active);
+    height: 32px;
+    border-radius: 8px;
+    background: transparent;
     color: var(--text-primary);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    padding: 0 10px;
+    border: 1px solid var(--border-subtle);
+    letter-spacing: 0.3px;
   }
 
   header.theme-kaunas #clock-day {
-    box-shadow: 0 0 0 1px #82cbff;
+    color: #82cbff;
+    border-color: rgba(126, 200, 255, 0.4);
+    background: rgba(126, 200, 255, 0.07);
   }
 
   header.theme-kaunas #clock-day.weekend {
-    background: #82cbff;
-    color: #061220;
-    box-shadow: 0 0 0 1px #82cbff;
+    color: #82cbff;
+    border-color: rgba(126, 200, 255, 0.7);
+    background: rgba(126, 200, 255, 0.15);
   }
 
   header.theme-jurginiskai #clock-day {
-    box-shadow: 0 0 0 1px var(--accent-wait);
+    color: #ffb347;
+    border-color: rgba(245, 158, 11, 0.4);
+    background: rgba(245, 158, 11, 0.07);
   }
 
   header.theme-jurginiskai #clock-day.weekend {
-    background: var(--accent-wait);
-    color: var(--bg-base);
-    box-shadow: 0 0 0 1px var(--accent-wait);
+    color: #ffb347;
+    border-color: rgba(245, 158, 11, 0.7);
+    background: rgba(245, 158, 11, 0.15);
   }
 
   #clock-day.holiday {
-    background: var(--bg-active);
     color: var(--accent-stop);
-    box-shadow: 0 0 0 1px var(--accent-stop);
+    border-color: rgba(239, 68, 68, 0.5);
+    background: rgba(239, 68, 68, 0.08);
   }
 
   .clock-dots .day-dot {
@@ -281,12 +287,12 @@
 
   #tab-kaunas .trip.platform-12 {
     background: #0a1727;
-    border-left: 3px solid #c084fc;
+    border-left: 3px solid #82cbff;
   }
 
   #tab-kaunas .trip.platform-6 {
     background: #0a1727;
-    border-left: 3px solid var(--accent-wait);
+    border-left: 3px solid rgba(126, 200, 255, 0.5);
   }
 
   #tab-jurginiskai .trip {
@@ -303,7 +309,7 @@
 
   #tab-jurginiskai .trip.platform-tm {
     background: #1c0f00;
-    border-left: 3px solid var(--accent-go);
+    border-left: 3px solid #ffb347;
   }
 
   #tab-kaunas .trip.weekend, #tab-kaunas .trip.saturday, #tab-kaunas .trip.sunday {
@@ -372,7 +378,7 @@
   }
 
   .time {
-    font-size: 22px;
+    font-size: 26px;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
     color: var(--text-primary);
@@ -464,7 +470,7 @@
   }
 
   .trip.upcoming .time {
-    font-size: 34px;
+    font-size: 41px;
   }
 
   .trip.upcoming .days-label {
@@ -628,28 +634,33 @@
   }
 
   #filter-btn {
-    background: var(--bg-active);
+    height: 32px;
+    background: transparent;
     color: var(--text-secondary);
     border: 1px solid var(--border-subtle);
-    border-radius: 6px;
-    padding: 4px 10px;
-    font-size: 13px;
+    border-radius: 8px;
+    padding: 0 12px;
+    font-size: 14px;
     font-weight: 700;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
     letter-spacing: 0.5px;
     white-space: nowrap;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
   }
 
   header.theme-kaunas #filter-btn {
     color: #82cbff;
-    border-color: rgba(126, 200, 255, 0.35);
+    border-color: rgba(126, 200, 255, 0.4);
+    background: rgba(126, 200, 255, 0.07);
   }
 
   header.theme-jurginiskai #filter-btn {
-    color: var(--accent-wait);
-    border-color: rgba(245, 158, 11, 0.35);
+    color: #ffb347;
+    border-color: rgba(245, 158, 11, 0.4);
+    background: rgba(245, 158, 11, 0.07);
   }
 
   #filter-btn.off {
