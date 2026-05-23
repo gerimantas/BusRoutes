@@ -399,11 +399,12 @@
   }
 
   .time-left {
-    font-size: 12px;
+    font-size: 15px;
     color: var(--text-secondary);
     margin-left: auto;
     padding-left: 8px;
     flex-shrink: 0;
+    font-weight: 600;
   }
 
   #tab-kaunas .time-left {
@@ -442,7 +443,7 @@
     display: flex;
     align-items: center;
     width: 100%;
-    margin-top: 2px;
+    margin-top: 6px;
   }
 
   .trip-row2:empty {
@@ -471,19 +472,19 @@
   }
 
   .trip.upcoming .time-left {
-    font-size: 15px;
+    font-size: 18px;
   }
 
   .days-row {
     display: flex;
     flex-wrap: nowrap;
-    gap: 5px;
+    gap: 6px;
     margin-left: auto;
     align-items: flex-end;
   }
 
   .day-label {
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 700;
     line-height: 1;
     padding-bottom: 2px;
@@ -491,11 +492,11 @@
 
   /* Kaunas paletė */
   #tab-kaunas .day-label {
-    color: rgba(126, 200, 255, 0.45);
+    color: rgba(126, 200, 255, 0.70);
   }
 
   #tab-kaunas .trip.upcoming .day-label {
-    color: rgba(126, 200, 255, 0.65);
+    color: rgba(126, 200, 255, 0.85);
   }
 
   #tab-kaunas .day-label.today {
@@ -505,11 +506,11 @@
 
   /* Juragiai paletė */
   #tab-jurginiskai .day-label {
-    color: rgba(245, 158, 11, 0.45);
+    color: rgba(245, 158, 11, 0.70);
   }
 
   #tab-jurginiskai .trip.upcoming .day-label {
-    color: rgba(245, 158, 11, 0.65);
+    color: rgba(245, 158, 11, 0.85);
   }
 
   #tab-jurginiskai .day-label.today {
@@ -518,48 +519,56 @@
   }
 
   .stop-badge {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
-    padding: 3px 8px;
+    padding: 3px 9px;
     border-radius: 6px;
     margin-right: 6px;
     white-space: nowrap;
-    background: var(--bg-active);
+    background: transparent;
     color: var(--text-secondary);
     border: 1px solid var(--border-subtle);
   }
 
   #tab-kaunas .stop-badge {
-    color: rgba(126, 200, 255, 0.85);
-    border-color: rgba(126, 200, 255, 0.25);
-    background: rgba(10, 23, 39, 0.4);
+    color: #82cbff;
+    border-color: rgba(126, 200, 255, 0.4);
+    background: rgba(126, 200, 255, 0.07);
   }
 
   #tab-jurginiskai .stop-badge {
-    color: rgba(245, 158, 11, 0.85);
-    border-color: rgba(245, 158, 11, 0.25);
-    background: rgba(28, 15, 0, 0.4);
+    color: #ffb347;
+    border-color: rgba(245, 158, 11, 0.4);
+    background: rgba(245, 158, 11, 0.07);
   }
 
-
   .platform-badge {
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
-    font-size: 13px;
+    height: 26px;
+    border-radius: 5px;
+    font-size: 14px;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    margin-right: 4px;
+    margin-right: 6px;
+    padding: 0 8px;
+    border: 1px solid transparent;
   }
 
-  .platform-badge.p5   { background: var(--bg-active); color: var(--accent-go); }
-  .platform-badge.p12  { background: var(--bg-active); color: #df80ff; }
-  .platform-badge.p6   { background: var(--bg-active); color: var(--accent-wait); }
-  .platform-badge.p106 { background: var(--bg-active); color: #40c8ff; width: auto; padding: 0 6px; }
-  .platform-badge.ptm  { background: var(--bg-active); color: var(--accent-go); width: auto; padding: 0 6px; }
+  /* Kaunas: visi ženkleliai mėlynos paletės */
+  #tab-kaunas .platform-badge {
+    color: #82cbff;
+    border-color: rgba(126, 200, 255, 0.4);
+    background: rgba(126, 200, 255, 0.07);
+  }
+
+  /* Juragiai: visi ženkleliai gintarinės paletės */
+  #tab-jurginiskai .platform-badge {
+    color: #ffb347;
+    border-color: rgba(245, 158, 11, 0.4);
+    background: rgba(245, 158, 11, 0.07);
+  }
 
   #holiday-banner {
     text-align: center;
