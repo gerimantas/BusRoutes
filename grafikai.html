@@ -82,13 +82,8 @@
   }
 
   #clock-day.holiday {
-    color: #ff3333;
-    box-shadow: 0 0 0 1px #ff3333;
-  }
-
-  .clock-dots {
-    flex: unset !important;
-    justify-content: center;
+    color: #ff6b6b;
+    box-shadow: 0 0 0 1px #ff6b6b;
   }
 
   .clock-dots .day-dot {
@@ -114,14 +109,14 @@
   }
 
   .clock-dots .day-dot.holiday {
-    color: #ff3333;
-    box-shadow: 0 0 0 1px #ff3333;
+    color: #ff6b6b;
+    box-shadow: 0 0 0 1px #ff6b6b;
   }
 
   .nd-label {
     font-size: 13px;
     font-weight: 700;
-    color: #ff3333;
+    color: #ff6b6b;
     letter-spacing: 1px;
   }
 
@@ -159,9 +154,9 @@
   }
 
   .tab-btn.active-orange {
-    background: #3a1f00;
-    color: #ff6a00;
-    border-bottom: 2px solid #ff6a00;
+    background: #2a1500;
+    color: #ff944d;
+    border-bottom: 2px solid #ff944d;
   }
 
   .tab-content {
@@ -341,12 +336,12 @@
   }
 
   .day-dot {
-    width: 20px;
-    height: 20px;
-    border-radius: 3px;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
     background: #2a2a2a;
     color: #aaa;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -355,7 +350,7 @@
   }
 
   .day-dot.on {
-    background: #555;
+    background: #444;
     color: #fff;
   }
 
@@ -374,13 +369,13 @@
   .trip.all-days .day-dot.on.sat,
   .trip.all-days .day-dot.on.sun {
     background: #ff6a00;
-    color: #fff;
+    color: #0f0f0f; /* Tamsus tekstas geresniam įskaitomumui (6.66:1 kontrastas) */
   }
 
   .stop-badge {
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
-    padding: 3px 7px;
+    padding: 3px 8px;
     border-radius: 6px;
     margin-right: 6px;
     white-space: nowrap;
@@ -390,10 +385,10 @@
 
 
   .platform-badge {
-    width: 20px;
-    height: 20px;
-    border-radius: 3px;
-    font-size: 11px;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    font-size: 13px;
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -402,11 +397,11 @@
     margin-right: 4px;
   }
 
-  .platform-badge.p5   { background: #555; color: #00ffcc; }
-  .platform-badge.p12  { background: #555; color: #df80ff; }
-  .platform-badge.p6   { background: #555; color: #ffcc00; }
-  .platform-badge.p106 { background: #555; color: #40c8ff; width: auto; padding: 0 5px; }
-  .platform-badge.ptm  { background: #555; color: #39ff14; width: auto; padding: 0 5px; }
+  .platform-badge.p5   { background: #181818; color: #00ffcc; }
+  .platform-badge.p12  { background: #181818; color: #df80ff; }
+  .platform-badge.p6   { background: #181818; color: #ffcc00; }
+  .platform-badge.p106 { background: #181818; color: #40c8ff; width: auto; padding: 0 6px; }
+  .platform-badge.ptm  { background: #181818; color: #39ff14; width: auto; padding: 0 6px; }
 
   #holiday-banner {
     text-align: center;
@@ -414,8 +409,8 @@
     font-size: 13px;
     font-weight: 700;
     letter-spacing: 0.3px;
-    color: #ff3333;
-    border-top: 1px solid #ff333340;
+    color: #ff6b6b; /* Ryškesnė koralų raudona (kontrastas 5.2:1) */
+    border-top: 1px solid #ff6b6b40;
     display: none;
   }
 
