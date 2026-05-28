@@ -46,15 +46,33 @@
     background: var(--bg-base);
     color: var(--text-secondary);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    font-size: 17px;
+    font-size: 18px;
+    line-height: 1.3;
     min-height: 100vh;
     padding-bottom: 80vh;
     padding-top: var(--header-h, 90px);
+    transition: background 0.35s ease, box-shadow 0.35s ease;
+  }
+
+  body.theme-kaunas {
+    background:
+      radial-gradient(120% 70% at 50% 0%, rgba(126, 200, 255, 0.28), rgba(6, 18, 32, 0) 58%),
+      linear-gradient(180deg, rgba(126, 200, 255, 0.08) 0%, rgba(6, 18, 32, 0) 42%),
+      #061220;
+    box-shadow: inset 0 0 95px rgba(126, 200, 255, 0.22);
+  }
+
+  body.theme-jurginiskai {
+    background:
+      radial-gradient(120% 70% at 50% 0%, rgba(245, 158, 11, 0.30), rgba(20, 10, 0, 0) 58%),
+      linear-gradient(180deg, rgba(245, 158, 11, 0.09) 0%, rgba(20, 10, 0, 0) 42%),
+      #140a00;
+    box-shadow: inset 0 0 95px rgba(245, 158, 11, 0.22);
   }
 
   header {
     background: var(--bg-surface);
-    border-bottom: 1px solid var(--border-subtle);
+    border-bottom: none;
     padding: 10px 16px 12px;
     position: fixed;
     top: 0;
@@ -65,15 +83,13 @@
   }
 
   header.theme-kaunas {
-    background: #0a1727;
-    border-bottom: 2px solid rgba(126, 200, 255, 0.6);
-    box-shadow: inset 0 0 25px 2px rgba(126, 200, 255, 0.45), inset 0 -2px 15px rgba(126, 200, 255, 0.2);
+    background: linear-gradient(180deg, #153149 0%, #0a1727 62%);
+    box-shadow: inset 0 18px 40px rgba(126, 200, 255, 0.25), inset 18px 0 34px rgba(126, 200, 255, 0.14), inset -18px 0 34px rgba(126, 200, 255, 0.14);
   }
 
   header.theme-jurginiskai {
-    background: #1c0f00;
-    border-bottom: 2px solid rgba(245, 158, 11, 0.6);
-    box-shadow: inset 0 0 25px 2px rgba(245, 158, 11, 0.45), inset 0 -2px 15px rgba(245, 158, 11, 0.2);
+    background: linear-gradient(180deg, #3a2206 0%, #1c0f00 62%);
+    box-shadow: inset 0 18px 40px rgba(245, 158, 11, 0.25), inset 18px 0 34px rgba(245, 158, 11, 0.14), inset -18px 0 34px rgba(245, 158, 11, 0.14);
   }
 
   #clock-bar {
@@ -82,8 +98,8 @@
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    font-size: 22px;
-    font-weight: 700;
+    font-size: 24px;
+    font-weight: 800;
     color: var(--accent-wait);
     margin-bottom: 8px;
     letter-spacing: 1px;
@@ -114,17 +130,17 @@
   }
 
   #clock-day {
-    height: 32px;
+    height: 36px;
     border-radius: 8px;
     background: transparent;
     color: var(--text-primary);
-    font-size: 14px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    padding: 0 10px;
+    padding: 0 12px;
     border: 1px solid var(--border-subtle);
     letter-spacing: 0.3px;
   }
@@ -165,16 +181,17 @@
     border-radius: 0;
     overflow: hidden;
     border: 1px solid var(--border-subtle);
+    border-bottom: none;
   }
 
   .tab-btn {
     flex: 1;
-    padding: 10px 6px;
+    padding: 12px 8px;
     border: none;
     background: var(--bg-surface);
     color: var(--text-secondary);
-    font-size: 15px;
-    font-weight: 700;
+    font-size: 17px;
+    font-weight: 800;
     cursor: pointer;
     text-align: center;
     -webkit-tap-highlight-color: transparent;
@@ -208,20 +225,23 @@
   }
 
   #tab-kaunas.active {
-    background: #061220;
+    background: linear-gradient(180deg, rgba(126, 200, 255, 0.08) 0%, #061220 34%);
+    box-shadow: inset 0 0 70px rgba(126, 200, 255, 0.16);
   }
 
   #tab-jurginiskai.active {
-    background: #140a00;
+    background: linear-gradient(180deg, rgba(245, 158, 11, 0.10) 0%, #140a00 34%);
+    box-shadow: inset 0 0 70px rgba(245, 158, 11, 0.16);
   }
 
   .section-title {
-    font-size: 12px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 800;
     letter-spacing: 1.5px;
+    line-height: 1.25;
     color: var(--text-secondary);
     text-transform: uppercase;
-    padding: 14px 4px 8px;
+    padding: 16px 4px 10px;
   }
 
   .schedule-list {
@@ -237,19 +257,19 @@
     padding: 12px 14px;
     border-radius: 0;
     background: var(--bg-surface);
-    gap: 2px 0;
+    gap: 6px 0;
   }
 
   #tab-kaunas .trip {
     background: #0a1727;
-    border: 1px solid rgba(126, 200, 255, 0.12);
+    border: 1.5px solid rgba(126, 200, 255, 0.30);
     box-shadow: none;
     transition: box-shadow 0.3s ease, border-color 0.3s ease;
   }
 
   #tab-kaunas .trip.upcoming {
-    border-color: rgba(126, 200, 255, 0.35);
-    box-shadow: 0 4px 14px 2px rgba(126, 200, 255, 0.22);
+    border-color: rgba(126, 200, 255, 0.55);
+    box-shadow: none;
   }
 
   #tab-kaunas .trip.platform-12 {
@@ -264,14 +284,14 @@
 
   #tab-jurginiskai .trip {
     background: #1c0f00;
-    border: 1px solid rgba(245, 158, 11, 0.12);
+    border: 1.5px solid rgba(245, 158, 11, 0.30);
     box-shadow: none;
     transition: box-shadow 0.3s ease, border-color 0.3s ease;
   }
 
   #tab-jurginiskai .trip.upcoming {
-    border-color: rgba(245, 158, 11, 0.35);
-    box-shadow: 0 4px 14px 2px rgba(245, 158, 11, 0.22);
+    border-color: rgba(245, 158, 11, 0.55);
+    box-shadow: none;
   }
 
   #tab-jurginiskai .trip.platform-tm {
@@ -281,38 +301,42 @@
 
   .trip.next {
     border: 1.5px solid var(--accent-go) !important;
-    box-shadow: 0 4px 20px 2px rgba(16, 185, 129, 0.3), 0 0 10px rgba(16, 185, 129, 0.15) !important;
+    box-shadow: none !important;
     position: relative;
-    margin-top: 10px;
+    margin-top: 14px;
+    scroll-margin-top: calc(var(--header-h, 90px) + 16px);
   }
 
   .trip.next::before {
     content: 'ARTIMIAUSIAS';
     position: absolute;
-    top: -9px;
+    top: -10px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: 0.6px;
     color: var(--accent-go);
     background: inherit;
-    padding: 0 6px;
+    padding: 1px 10px;
+    border-radius: 4px;
     white-space: nowrap;
   }
 
   #tab-kaunas .trip.next .time {
     color: var(--accent-go) !important;
-    text-shadow: 0 0 12px rgba(16, 185, 129, 0.5) !important;
+    text-shadow: none !important;
   }
 
   #tab-jurginiskai .trip.next .time {
     color: var(--accent-go) !important;
-    text-shadow: 0 0 12px rgba(16, 185, 129, 0.5) !important;
+    text-shadow: none !important;
   }
 
   .time {
-    font-size: 26px;
-    font-weight: 700;
+    font-size: 30px;
+    font-weight: 800;
     font-variant-numeric: tabular-nums;
     color: var(--text-primary);
     letter-spacing: -0.5px;
@@ -325,7 +349,7 @@
 
   #tab-kaunas .trip.upcoming .time {
     color: #7ec8ff; /* Ryški mėlyna būsimiems reisams */
-    text-shadow: 0 0 12px rgba(126, 200, 255, 0.4);
+    text-shadow: none;
   }
 
   #tab-jurginiskai .time {
@@ -334,16 +358,17 @@
 
   #tab-jurginiskai .trip.upcoming .time {
     color: #ff9d5c; /* Ryški gintarinė būsimiems reisams */
-    text-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+    text-shadow: none;
   }
 
   .time-left {
-    font-size: 15px;
+    font-size: 17px;
     color: var(--text-secondary);
     margin-left: auto;
-    padding-left: 8px;
+    padding-left: 12px;
     flex-shrink: 0;
-    font-weight: 600;
+    font-weight: 700;
+    line-height: 1.25;
   }
 
   #tab-kaunas .time-left {
@@ -382,7 +407,7 @@
     display: flex;
     align-items: center;
     width: 100%;
-    margin-top: 6px;
+    margin-top: 8px;
   }
 
   .trip-row2:empty {
@@ -403,30 +428,30 @@
   }
 
   .trip.upcoming .time {
-    font-size: 41px;
+    font-size: 46px;
   }
 
   .trip.upcoming .days-label {
-    font-size: 15px;
+    font-size: 17px;
   }
 
   .trip.upcoming .time-left {
-    font-size: 18px;
+    font-size: 21px;
   }
 
   .days-row {
     display: flex;
     flex-wrap: nowrap;
-    gap: 6px;
+    gap: 9px;
     margin-left: auto;
     align-items: flex-end;
   }
 
   .day-label {
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 1;
-    padding-bottom: 2px;
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.15;
+    padding-bottom: 3px;
   }
 
   /* Kaunas paletė */
@@ -458,9 +483,9 @@
   }
 
   .stop-badge {
-    font-size: 14px;
-    font-weight: 700;
-    padding: 3px 9px;
+    font-size: 16px;
+    font-weight: 800;
+    padding: 4px 10px;
     border-radius: 6px;
     margin-right: 6px;
     white-space: nowrap;
@@ -482,10 +507,10 @@
   }
 
   .platform-badge {
-    height: 26px;
+    height: 30px;
     border-radius: 5px;
-    font-size: 14px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -511,10 +536,11 @@
 
   #holiday-banner {
     text-align: center;
-    padding: 5px 12px;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
+    padding: 8px 12px;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    line-height: 1.3;
     color: var(--accent-stop);
     border-top: 1px solid rgba(239, 68, 68, 0.25);
     display: none;
@@ -522,18 +548,20 @@
 
   #no-more-banner {
     text-align: center;
-    padding: 6px 12px;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
+    padding: 9px 12px;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.7px;
+    line-height: 1.35;
   }
 
   #last-trip-banner {
     text-align: center;
-    padding: 5px 12px;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
+    padding: 8px 12px;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    line-height: 1.3;
     display: none;
   }
 
@@ -553,10 +581,12 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 4px 0;
+    padding: 8px 0;
     color: var(--accent-go);
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: 0.5px;
   }
 
   .time-now-line::before, .time-now-line::after {
@@ -567,14 +597,14 @@
   }
 
   #filter-btn {
-    height: 32px;
+    height: 36px;
     background: transparent;
     color: var(--text-secondary);
     border: 1px solid var(--border-subtle);
     border-radius: 8px;
-    padding: 0 12px;
-    font-size: 14px;
-    font-weight: 700;
+    padding: 0 14px;
+    font-size: 16px;
+    font-weight: 800;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
     letter-spacing: 0.5px;
@@ -604,14 +634,12 @@
 
   header.theme-kaunas.filter-off {
     background: #0f0714 !important;
-    border-bottom: 2px solid var(--accent-stop) !important;
-    box-shadow: inset 0 0 25px rgba(239, 68, 68, 0.8), inset 0 0 50px rgba(126, 200, 255, 0.2), 0 4px 20px rgba(239, 68, 68, 0.2) !important;
+    box-shadow: inset 0 18px 40px rgba(239, 68, 68, 0.42), inset 18px 0 34px rgba(126, 200, 255, 0.12), inset -18px 0 34px rgba(126, 200, 255, 0.12) !important;
   }
 
   header.theme-jurginiskai.filter-off {
     background: #180500 !important;
-    border-bottom: 2px solid var(--accent-stop) !important;
-    box-shadow: inset 0 0 25px rgba(239, 68, 68, 0.8), inset 0 0 50px rgba(245, 158, 11, 0.2), 0 4px 20px rgba(239, 68, 68, 0.2) !important;
+    box-shadow: inset 0 18px 40px rgba(239, 68, 68, 0.42), inset 18px 0 34px rgba(245, 158, 11, 0.12), inset -18px 0 34px rgba(245, 158, 11, 0.12) !important;
   }
 
 
@@ -621,7 +649,7 @@
   }
 </style>
 </head>
-<body>
+<body class="theme-kaunas">
 <h1 class="visual-hidden">Jurginiškių priemiesčio autobusų tvarkaraštis Kaunas ↔ Juragiai</h1>
 
 <header class="theme-kaunas">
@@ -966,10 +994,12 @@ function scrollToNext() {
 
   const header = document.querySelector("header");
   const headerH = header ? header.offsetHeight : 90;
+  const safeTopGap = 12;
   
-  // Apskaičiuojame absoliutų Y tašką dokumente ir pritaikome saugų viršutinį atstumą (8px)
+  // Apskaičiuojame absoliutų Y tašką dokumente ir pritaikome didesnį saugų atstumą,
+  // kad "ARTIMIAUSIAS" žyma nepalįstų po fiksuotu header.
   const elementAbsoluteTop = rect.top + window.pageYOffset;
-  const targetScrollY = elementAbsoluteTop - headerH - 8;
+  const targetScrollY = Math.max(0, elementAbsoluteTop - headerH - safeTopGap);
 
   window.scrollTo({ top: targetScrollY, behavior: "instant" });
 }
@@ -984,9 +1014,14 @@ function switchTab(name, btn, isManual) {
   btn.classList.add(name === "kaunas" ? "active-blue" : "active-orange");
   
   const header = document.querySelector("header");
+  const body = document.body;
   if (header) {
     header.classList.remove("theme-kaunas", "theme-jurginiskai");
     header.classList.add("theme-" + name);
+  }
+  if (body) {
+    body.classList.remove("theme-kaunas", "theme-jurginiskai");
+    body.classList.add("theme-" + name);
   }
 
   updateNoMoreBanner();
