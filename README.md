@@ -15,6 +15,17 @@ Two fully independent visual themes — every element in the card (time, day lab
 
 Switching direction triggers a **0.3s fade transition** across all header colors, borders, and shadows.
 
+### Accessibility-First Typography (v6)
+Text sizes and weights were increased across the app for better readability in low-vision usage scenarios:
+- Larger clock, tab, badge, and time-left labels
+- Stronger font weights (`800`) on key labels and controls
+- Improved spacing/line-height for status lines (`ARTIMIAUSIAS`, holiday and no-more-trip banners)
+
+### Unified Header + Page Atmosphere (v6)
+- Header and page now share the same theme direction (blue/amber) for a continuous visual surface.
+- Header no longer uses a bottom border/glow seam.
+- Trip cards keep clear borders but **no extra glow effects** on cards/time text.
+
 ### Compact Day Labels
 Trip cards show only the days the trip runs — as plain, spaced numbers:
 - `1 2 3 4 5` — workdays
@@ -24,7 +35,7 @@ Trip cards show only the days the trip runs — as plain, spaced numbers:
 Today's day is marked with a route-colored bottom underline.
 
 ### Smart Header Bar
-Filter button and day indicator share identical style — same `32px` height, `8px` border-radius, route-colored border and tinted background. On public holidays, the day indicator shows `"N - ND"` format (e.g. `"4 - ND"`).
+Filter button and day indicator share identical style — same `36px` height, `8px` border-radius, route-colored border and tinted background. On public holidays, the day indicator shows `"N - ND"` format (e.g. `"4 - ND"`).
 
 ### Geolocation Auto-Routing
 Haversine formula calculates distance to Kaunas Bus Station and Juragiai on load — automatically activates the correct direction tab.
@@ -46,6 +57,8 @@ Gauss Easter algorithm + 14 statutory Lithuanian holidays (DK 160 str.) — auto
 
 ### PWA
 Installs to Android/iOS home screens, works 100% offline, auto-updates via service worker.
+
+Current cache key: `tvarkarastis-v21`.
 
 ---
 

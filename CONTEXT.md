@@ -1,64 +1,122 @@
 # Grafikai — CONTEXT
 
 ## Purpose
-Suburban bus schedule Kaunas ↔ Juragiai / Jurginiškiai (Route 106) — single-file PWA optimized for mobile, featuring high accessibility standards (WCAG 2.1 AA/AAA) and premium device integrations.
+Suburban bus schedule Kaunas ↔ Juragiai / Jurginiškiai (Route 106) — single-file PWA optimized for mobile.
 
 ## URL & Repository
-*   **Live App:** https://gerimantas.github.io/BusRoutes/grafikai.html
-*   **Repository:** https://github.com/gerimantas/BusRoutes
+- **Live App:** https://gerimantas.github.io/BusRoutes/grafikai.html
+- **Repository:** https://github.com/gerimantas/BusRoutes
 
 ## Technical Status
-*   **Current Version:** **v4 (Dynamic Visuals & Premium Integrations)**
-*   **Service Worker Cache:** **`tvarkarastis-v20`** (strictly bump cache version in `sw.js` on every HTML modification).
+- **Current Version:** **v6 (Accessibility & Visual Continuity Update)**
+- **Service Worker Cache:** **`tvarkarastis-v21`** (bump in `sw.js` on every HTML change)
 
 ---
 
-## 🛠️ Complete Feature Set
+## Complete Feature Set
 
 ### 1. Navigation & Route Identifiers
-*   **Dual Tab Routing:** Two distinct directions: Kaunas → Juragiai (Mėlyna/Blue theme) and Juragiai → Kaunas (Gintaras/Amber theme).
-*   **Premium Header Themes:** The fixed top bar dynamically swaps classes (`theme-kaunas` / `theme-jurginiskai`) and applies a **0.3s fade-transition** across backgrounds, borders, and shadows:
-    *   **Kaunas theme:** `#0a1727` background, `rgba(126, 200, 255, 0.6)` bottom border, and intense `rgba(126, 200, 255, 0.45)` neon drop shadow with blue glowing clock time text-shadow.
-    *   **Juragiai theme:** `#1c0f00` background, `rgba(245, 158, 11, 0.6)` bottom border, and intense `rgba(245, 158, 11, 0.45)` neon drop shadow with amber glowing clock time text-shadow.
-*   **Premium Geolocation Auto-Select:** Calculates distances to Kaunas Bus Station and Juragiai using the Haversine formula on load. Instantly switches active tabs if the user is physically closer to the other start point.
+- **Dual Tab Routing:** Kaunas → Juragiai (blue theme) and Juragiai → Kaunas (amber theme).
+- **Header + Body Themes:** Fixed top bar and full page swap `theme-kaunas` / `theme-jurginiskai` with 0.3s fade-transition:
+  - **Kaunas:** deep blue gradient and inset side/top glow
+  - **Juragiai:** deep amber gradient and inset side/top glow
+  - No header bottom border/glow seam.
+- **Geolocation Auto-Select:** Haversine formula → auto-switches tab on load. Locked after manual interaction.
 
-### 2. Time-Keeping & Alerts
-*   **Clock Bar:** Contains a live clock, dynamic day indicators, and the filter toggle button.
-*   **Tactile Vibration Alert:** Physically double-pulses the mobile device (`navigator.vibrate([200, 100, 200])`) when the user is looking at the active route tab and the countdown to the nearest departure reaches **≤ 2 minutes**.
-*   **Buffer-Aware "Nearest" Trip:** High-contrast emerald green outline and `ARTIMIAUSIAS` label centered on the card border. The green highlight is kept active during the current minute (`timeToMinutes(time) * 60 + 59 >= nowSec`) so it never disappears prematurely.
-*   **Visual Hierarchy:** Upcoming trips are displayed in a larger, high-contrast style (`padding: 20px 14px`, `.time { font-size: 34px }`). Past trips are dimmed but kept visible for next-day context.
+### 2. Unified Route Color Palette (v6)
+All card elements use route palette — no global accent overrides, with card glow removed for cleaner readability:
 
-### 3. Filters & Accessibility (WCAG 2.1 AA/AAA)
-*   **Smart Filter Button:** Pre-calculates the active day index and displays a readable state badge (**`1-5`** for workdays, **`6-7`** for weekends, **`ND`** for holidays).
-*   **Filter OFF Alert Aura:** Turning the filter OFF (displays **`1-7`**) changes the header to `#180909`, thickens the border-bottom, and projects a deep crimson red inset/outset warning shadow.
-*   **High Contrast Elements:** Day dots (`6-7` weekend dots have a bold amber background with dark text yielding a high **6.66:1** contrast). All platform badges are expanded to `24px x 24px` with custom neon colors contrasting at **>7.0:1 – 9.0:1** ratios.
-*   **All-Caps Style:** Global uppercase rule (`* { text-transform: uppercase; }`) for consistent, clear reading.
+| Element | Kaunas (blue) | Juragiai (amber) |
+|---------|--------------|-----------------|
+| `.time` base | `#82cbff` | `#ffb347` |
+| `.time` upcoming | `#7ec8ff` | `#ff9d5c` |
+| `.time` next (ARTIMIAUSIAS) | `var(--accent-go)` green `!important` | green `!important` |
+| `.time-left` | `rgba(126,200,255,0.7)` | `rgba(245,158,11,0.7)` |
+| `.day-label` inactive | `rgba(126,200,255,0.70)` | `rgba(245,158,11,0.70)` |
+| `.day-label.today` | `#82cbff` + underline | `#ffb347` + underline |
+| `.platform-badge` | `#82cbff` + tinted bg | `#ffb347` + tinted bg |
+| `.stop-badge` | `#82cbff` + tinted bg | `#ffb347` + tinted bg |
+| Side border (`platform-12/6/tm`) | `#82cbff` / `rgba(126,200,255,0.5)` | `#ffb347` |
+| `#filter-btn` | `#82cbff` + tinted bg | `#ffb347` + tinted bg |
+| `#clock-day` | `#82cbff` + tinted bg | `#ffb347` + tinted bg |
 
-### 4. Resilient Layout
-*   **Reflow-Safe Scrolling:** A customized `scrollToNext()` helper with safety checks (`rect.top !== 0 && rect.height !== 0`), dynamic `window.pageYOffset` positioning, and layout-tolerant `80ms` timeouts ensuring perfect positioning `8px` below the header.
-*   **Padding-Bottom Buffer:** The body has `padding-bottom: 80vh;` to provide sufficient scrollable space, guaranteeing that even the very last trip of the day can always be scrolled to the top of the viewport.
+### 3. Compact Day Label System (v5)
+Trip cards show only days the trip runs, as plain numbers:
+- `1 2 3 4 5` — workdays only
+- `1 2 3 4 5 6 7` — every day
+- `6 7` — weekends only
 
-### 5. Automated Calendar Engine
-*   **Gauss Easter Calculator:** Solves for Easter Sunday and Easter Monday dynamically for any given year.
-*   **Holiday Scheduler:** Auto-calculates all 14 statutory holidays (DK 160 str.), displays the holiday name in a red banner, and automatically applies the weekend (`ŠS`) schedule.
-*   **Year Transitions:** Automatic calendar updater (`checkYearUpdate`) that re-runs when a new year begins.
+Today's day: route-colored `border-bottom: 2px solid`. Inactive days at 70% opacity.
+Font: `18px`, bold. `renderDays(days, now)` — replaces old `renderDots()`.
+
+### 4. Unified Header Bar (v6)
+`#filter-btn` and `#clock-day` share identical style:
+- `height: 36px`, `border-radius: 8px`, `font-size: 16px`
+- `border: 1px solid` in route palette color, tinted bg (7% opacity)
+- Header `padding: 10px 16px`
+- `#clock-day` auto-width with padding (fits holiday text e.g. `"4 - ND"`)
+
+### 5. Accessibility Typography (v6)
+- Key texts increased and emboldened for low-vision users:
+  - larger clock, tabs, trip time, day labels, and info banners
+  - stronger `font-weight: 800` on primary controls and status labels
+- Spacing improvements for readability:
+  - increased line-height and vertical paddings for status rows and banners
+  - improved `ARTIMIAUSIAS` label spacing and stable placement under fixed header
+
+### 6. Holiday Display (v5)
+- **Clock bar** (`#clock-day`): shows `"N - ND"` format on public holidays
+- **Holiday banner** (`#holiday-banner`): full holiday name in red
+- Style: red border, red text, red tinted bg
+
+### 7. Time-Keeping & Alerts
+- Font sizes: `.time` `30px` base, `46px` upcoming. `.time-left` `17px` base, `21px` upcoming.
+- Tactile vibration: `[200, 100, 200]` when ≤ 2 min to nearest departure.
+- Buffer-aware next trip: green `!important` on `.trip.next .time`, emerald border, `ARTIMIAUSIAS` label.
+- Page Visibility API: pauses timer when tab hidden, resumes on focus.
+
+### 8. Filters
+- Filter ON: shows `1-5` / `6-7` / `ND` — only today's trips.
+- Filter OFF (`1-7`): shows all trips. Header → deep crimson warning state.
+- `filterBtnLabel(now, todayIdx)` — receives `now` from caller, never calls `new Date()` internally.
+
+### 9. Automated Calendar Engine
+Gauss Easter algorithm (any year), 14 statutory LT holidays, auto year-transition.
+
+### 10. Performance
+- `precalculateTripMinutes()` pre-converts all times to minutes on load.
+- Single `new Date()` per `refresh()` cycle — passed as `now` to all subfunctions.
+
+### 11. Security
+- `Content-Security-Policy` meta: `connect-src 'none'`, `object-src 'none'`, `base-uri 'self'`
+- `.gitignore`: excludes `SKILL.md`, `CLAUDE.md`, `qr.png`, `notused/`
+- `SKILL.md` and `CLAUDE.md` removed from full git history via `git filter-repo`
 
 ---
 
-## 📁 Files
+## Latest Decisions (2026-05-28)
+1. Accessibility over decorative effects: increased text size/weight and spacing in all critical UI zones.
+2. Visual continuity: synchronized full-page and header theme atmosphere, without bottom seam under header.
+3. Cleaner cards: removed trip-card glow while keeping readable, route-colored borders.
 
-| File | Path |
+---
+
+## Files
+
+| File | Purpose |
 |---|---|
-| Main PWA | [grafikai.html](file:///C:/Users/retco/Projects/Grafikai/grafikai.html) |
-| Manifest | [manifest.json](file:///C:/Users/retco/Projects/Grafikai/manifest.json) |
-| Service Worker | [sw.js](file:///C:/Users/retco/Projects/Grafikai/sw.js) |
-| Source Kaunas | [kaunas-juragiai_grafikas.md](file:///C:/Users/retco/Projects/Grafikai/kaunas-juragiai_grafikas.md) |
-| Source Juragiai | [juragiai-kaunas_grafikas.md](file:///C:/Users/retco/Projects/Grafikai/juragiai-kaunas_grafikas.md) |
+| `grafikai.html` | Single-file PWA — all HTML, CSS, JS, schedule data |
+| `sw.js` | Cache-first Service Worker (offline support) |
+| `manifest.json` | PWA install configuration |
+| `icon-192.png` / `icon-512.png` | PWA icons |
+| `kaunas-juragiai_grafikas.md` | Canonical schedule source: Kaunas → Juragiai |
+| `juragiai-kaunas_grafikas.md` | Canonical schedule source: Juragiai → Kaunas |
 
 ---
 
-## 🚀 Deployment & Updates
-1.  Verify data changes locally.
-2.  Increment the `CACHE` name in `sw.js` (e.g. `tvarkarastis-v20`).
-3.  Commit and push to `main` branch.
-4.  GitHub Pages will build and deploy. Client browsers will automatically detect the new service worker version, fetch the fresh cache, and perform a background page refresh to make the changes live.
+## Deployment & Updates
+1. Edit `grafikai.html`.
+2. Bump `CACHE` version in `sw.js`.
+3. `git add grafikai.html sw.js && git commit -m "..." && git push`
+4. GitHub Pages deploys in ~1 min.
+5. Verify: `gh api repos/gerimantas/BusRoutes/pages --jq '.status'`
