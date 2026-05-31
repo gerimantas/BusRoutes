@@ -572,6 +572,17 @@
       </div>
 
       <div class="filter-group">
+        <label class="filter-label" for="filter-year">Gamybos metai</label>
+        <select class="filter-select" id="filter-year">
+          <option value="all">Visi metai</option>
+          <option value="2024+">2024 ir naujesnės</option>
+          <option value="2021+">2021 ir naujesnės</option>
+          <option value="2019+">2019 ir naujesnės</option>
+          <option value="2018-">Iki 2018 (senesnės)</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
         <label class="filter-label" for="filter-sort">Rūšiuoti pagal</label>
         <select class="filter-select" id="filter-sort">
           <option value="price-asc">Kainą: nuo pigiausios</option>
@@ -879,6 +890,7 @@
     const grid = document.getElementById('listings-grid');
     const filterPlatform = document.getElementById('filter-platform');
     const filterBrand = document.getElementById('filter-brand');
+    const filterYear = document.getElementById('filter-year');
     const filterSort = document.getElementById('filter-sort');
     const btnReset = document.getElementById('btn-reset');
     const toast = document.getElementById('toast');
@@ -1035,6 +1047,13 @@
         filtered = filtered.filter(item => item.brand === brand);
       }
 
+      // Year filter
+      const year = filterYear.value;
+      if (year === '2024+') filtered = filtered.filter(i => i.year >= 2024);
+      else if (year === '2021+') filtered = filtered.filter(i => i.year >= 2021);
+      else if (year === '2019+') filtered = filtered.filter(i => i.year >= 2019);
+      else if (year === '2018-') filtered = filtered.filter(i => i.year && i.year <= 2018);
+
       // Sorting
       const sort = filterSort.value;
       if (sort === 'price-asc') {
@@ -1053,11 +1072,13 @@
     // Event Listeners
     filterPlatform.addEventListener('change', applyFilters);
     filterBrand.addEventListener('change', applyFilters);
+    filterYear.addEventListener('change', applyFilters);
     filterSort.addEventListener('change', applyFilters);
 
     btnReset.addEventListener('click', () => {
       filterPlatform.value = 'all';
       filterBrand.value = 'all';
+      filterYear.value = 'all';
       filterSort.value = 'price-asc';
       applyFilters();
     });
