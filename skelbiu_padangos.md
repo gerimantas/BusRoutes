@@ -42,7 +42,7 @@ Didžioji dalis geriausių premium padangų skelbimų Kaune priklauso keliems st
 
 ---
 
-### 👤 Pardavėjas E („Automontoja“ — puikus Continental pasirinkimas)
+### 👤 Pardavėjas E („Automontoja" — puikus Continental pasirinkimas)
 * **Telefono numeris:** **+37066900066**
 * **Vieta:** Kaunas (siunčia į kitus miestus)
 * **Siūlomas variantas:**
@@ -55,13 +55,16 @@ Didžioji dalis geriausių premium padangų skelbimų Kaune priklauso keliems st
 
 ---
 
-### 👤 Pardavėjas F (Naujas! Autogidas Didelis Naudotų Padangų Sandėlis)
+### 👤 Pardavėjas F (Autogidas — Didelis Naudotų Padangų Sandėlis)
 * **Telefono numeriai:** **+37061195152** arba **+37065518829**
 * **Vieta:** Kaunas (yra montavimas ir balansavimas vietoje)
 * **Aprašymas:** Didelis naudotų padangų sandėlis (daugiau nei 2000 žieminių padangų), kainos nuo 12 € / vnt.
 * **Siūlomi variantai jūsų išmatavimams (205/55 R16):**
    * **Michelin** žieminės padangos (R16, 205/55): [Skelbimo nuoroda](https://autogidas.lt/skelbimas/michelin-ziemines-20555-r16-r16-ziemines-padangos-lengviesiems-122247403.html)
    * **Continental** žieminės padangos (R16, 205/55): [Skelbimo nuoroda](https://autogidas.lt/skelbimas/continental-ziemines-20555-r16-r16-ziemines-padangos-lengviesiems-122247430.html)
+   * **Kumho** žieminės 205/55 R16 — **25 € / vnt.**: [Skelbimo nuoroda](https://autogidas.lt/skelbimas/kumho-ziemines-20555-r16-r16-ziemines-padangos-lengviesiems-122247472.html)
+   * **Goodyear** žieminės 205/55 R16 — **20 € / vnt.**: [Skelbimo nuoroda](https://autogidas.lt/skelbimas/goodyear-r16-ziemines-padangos-lengviesiems-122310967.html)
+   * **Continental** žieminės — **25 € / vnt.**, 4 vnt.: [Skelbimo nuoroda](https://autogidas.lt/skelbimas/continental-r16-ziemines-padangos-lengviesiems-122298190.html)
 
 ---
 
@@ -88,7 +91,7 @@ Didžioji dalis geriausių premium padangų skelbimų Kaune priklauso keliems st
 ---
 
 ### 👤 Pardavėjas G (Ypatingai pigus privatus variantas Autogide)
-* **Telefono numeris:** Spauskite nuorodą skelbime mygtuką „Rodyti numerį“ (numeris prasideda +370676...)
+* **Telefono numeris:** Spauskite nuorodą skelbime mygtuką „Rodyti numerį" (numeris prasideda +370676...)
 * **Vieta:** Kaunas
 * **Siūlomas variantas:**
    * **Padangos:** **Viking SnowTech ll (2016 m. gamybos)** — *Viking priklauso Continental grupei*
@@ -106,4 +109,31 @@ Didžioji dalis geriausių premium padangų skelbimų Kaune priklauso keliems st
 
 ---
 
-*Informacija surinkta naudojant Firecrawl įrankį. Data: 2026-05-30.*
+## 🆕 Nauji skelbiu.lt skelbimai — agent paieška (2026-05-31)
+
+Filtruota: likutis ≥80%, premium markės. Tel. **+37061422636** — tas pats stambus Kauno pardavėjas (daug variantų vienoje vietoje).
+
+| Markė / Modelis | Metai | Kaina | Likutis | Tel. | Nuoroda |
+|-----------------|-------|-------|---------|------|---------|
+| **Bridgestone BLIZZAK LM005** | 2021 | **40 €** | 95% | +37061422636 | [skelbiu.lt](https://www.skelbiu.lt/skelbimai/padangos-tikrai-geros-tolygiai-devetos-nera-guzuotos-82847715.html) |
+| **Bridgestone BLIZZAK LM005** | 2021 | **40 €** | 95% | +37061422636 | [skelbiu.lt](https://www.skelbiu.lt/skelbimai/padangos-tikrai-geros-tolygiai-devetos-nera-guzuotos-82847943.html) |
+| **Continental WINTERCONTACT TS830P** | 2019 | **40 €** | 95% | +37061422636 | [skelbiu.lt](https://www.skelbiu.lt/skelbimai/padangos-tikrai-geros-tolygiai-devetos-nera-guzuotos-82847893.html) |
+| **Continental** (7–8 mm) | 2020 | **40 €** | ~90% | +37061422636 | [skelbiu.lt](https://www.skelbiu.lt/skelbimai/padangos-tikrai-geros-tolygiai-devetos-nera-guzuotos-83139238.html) |
+| **Bridgestone** (8 mm) | — | **35 €** | ~90% | +37061422636 | [skelbiu.lt](https://www.skelbiu.lt/skelbimai/padangos-tikrai-geros-tolygiai-devetos-nera-guzuotos-82424001.html) |
+| **Bridgestone BLIZZAK LM001** | 2017 | **30 €** | 90% | +37061422636 | [skelbiu.lt](https://www.skelbiu.lt/skelbimai/padangos-tikrai-geros-tolygiai-devetos-nera-guzuotos-82847851.html) |
+| **Bridgestone BLIZZAK LM001** | 2016 | **30 €** | 90% | +37061422636 | [skelbiu.lt](https://www.skelbiu.lt/skelbimai/padangos-tikrai-geros-tolygiai-devetos-nera-guzuotos-82847859.html) |
+| **Bridgestone LM-32** | 2017 | **30 €** | 95% | +37061422636 | [skelbiu.lt](https://www.skelbiu.lt/skelbimai/padangos-tikrai-geros-tolygiai-devetos-nera-guzuotos-82847901.html) |
+| **Hankook** | 2021 | **25 €** | 80% | +37061422636 | [skelbiu.lt](https://www.skelbiu.lt/skelbimai/padangos-tikrai-geros-tolygiai-devetos-nera-guzuotos-82607893.html) |
+| **Nokian WR D5** | 2020 | **59 €** | 95% | +37067193165 | [skelbiu.lt](https://www.skelbiu.lt/skelbimai/nokian-wr-d5-ziemines-padangos-8-9mm-gylio-protektorius-95-82108500.html) |
+| **Continental AllSeasonContact2** | 2024 | **58 €** | 95% | +37067193165 | [skelbiu.lt](https://www.skelbiu.lt/skelbimai/continental-allseasoncontact2-padangos-patikrintos-geros-81430921.html) |
+
+## 🆕 Nauji autogidas.lt skelbimai (2026-05-31)
+
+| Modelis | Kaina | Būklė | Vieta | Nuoroda |
+|---------|-------|-------|-------|---------|
+| Žieminės 2023 m. (nenurodyta marka) | 35 € / vnt. | 95% likutis, 4 vnt. | Kaunas | [autogidas.lt](https://autogidas.lt/skelbimas/r16-ziemines-padangos-lengviesiems-122592250.html) |
+| Hankook Winter i*Cept Evo 2 RFT (2022 m.) | 35 € / vnt. | 95% likutis, Run Flat | Kaunas | [autoplius.lt](https://autoplius.lt/skelbimai/padangos-ratlankiai/padangos/lengvuju-automobiliu/ziemines?qt=205-55-r16) |
+
+---
+
+*Informacija surinkta naudojant Firecrawl įrankį. Atnaujinta: 2026-05-31.*

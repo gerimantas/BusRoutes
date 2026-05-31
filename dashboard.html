@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Padangų Paieškos Skydelis</title>
+  <title>Naudotų 16''/205/55 padangų paieška</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -519,27 +519,27 @@
           <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z" />
         </svg>
       </div>
-      <h1>Padangų Paieškos Skydelis</h1>
+      <h1>Naudotų 16''/205/55 padangų paieška</h1>
       <p class="subtitle">Interaktyvi analizė iš Skelbiu.lt, Autoplius.lt ir Autogidas.lt Kauno regione</p>
     </header>
 
     <!-- Stats Section -->
     <section class="stats-container">
       <div class="stat-card">
-        <div class="stat-val" id="stat-count">8</div>
+        <div class="stat-val" id="stat-count">17</div>
         <div class="stat-lbl">Iš viso skelbimų</div>
       </div>
       <div class="stat-card">
-        <div class="stat-val">45.5 €</div>
+        <div class="stat-val" id="stat-avg">—</div>
         <div class="stat-lbl">Vidutinė kaina / vnt.</div>
       </div>
       <div class="stat-card">
-        <div class="stat-val" style="color: var(--primary);">Michelin</div>
-        <div class="stat-lbl">Premium prekės ženklai</div>
+        <div class="stat-val" id="stat-best">—</div>
+        <div class="stat-lbl">Geriausia kaina</div>
       </div>
       <div class="stat-card">
-        <div class="stat-val" style="color: var(--accent);">15 €</div>
-        <div class="stat-lbl">Geriausia kaina</div>
+        <div class="stat-val" id="stat-updated">2026-05-31</div>
+        <div class="stat-lbl">Atnaujinta</div>
       </div>
     </section>
 
@@ -564,6 +564,8 @@
           <option value="Goodyear">Goodyear</option>
           <option value="Bridgestone">Bridgestone</option>
           <option value="Pirelli">Pirelli</option>
+          <option value="Nokian">Nokian</option>
+          <option value="Hankook">Hankook</option>
           <option value="Viking">Viking</option>
           <option value="Agi">Agi</option>
         </select>
@@ -598,7 +600,7 @@
   </div>
 
   <script>
-    // Structured Listings Data
+    // Structured Listings Data — atnaujinta 2026-05-31
     const listings = [
       {
         id: 1,
@@ -635,7 +637,7 @@
       {
         id: 3,
         brand: 'Michelin',
-        model: 'CrossClimate 2 (2025 m.)',
+        model: 'CrossClimate 2',
         price: 45,
         quantity: 2,
         tread: 8.0,
@@ -650,6 +652,150 @@
       },
       {
         id: 4,
+        brand: 'Bridgestone',
+        model: 'Blizzak LM005',
+        price: 40,
+        quantity: 4,
+        tread: 8.5,
+        treadPct: 95,
+        year: 2021,
+        platform: 'Skelbiu.lt',
+        seller: 'Pardavėjas H',
+        phone: '+37061422636',
+        location: 'Kaunas',
+        link: 'https://www.skelbiu.lt/skelbimai/padangos-tikrai-geros-tolygiai-devetos-nera-guzuotos-82847715.html',
+        recommended: true
+      },
+      {
+        id: 5,
+        brand: 'Continental',
+        model: 'WinterContact TS830P',
+        price: 40,
+        quantity: 4,
+        tread: 8.5,
+        treadPct: 95,
+        year: 2019,
+        platform: 'Skelbiu.lt',
+        seller: 'Pardavėjas H',
+        phone: '+37061422636',
+        location: 'Kaunas',
+        link: 'https://www.skelbiu.lt/skelbimai/padangos-tikrai-geros-tolygiai-devetos-nera-guzuotos-82847893.html',
+        recommended: true
+      },
+      {
+        id: 6,
+        brand: 'Nokian',
+        model: 'WR D5',
+        price: 59,
+        quantity: 4,
+        tread: 8.5,
+        treadPct: 95,
+        year: 2020,
+        platform: 'Skelbiu.lt',
+        seller: 'Pardavėjas A',
+        phone: '+37067193165',
+        location: 'Kaunas',
+        link: 'https://www.skelbiu.lt/skelbimai/nokian-wr-d5-ziemines-padangos-8-9mm-gylio-protektorius-95-82108500.html',
+        recommended: false
+      },
+      {
+        id: 7,
+        brand: 'Continental',
+        model: 'AllSeasonContact 2',
+        price: 58,
+        quantity: 4,
+        tread: 8.5,
+        treadPct: 95,
+        year: 2024,
+        platform: 'Skelbiu.lt',
+        seller: 'Pardavėjas A',
+        phone: '+37067193165',
+        location: 'Kaunas',
+        link: 'https://www.skelbiu.lt/skelbimai/continental-allseasoncontact2-padangos-patikrintos-geros-81430921.html',
+        recommended: false
+      },
+      {
+        id: 8,
+        brand: 'Bridgestone',
+        model: 'Blizzak LM005',
+        price: 40,
+        quantity: 4,
+        tread: 8.5,
+        treadPct: 95,
+        year: 2021,
+        platform: 'Skelbiu.lt',
+        seller: 'Pardavėjas H',
+        phone: '+37061422636',
+        location: 'Kaunas',
+        link: 'https://www.skelbiu.lt/skelbimai/padangos-tikrai-geros-tolygiai-devetos-nera-guzuotos-82847943.html',
+        recommended: false
+      },
+      {
+        id: 9,
+        brand: 'Bridgestone',
+        model: 'Blizzak LM001',
+        price: 30,
+        quantity: 4,
+        tread: 7.5,
+        treadPct: 90,
+        year: 2017,
+        platform: 'Skelbiu.lt',
+        seller: 'Pardavėjas H',
+        phone: '+37061422636',
+        location: 'Kaunas',
+        link: 'https://www.skelbiu.lt/skelbimai/padangos-tikrai-geros-tolygiai-devetos-nera-guzuotos-82847851.html',
+        recommended: false
+      },
+      {
+        id: 10,
+        brand: 'Bridgestone',
+        model: 'LM-32',
+        price: 30,
+        quantity: 4,
+        tread: 8.5,
+        treadPct: 95,
+        year: 2017,
+        platform: 'Skelbiu.lt',
+        seller: 'Pardavėjas H',
+        phone: '+37061422636',
+        location: 'Kaunas',
+        link: 'https://www.skelbiu.lt/skelbimai/padangos-tikrai-geros-tolygiai-devetos-nera-guzuotos-82847901.html',
+        recommended: false
+      },
+      {
+        id: 11,
+        brand: 'Bridgestone',
+        model: 'Blizzak (8 mm)',
+        price: 35,
+        quantity: 4,
+        tread: 8.0,
+        treadPct: 90,
+        year: null,
+        platform: 'Skelbiu.lt',
+        seller: 'Pardavėjas H',
+        phone: '+37061422636',
+        location: 'Kaunas',
+        link: 'https://www.skelbiu.lt/skelbimai/padangos-tikrai-geros-tolygiai-devetos-nera-guzuotos-82424001.html',
+        recommended: false
+      },
+      {
+        id: 12,
+        brand: 'Hankook',
+        model: 'žieminės',
+        price: 25,
+        quantity: 4,
+        tread: 5.0,
+        treadPct: 80,
+        year: 2021,
+        platform: 'Skelbiu.lt',
+        seller: 'Pardavėjas H',
+        phone: '+37061422636',
+        location: 'Kaunas',
+        link: 'https://www.skelbiu.lt/skelbimai/padangos-tikrai-geros-tolygiai-devetos-nera-guzuotos-82607893.html',
+        recommended: false
+      },
+      {
+        id: 13,
         brand: 'Pirelli',
         model: 'Cinturato Winter 2',
         price: 30,
@@ -665,7 +811,7 @@
         recommended: false
       },
       {
-        id: 5,
+        id: 14,
         brand: 'Continental',
         model: 'WinterContact TS830P',
         price: 48,
@@ -681,7 +827,7 @@
         recommended: false
       },
       {
-        id: 6,
+        id: 15,
         brand: 'Michelin',
         model: 'CrossClimate 2 (2022 m.)',
         price: 68,
@@ -697,7 +843,7 @@
         recommended: false
       },
       {
-        id: 7,
+        id: 16,
         brand: 'Viking',
         model: 'SnowTech ll',
         price: 15,
@@ -713,7 +859,7 @@
         recommended: false
       },
       {
-        id: 8,
+        id: 17,
         brand: 'Agi',
         model: 'AG-Optima / Master 4',
         price: 38,
@@ -752,10 +898,16 @@
           </div>
         `;
         document.getElementById('stat-count').innerText = '0';
+        document.getElementById('stat-avg').innerText = '—';
+        document.getElementById('stat-best').innerText = '—';
         return;
       }
 
       document.getElementById('stat-count').innerText = data.length.toString();
+      const avg = data.reduce((s, i) => s + i.price, 0) / data.length;
+      document.getElementById('stat-avg').innerText = avg.toFixed(0) + ' €';
+      const best = Math.min(...data.map(i => i.price));
+      document.getElementById('stat-best').innerText = best + ' €';
 
       data.forEach(item => {
         const card = document.createElement('div');
@@ -768,7 +920,7 @@
         card.innerHTML = `
           <div class="card-header">
             <div class="brand-section">
-              <span class="brand-badge">${item.brand}</span>
+              <span class="brand-badge">${item.brand}${item.recommended ? ' <span style="font-size:0.7rem;background:rgba(16,185,129,0.2);color:#6ee7b7;border:1px solid rgba(16,185,129,0.35);padding:0.15rem 0.45rem;border-radius:6px;vertical-align:middle;font-weight:600">★ REC</span>' : ''}</span>
               <span class="model-name">${item.model}</span>
             </div>
             <span class="platform-badge ${platformClass}">${item.platform}</span>
@@ -782,7 +934,7 @@
               </div>
               <div class="spec-item">
                 <span class="spec-label">Metai (DOT)</span>
-                <span class="spec-value">${item.year} m.</span>
+                <span class="spec-value">${item.year ? item.year + ' m.' : '—'}</span>
               </div>
               <div class="spec-item">
                 <span class="spec-label">Kiekis</span>
@@ -892,7 +1044,7 @@
       } else if (sort === 'tread-desc') {
         filtered.sort((a, b) => b.tread - a.tread);
       } else if (sort === 'year-desc') {
-        filtered.sort((a, b) => b.year - a.year);
+        filtered.sort((a, b) => (b.year || 0) - (a.year || 0));
       }
 
       renderListings(filtered);
