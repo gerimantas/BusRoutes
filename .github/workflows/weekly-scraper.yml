@@ -2,7 +2,7 @@ name: Weekly Schedule Scraper
 
 on:
   schedule:
-    - cron: '0 6 * * 1'  # Every Monday at 6:00 UTC (9:00 Vilnius summer, 8:00 winter)
+    - cron: '0 6 * * 0'  # Every Sunday at 6:00 UTC (9:00 Vilnius summer, 8:00 winter)
   workflow_dispatch:     # Also allow manual trigger
 
 jobs:

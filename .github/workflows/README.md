@@ -34,14 +34,14 @@ This directory contains automated workflows for maintaining bus schedule data.
 ### 2. `weekly-scraper.yml` — Automatic Updates
 
 **Trigger:** 
-- Schedule: Every Monday 6:00 UTC (9:00 Vilnius summer / 8:00 winter)
+- Schedule: Every Sunday 6:00 UTC (9:00 Vilnius summer / 8:00 winter)
 - Manual: workflow_dispatch (same as test-scraper)
 
 **Purpose:** Automatically scrape schedules and create Pull Request if data changed
 
 **Workflow:**
 ```
-Monday 6:00 UTC
+Sunday 6:00 UTC
     ↓
 Scrape autobusubilietai.lt
     ↓
@@ -76,7 +76,7 @@ Change schedule in `weekly-scraper.yml`:
 ```yaml
 on:
   schedule:
-    - cron: '0 6 * * 1'  # Current: Monday 6:00 UTC
+    - cron: '0 6 * * 0'  # Current: Sunday 6:00 UTC
 ```
 
 Examples:
@@ -157,7 +157,7 @@ GitHub sends email notifications for:
 
 ## Manual Override
 
-To update schedules without waiting for Monday:
+To update schedules without waiting for Sunday:
 
 1. Go to Actions → "Weekly Schedule Scraper"
 2. Click "Run workflow"

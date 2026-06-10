@@ -1,9 +1,9 @@
 name: Update Bus Schedule
 
 on:
-  # Kas pirmadienį 6:00 UTC (9:00 Vilniaus laiku vasarą, 8:00 žiemą)
+  # Kas sekmadienį 6:00 UTC (9:00 Vilniaus laiku vasarą, 8:00 žiemą)
   schedule:
-    - cron: '0 6 * * 1'
+    - cron: '0 6 * * 0'
   
   # Rankinis paleidimas per GitHub UI
   workflow_dispatch:
