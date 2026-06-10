@@ -1,6 +1,6 @@
-const CACHE = 'tvarkarastis-v22';
+const CACHE = 'tvarkarastis-v23';
 const ASSETS = [
-  './grafikai.html',
+  './paper/grafikai.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png'

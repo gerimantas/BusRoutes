@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Jurginiškiai — Tvarkaraštis</title>
+<title>Jurginiškiai — Tvarkaraštis (WEB TEST)</title>
 <meta name="description" content="Kauno ir Juragių priemiesčio autobusų (106 maršruto) tvarkaraštis. PWA programėlė greitam ir patogiam laiko sekimui telefone.">
 <meta name="theme-color" content="#1a1a1a">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; img-src 'self'; object-src 'none'; base-uri 'self'">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Tvarkaraštis">
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="../manifest.json">
 <style>
   :root {
     /* 60% — DOMINATING BACKGROUNDS */
@@ -73,7 +73,7 @@
   header {
     background: var(--bg-surface);
     border-bottom: none;
-    padding: 10px 16px 12px;
+    padding: 10px 16px 0px;
     position: fixed;
     top: 0;
     left: 0;
@@ -175,6 +175,24 @@
     background: rgba(239, 68, 68, 0.08);
   }
 
+  #data-source {
+    text-align: center;
+    padding: 6px 12px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    line-height: 1.2;
+    opacity: 0.6;
+  }
+
+  header.theme-kaunas #data-source {
+    color: #82cbff;
+  }
+
+  header.theme-jurginiskai #data-source {
+    color: #ffb347;
+  }
+
   .tabs {
     display: flex;
     gap: 0;
@@ -272,14 +290,14 @@
     box-shadow: none;
   }
 
-  #tab-kaunas .trip.platform-12 {
+  #tab-kaunas .trip.platform-106 {
     background: #0a1727;
     border-left: 3px solid #82cbff;
   }
 
-  #tab-kaunas .trip.platform-6 {
+  #tab-kaunas .trip.platform-tm {
     background: #0a1727;
-    border-left: 3px solid rgba(126, 200, 255, 0.5);
+    border-left: 3px solid #82cbff;
   }
 
   #tab-jurginiskai .trip {
@@ -292,6 +310,11 @@
   #tab-jurginiskai .trip.upcoming {
     border-color: rgba(245, 158, 11, 0.55);
     box-shadow: none;
+  }
+
+  #tab-jurginiskai .trip.platform-106 {
+    background: #1c0f00;
+    border-left: 3px solid #ffb347;
   }
 
   #tab-jurginiskai .trip.platform-tm {
@@ -344,20 +367,20 @@
   }
 
   #tab-kaunas .time {
-    color: #82cbff; /* Mėlyna bazinė laiko spalva */
+    color: #82cbff;
   }
 
   #tab-kaunas .trip.upcoming .time {
-    color: #7ec8ff; /* Ryški mėlyna būsimiems reisams */
+    color: #7ec8ff;
     text-shadow: none;
   }
 
   #tab-jurginiskai .time {
-    color: #ffb347; /* Gintarinė bazinė laiko spalva */
+    color: #ffb347;
   }
 
   #tab-jurginiskai .trip.upcoming .time {
-    color: #ff9d5c; /* Ryški gintarinė būsimiems reisams */
+    color: #ff9d5c;
     text-shadow: none;
   }
 
@@ -372,27 +395,27 @@
   }
 
   #tab-kaunas .time-left {
-    color: rgba(126, 200, 255, 0.7); /* Šviesiai mėlyna laiko likučio spalva */
+    color: rgba(126, 200, 255, 0.7);
   }
 
   #tab-kaunas .time-left.past {
-    color: rgba(126, 200, 255, 0.35); /* Prigesinta mėlyna praėjusiems */
+    color: rgba(126, 200, 255, 0.35);
   }
 
   #tab-kaunas .time-left.soon {
-    color: var(--accent-go); /* Paliekama žalia skubiam reikalui */
+    color: var(--accent-go);
   }
 
   #tab-jurginiskai .time-left {
-    color: rgba(245, 158, 11, 0.7); /* Šviesiai gintarinė laiko likučio spalva */
+    color: rgba(245, 158, 11, 0.7);
   }
 
   #tab-jurginiskai .time-left.past {
-    color: rgba(245, 158, 11, 0.35); /* Prigesinta gintarinė praėjusiems */
+    color: rgba(245, 158, 11, 0.35);
   }
 
   #tab-jurginiskai .time-left.soon {
-    color: var(--accent-go); /* Paliekama žalia skubiam reikalui */
+    color: var(--accent-go);
   }
 
   .trip-row1 {
@@ -454,7 +477,6 @@
     padding-bottom: 3px;
   }
 
-  /* Kaunas paletė */
   #tab-kaunas .day-label {
     color: rgba(126, 200, 255, 0.70);
   }
@@ -468,7 +490,6 @@
     border-bottom: 2px solid #82cbff;
   }
 
-  /* Juragiai paletė */
   #tab-jurginiskai .day-label {
     color: rgba(245, 158, 11, 0.70);
   }
@@ -480,30 +501,6 @@
   #tab-jurginiskai .day-label.today {
     color: #ffb347;
     border-bottom: 2px solid #ffb347;
-  }
-
-  .stop-badge {
-    font-size: 16px;
-    font-weight: 800;
-    padding: 4px 10px;
-    border-radius: 6px;
-    margin-right: 6px;
-    white-space: nowrap;
-    background: transparent;
-    color: var(--text-secondary);
-    border: 1px solid var(--border-subtle);
-  }
-
-  #tab-kaunas .stop-badge {
-    color: #82cbff;
-    border-color: rgba(126, 200, 255, 0.4);
-    background: rgba(126, 200, 255, 0.07);
-  }
-
-  #tab-jurginiskai .stop-badge {
-    color: #ffb347;
-    border-color: rgba(245, 158, 11, 0.4);
-    background: rgba(245, 158, 11, 0.07);
   }
 
   .platform-badge {
@@ -520,14 +517,12 @@
     border: 1px solid transparent;
   }
 
-  /* Kaunas: visi ženkleliai mėlynos paletės */
   #tab-kaunas .platform-badge {
     color: #82cbff;
     border-color: rgba(126, 200, 255, 0.4);
     background: rgba(126, 200, 255, 0.07);
   }
 
-  /* Juragiai: visi ženkleliai gintarinės paletės */
   #tab-jurginiskai .platform-badge {
     color: #ffb347;
     border-color: rgba(245, 158, 11, 0.4);
@@ -642,15 +637,13 @@
     box-shadow: inset 0 18px 40px rgba(239, 68, 68, 0.42), inset 18px 0 34px rgba(245, 158, 11, 0.12), inset -18px 0 34px rgba(245, 158, 11, 0.12) !important;
   }
 
-
-
   .trip.filtered-out {
     display: none;
   }
 </style>
 </head>
 <body class="theme-kaunas">
-<h1 class="visual-hidden">Jurginiškių priemiesčio autobusų tvarkaraštis Kaunas ↔ Juragiai</h1>
+<h1 class="visual-hidden">Jurginiškių priemiesčio autobusų tvarkaraštis Kaunas ↔ Juragiai (WEB TEST)</h1>
 
 <header class="theme-kaunas">
   <div id="clock-bar">
@@ -658,6 +651,7 @@
     <span id="clock-time"></span>
     <span id="clock-day"></span>
   </div>
+  <div id="data-source">autobusubilietai.lt • 2026-06-10</div>
   <div class="tabs">
     <button class="tab-btn active-blue" onclick="switchTab('kaunas', this, true)">Kaunas → Juragiai</button>
     <button class="tab-btn" onclick="switchTab('jurginiskai', this, true)">Juragiai → Kaunas</button>
@@ -679,7 +673,9 @@
 
 
 <script>
-// Duomenys: [laikas, dienų_masyvas]
+// WEB SCRAPER DUOMENYS (autobusubilietai.lt, 2026-06-10)
+// Įtraukta: 106 maršrutas + tarpmiestiniai (tm)
+// Duomenys: [laikas, dienų_masyvas, platforma]
 // Dienų masyvas: [Pr,A,T,K,Pn,Š,S] — true/false
 // JS weekday: 0=S, 1=Pr, 2=A, 3=T, 4=K, 5=Pn, 6=Š
 
@@ -687,63 +683,69 @@ const WORKDAYS = [true,  true,  true,  true,  true,  false, false];
 const WEEKEND  = [false, false, false, false, false, true,  true ];
 const ALL_DAYS = [true,  true,  true,  true,  true,  true,  true ];
 
+// Kaunas → Juragiai (106 maršrutas + tarpmiestiniai)
 const dataKaunas = [
-  ["05:55", WORKDAYS, "5"],   // 12345-
-  ["06:25", WEEKEND,  "5"],   // -67
-  ["06:55", WORKDAYS, "5"],   // 12345-
-  ["08:00", ALL_DAYS, "12"],  // 1234567
-  ["08:15", WORKDAYS, "5"],   // 12345-
-  ["08:30", WEEKEND,  "5"],   // -67
-  ["09:05", WORKDAYS, "5"],   // 12345-
-  ["09:55", WORKDAYS, "5"],   // 12345-
-  ["10:50", WORKDAYS, "5"],   // 12345-
-  ["10:55", WEEKEND,   "5"],   // ŠS
-  ["11:35", ALL_DAYS, "12"],  // 1234567
-  ["11:40", WORKDAYS, "5"],   // 12345-
-  ["12:00", ALL_DAYS, "12"],  // 1234567
-  ["12:35", WORKDAYS,  "5"],   // 12345
-  ["12:40", ALL_DAYS, "12"],  // 1234567
-  ["13:00", WEEKEND,  "5"],   // -67
-  ["13:05", WORKDAYS, "5"],   // 12345-
-  ["13:40", WORKDAYS,  "5"],   // 12345
-  ["14:35", WORKDAYS, "5"],   // 12345-
-  ["15:10", WORKDAYS, "5"],   // 12345-
-  ["15:15", WEEKEND,  "5"],   // -67
-  ["15:35", WORKDAYS, "5"],   // 12345-
-  ["16:25", WORKDAYS, "5"],   // 12345-
-  ["16:50", ALL_DAYS, "12"],  // 1234567
-  ["17:30", WORKDAYS, "5"],   // 12345-
-  ["18:40", WORKDAYS,  "5"],   // 12345
+  ["05:05", WORKDAYS, "106"],
+  ["05:50", WORKDAYS, "106"],
+  ["05:55", WORKDAYS, "106"],
+  ["06:25", WEEKEND,  "106"],
+  ["06:55", WORKDAYS, "106"],
+  ["08:15", WORKDAYS, "106"],
+  ["08:30", WEEKEND,  "106"],
+  ["09:05", WORKDAYS, "106"],
+  ["09:55", WORKDAYS, "106"],
+  ["10:50", WORKDAYS, "106"],
+  ["10:55", WEEKEND,  "106"],
+  ["11:35", ALL_DAYS, "tm"],
+  ["11:40", WORKDAYS, "106"],
+  ["12:35", WORKDAYS, "106"],
+  ["12:40", ALL_DAYS, "tm"],
+  ["13:00", WEEKEND,  "106"],
+  ["13:05", WORKDAYS, "106"],
+  ["13:40", WORKDAYS, "106"],
+  ["14:35", WORKDAYS, "106"],
+  ["15:10", WORKDAYS, "106"],
+  ["15:15", WEEKEND,  "106"],
+  ["15:35", WORKDAYS, "106"],
+  ["16:25", WORKDAYS, "106"],
+  ["16:50", ALL_DAYS, "tm"],
+  ["17:30", WORKDAYS, "106"],
+  ["18:10", WEEKEND,  "tm"],
+  ["18:40", WORKDAYS, "106"],
+  ["18:50", WORKDAYS, "tm"],
+  ["19:25", WEEKEND,  "tm"],
 ];
 
+// Juragiai → Kaunas (106 maršrutas + tarpmiestiniai)
 const dataJurginiskai = [
-  ["05:26", WORKDAYS,  "106"],  // 12345-
-  ["07:14", WORKDAYS,  "106"],  // 12345-
-  ["07:34", WEEKEND,   "106"],  // -67
-  ["08:05", WORKDAYS,  "106"],  // 12345-
-  ["09:28", ALL_DAYS,  "tm"],   // 1234567
-  ["09:31", WORKDAYS,  "106"],  // 12345-
-  ["09:44", WEEKEND,    "106"],  // ŠS
-  ["10:36", WORKDAYS,  "106"],  // 12345-
-  ["11:06", ALL_DAYS,  "tm"],   // 1234567
-  ["11:06", WORKDAYS,  "106"],  // 12345-
-  ["12:03", WEEKEND,   "106"],  // -67
-  ["12:06", WORKDAYS,  "106"],  // 12345-
-  ["13:06", WORKDAYS,  "106"],  // 12345-
-  ["14:01", WORKDAYS,  "106"],  // 12345-
-  ["14:13", WEEKEND,    "106"],  // ŠS
-  ["14:16", WORKDAYS,  "106"],  // 12345-
-  ["14:48", ALL_DAYS,  "tm"],   // 1234567
-  ["15:01", WORKDAYS,  "106"],  // 12345-
-  ["15:52", WORKDAYS,  "106"],  // 12345-
-  ["16:23", WEEKEND,   "106"],  // -67
-  ["16:26", WORKDAYS,  "106"],  // 12345-
-  ["16:51", WORKDAYS,  "106"],  // 12345-
-  ["17:06", ALL_DAYS,  "tm"],   // 1234567
-  ["17:41", WORKDAYS,  "106"],  // 12345-
-  ["18:25", WORKDAYS,  "106"],  // 12345-
-  ["19:39", WORKDAYS,  "106"],  // 12345-
-  ["20:24", ALL_DAYS,  "tm"],   // 1234567
+  ["06:06", WORKDAYS, "106"],
+  ["06:51", WORKDAYS, "106"],
+  ["07:15", WORKDAYS, "106"],
+  ["07:34", WEEKEND,  "106"],
+  ["08:05", WORKDAYS, "106"],
+  ["09:28", ALL_DAYS, "tm"],
+  ["09:31", WORKDAYS, "106"],
+  ["09:44", WEEKEND,  "106"],
+  ["10:16", WORKDAYS, "106"],
+  ["11:06", ALL_DAYS, "tm"],
+  ["12:03", WEEKEND,  "106"],
+  ["12:06", WORKDAYS, "106"],
+  ["12:56", WORKDAYS, "106"],
+  ["14:01", WORKDAYS, "106"],
+  ["14:13", WEEKEND,  "106"],
+  ["14:31", WORKDAYS, "106"],
+  ["14:48", ALL_DAYS, "tm"],
+  ["15:01", WORKDAYS, "106"],
+  ["15:51", WORKDAYS, "106"],
+  ["16:23", WEEKEND,  "106"],
+  ["16:26", WORKDAYS, "106"],
+  ["16:51", WORKDAYS, "106"],
+  ["17:06", ALL_DAYS, "tm"],
+  ["17:12", WEEKEND,  "tm"],
+  ["17:46", WORKDAYS, "106"],
+  ["18:56", WORKDAYS, "106"],
+  ["19:56", WORKDAYS, "106"],
+  ["20:24", ALL_DAYS, "tm"],
 ];
 
 
@@ -784,7 +786,6 @@ function timeToMinutes(t) {
   return h * 60 + m;
 }
 
-// Iš anksto konvertuojame laiko eilutes į minutes nuo vidurnakčio
 function precalculateTripMinutes(data) {
   for (let i = 0; i < data.length; i++) {
     if (data[i].length === 3) {
@@ -795,7 +796,6 @@ function precalculateTripMinutes(data) {
 precalculateTripMinutes(dataKaunas);
 precalculateTripMinutes(dataJurginiskai);
 
-// Gauss algorithm — returns [month, day] of Easter Sunday for given year
 function easterDate(year) {
   const a = year % 19;
   const b = Math.floor(year / 100);
@@ -862,10 +862,8 @@ function renderList(data, containerId, now) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  // Naudojame sekundes tiksliam „dabar“ aptikimui tos pačios minutės ribose
   const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
-  // Next = pirmasis reisas šiandien, kuris dar pilnai neišvyko
   let nextIdx = -1;
   let tripsLeft = 0;
   let lastTripMin = 0;
@@ -897,7 +895,7 @@ function renderList(data, containerId, now) {
     const diffSec = minSec - nowSec;
     const diffMin = Math.round(diffSec / 60);
     const isUpcoming = todayRuns && diffSec > 0;
-    const isAlt = platform && platform !== "5";
+    const isAlt = platform && platform !== "106";
     const isFilteredOut = filterOn && !todayRuns;
 
     let classes = `trip ${dayClass}`;
@@ -906,7 +904,7 @@ function renderList(data, containerId, now) {
     if (isAlt) classes += ` platform-${platform}`;
     if (isFilteredOut) classes += " filtered-out";
 
-    const pLabel = (platform && !["106","tm"].includes(platform)) ? platform + "a" : platform;
+    const pLabel = platform || "";
     const platformBadge = platform
       ? `<div class="platform-badge p${platform}">${pLabel}</div>`
       : "";
@@ -970,7 +968,6 @@ function updateNoMoreBanner() {
     if (lastBanner) lastBanner.style.display = "none";
   } else {
     banner.style.display = "none";
-    // Show warning if only 1 trip left today
     if (lastBanner && list && list.dataset.tripsLeft === "1") {
       lastBanner.textContent = "Paskutinis autobusas šiandien — už " + list.dataset.lastMin + " min";
       lastBanner.style.display = "block";
@@ -985,7 +982,6 @@ function scrollToNext() {
   const next = activeTab.querySelector(".trip.next");
   if (!next) return;
 
-  // Saugumo patikra: jei elementas dar pilnai neišdėstytas ekrane, palaukiame trumpą laiką
   const rect = next.getBoundingClientRect();
   if (rect.height === 0 || rect.top === 0) {
     setTimeout(scrollToNext, 40);
@@ -996,8 +992,6 @@ function scrollToNext() {
   const headerH = header ? header.offsetHeight : 90;
   const safeTopGap = 12;
   
-  // Apskaičiuojame absoliutų Y tašką dokumente ir pritaikome didesnį saugų atstumą,
-  // kad "ARTIMIAUSIAS" žyma nepalįstų po fiksuotu header.
   const elementAbsoluteTop = rect.top + window.pageYOffset;
   const targetScrollY = Math.max(0, elementAbsoluteTop - headerH - safeTopGap);
 
@@ -1025,7 +1019,6 @@ function switchTab(name, btn, isManual) {
   }
 
   updateNoMoreBanner();
-  // Padidinome laiką iki 80ms, kad naršyklė spėtų atlikti stilių perpynimą (reflow)
   setTimeout(scrollToNext, 80);
 }
 
@@ -1093,13 +1086,11 @@ function refresh() {
   renderList(dataKaunas, "list-kaunas", now);
   renderList(dataJurginiskai, "list-jurginiskai", now);
   
-  // Sync header height so body padding-top matches actual header
   const header = document.querySelector("header");
   if (header) {
     document.documentElement.style.setProperty("--header-h", header.offsetHeight + "px");
   }
 
-  // Taktilinis perspėjimas: telefonas suvirpa likus <= 2 min iki artimiausio reiso aktyviame Tab'e
   const activeTab = document.querySelector(".tab-content.active");
   const list = activeTab ? activeTab.querySelector(".schedule-list") : null;
   if (list && list.dataset.nextMin && list.dataset.nextTime) {
@@ -1122,7 +1113,6 @@ function scheduleRefresh() {
   if (refreshInterval) clearInterval(refreshInterval);
 
   const now = new Date();
-  // Align next tick to the start of the next minute
   const msToNextMin = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
   refreshTimeout = setTimeout(() => {
     refresh();
@@ -1137,9 +1127,8 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-// Geolokacija: automatinis krypties (tabo) parinkimas pagal fizinį vartotojo atstumą
 function getDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371; // km
+  const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
@@ -1152,12 +1141,10 @@ function getDistance(lat1, lon1, lat2, lon2) {
 function autoSelectTabByLocation() {
   if (!navigator.geolocation) return;
   navigator.geolocation.getCurrentPosition(position => {
-    if (userInteracted) return; // Jei vartotojas jau atliko rankinius veiksmus, geolokacija skirtuko nekeičia
+    if (userInteracted) return;
     const uLat = position.coords.latitude;
     const uLon = position.coords.longitude;
     
-    // Kauno autobusų stotis: 54.8893, 23.9279
-    // Juragiai: 54.8055, 23.8652
     const distToKaunas = getDistance(uLat, uLon, 54.8893, 23.9279);
     const distToJuragiai = getDistance(uLat, uLon, 54.8055, 23.8652);
     
@@ -1184,22 +1171,6 @@ refresh();
 setTimeout(scrollToNext, 50);
 scheduleRefresh();
 autoSelectTabByLocation();
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(reg => {
-    reg.addEventListener('updatefound', () => {
-      const newWorker = reg.installing;
-      if (newWorker) {
-        newWorker.addEventListener('statechange', () => {
-          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            // New version ready, reload to activate
-            window.location.reload();
-          }
-        });
-      }
-    });
-  });
-}
 </script>
 
 </body>

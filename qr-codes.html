@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grafikai — QR Kodai</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0a0a0a;
+    color: #e5e5e5;
+    padding: 40px 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  h1 {
+    font-size: 32px;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 16px;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+  .subtitle {
+    font-size: 18px;
+    text-align: center;
+    color: #888;
+    margin-bottom: 48px;
+    font-weight: 500;
+  }
+  .container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 40px;
+    max-width: 900px;
+    width: 100%;
+  }
+  .qr-card {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .qr-card:hover {
+    transform: translateY(-4px);
+    border-color: #555;
+  }
+  .qr-card.production {
+    border-color: #3b82f6;
+  }
+  .qr-card.experimental {
+    border-color: #f59e0b;
+  }
+  .qr-card h2 {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
+  }
+  .qr-card.production h2 {
+    color: #60a5fa;
+  }
+  .qr-card.experimental h2 {
+    color: #fbbf24;
+  }
+  .badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+  }
+  .badge.production {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+  }
+  .badge.experimental {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+  .qr-image {
+    width: 240px;
+    height: 240px;
+    margin: 0 auto 24px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+  .qr-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .url {
+    font-size: 14px;
+    color: #888;
+    word-break: break-all;
+    margin-bottom: 16px;
+    font-family: 'Courier New', monospace;
+  }
+  .description {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #aaa;
+    margin-top: 16px;
+  }
+  .description strong {
+    color: #e5e5e5;
+  }
+  .print-button {
+    margin-top: 40px;
+    padding: 14px 32px;
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .print-button:hover {
+    background: #2563eb;
+  }
+  @media print {
+    body { background: #fff; color: #000; }
+    .qr-card { border-color: #ccc; background: #fff; }
+    .print-button { display: none; }
+    .subtitle { color: #666; }
+    .url { color: #666; }
+    .description { color: #444; }
+  }
+  @media (max-width: 768px) {
+    .container {
+      grid-template-columns: 1fr;
+    }
+    h1 { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Grafikai — QR Kodai</h1>
+<p class="subtitle">Kaunas ↔ Juragiai · Autobusų tvarkaraštis</p>
+
+<div class="container">
+  <!-- Production -->
+  <div class="qr-card production">
+    <h2>Production</h2>
+    <div class="badge production">Oficialu</div>
+    
+    <div class="qr-image">
+      <img src="qr.png" alt="Production QR Code">
+    </div>
+    
+    <div class="url">
+      https://gerimantas.github.io/<br>BusRoutes/paper/grafikai.html
+    </div>
+    
+    <div class="description">
+      <strong>Rankinis kuravimas</strong><br>
+      Duomenys iš PDF tvarkaraščių ir autobusų stoties nuotraukų.
+      Patikrintas ir verifikuotas grafikas.
+    </div>
+  </div>
+
+  <!-- Experimental -->
+  <div class="qr-card experimental">
+    <h2>Experimental</h2>
+    <div class="badge experimental">Testavimas</div>
+    
+    <div class="qr-image">
+      <img src="web/qr-web.png" alt="Experimental QR Code">
+    </div>
+    
+    <div class="url">
+      https://gerimantas.github.io/<br>BusRoutes/web/grafikai-web.html
+    </div>
+    
+    <div class="description">
+      <strong>Automatinis scraper</strong><br>
+      Duomenys automatiškai traukiami iš autobusubilietai.lt.
+      Testavimui ir palyginimui su realiomis sąlygomis.
+    </div>
+  </div>
+</div>
+
+<button class="print-button" onclick="window.print()">🖨️ Spausdinti</button>
+
+</body>
+</html>

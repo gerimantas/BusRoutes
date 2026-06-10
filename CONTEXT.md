@@ -4,12 +4,13 @@
 Suburban bus schedule Kaunas ↔ Juragiai / Jurginiškiai (Route 106) — single-file PWA optimized for mobile.
 
 ## URL & Repository
-- **Live App:** https://gerimantas.github.io/BusRoutes/grafikai.html
+- **Live App:** https://gerimantas.github.io/BusRoutes/paper/grafikai.html
 - **Repository:** https://github.com/gerimantas/BusRoutes
 
 ## Technical Status
 - **Current Version:** **v6 (Accessibility & Visual Continuity Update)**
-- **Service Worker Cache:** **`tvarkarastis-v22`** (bump in `sw.js` on every HTML change)
+- **Service Worker Cache:** **`tvarkarastis-v23`** (bump in `sw.js` on every HTML change)
+- **Directory Structure:** **`paper/` (production) + `web/` (experimental web scraper)**
 
 ---
 
@@ -94,10 +95,44 @@ Gauss Easter algorithm (any year), 14 statutory LT holidays, auto year-transitio
 
 ---
 
-## Latest Decisions (2026-05-28)
+## Directory Structure (2026-06-10)
+
+### `paper/` — Production Version (Manual Curation)
+Hand-maintained schedule data from PDF timetables and photos of bus station displays. Deployed to GitHub Pages.
+
+**Files:**
+- `grafikai.html` — **Production PWA** (live at `/paper/grafikai.html`)
+- `kaunas-juragiai_grafikas.md` — Canonical schedule: Kaunas → Juragiai
+- `juragiai-kaunas_grafikas.md` — Canonical schedule: Juragiai → Kaunas
+- `kaunas-juragiai_YYYY-MM-DD.md` — Dated version snapshots (change history)
+- `Kaunas-Juragiai_*.jpg` — Source photos from bus station
+- `qr-paper.png` — QR code for production URL
+- `README.md` — Documentation for paper/ directory
+
+### `web/` — Automated Web Scraper (Experimental)
+Fully automated schedule extraction from autobusubilietai.lt with multi-day periodicity detection (WORKDAYS / WEEKEND / ALL_DAYS).
+
+**Files:**
+- `grafikai-web.html` — Experimental test version with web-scraped data
+- `106_kaunas-juragiai_pilnas.md` — 106 route: Kaunas → Juragiai
+- `106_juragiai-kaunas_pilnas.md` — 106 route: Juragiai → Kaunas
+- `tarpmiestiniai_kaunas-juragiai_pilnas.md` — Intercity via Juragiai (to Marijampolė)
+- `tarpmiestiniai_juragiai-kaunas_pilnas.md` — Intercity via Juragiai (from Marijampolė)
+- `*_web.md` — Other experimental routes
+- `qr-web.png` — QR code for experimental URL
+- `README.md` — Documentation for web/ directory
+
+**Scraper:** `notused/scrape_juragiai.py` (Playwright, 6s page wait, deduplication, periodicity auto-detection)
+
+---
+
+## Latest Decisions (2026-05-28 → 2026-06-10)
 1. Accessibility over decorative effects: increased text size/weight and spacing in all critical UI zones.
 2. Visual continuity: synchronized full-page and header theme atmosphere, without bottom seam under header.
 3. Cleaner cards: removed trip-card glow while keeping readable, route-colored borders.
+6. **QR codes:** Generated QR codes for both versions (`qr.png`, `paper/qr-paper.png`, `web/qr-web.png`) + printable HTML page (`qr-codes.html`).
+4. **Directory reorganization:** Split into `paper/` (production, manual) and `web/` (experimental, automated scraper).
+5. **Web scraper workflow:** Built automated extraction pipeline with periodicity detection — potential future replacement for manual photo uploads.
 
 ---
 
