@@ -349,7 +349,7 @@ def main():
     
     with sync_playwright() as p:
         print("Paleidžiamas Chrome...")
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         
         # =========================================================
@@ -620,14 +620,9 @@ def main():
                 f.write(md_tm_jk)
             print(f"✓ Juragiai→Kaunas (TM):  {file_tm_jk.name}")
         
-        print(f"\n{'='*70}")
-        print("Naršyklė liks atidaryta 10 sekundžių...")
-        print(f"{'='*70}\n")
-        
-        page.wait_for_timeout(10000)
         browser.close()
         
-        print("✓ Baigta!\n")
+        print("\n✓ Baigta!\n")
 
 
 if __name__ == '__main__':
