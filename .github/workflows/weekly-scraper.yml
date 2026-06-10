@@ -25,7 +25,7 @@ jobs:
       
       - name: Run scraper
         run: |
-          python notused/scrape_juragiai.py
+          python scripts/scrape_juragiai.py
       
       - name: Check for changes
         id: changes
