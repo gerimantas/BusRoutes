@@ -1,0 +1,50 @@
+name: Test Scraper
+
+on:
+  workflow_dispatch:  # Manual trigger via GitHub Actions UI
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install Python dependencies
+        run: |
+          pip install playwright
+      
+      - name: Install Playwright browsers
+        run: |
+          playwright install --with-deps chromium
+      
+      - name: Run scraper
+        run: |
+          python notused/scrape_juragiai.py
+      
+      - name: Upload scraped schedules
+        uses: actions/upload-artifact@v4
+        with:
+          name: scraped-schedules-${{ github.run_number }}
+          path: web/*_pilnas.md
+          retention-days: 30
+      
+      - name: Display summary
+        run: |
+          echo "## Scraper Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Generated files:" >> $GITHUB_STEP_SUMMARY
+          ls -lh web/*_pilnas.md | awk '{print "- " $9 " (" $5 ")"}' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Trip counts:" >> $GITHUB_STEP_SUMMARY
+          for file in web/*_pilnas.md; do
+            count=$(grep -c "^|" "$file" | awk '{print $1 - 2}')
+            echo "- $(basename $file): **$count trips**" >> $GITHUB_STEP_SUMMARY
+          done
