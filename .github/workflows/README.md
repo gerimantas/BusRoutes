@@ -25,7 +25,7 @@ This directory contains automated workflows for maintaining bus schedule data.
 - Summary: Trip counts per file
 
 **Use cases:**
-- Test after modifying `notused/scrape_juragiai.py`
+- Test after modifying `scripts/scrape_juragiai.py`
 - Verify scraper still works if website changes
 - Quick data check without committing
 

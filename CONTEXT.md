@@ -136,22 +136,43 @@ Fully automated schedule extraction from autobusubilietai.lt with multi-day peri
 
 ---
 
-## Files
+## Directory Structure
 
+### Production (`paper/`)
 | File | Purpose |
 |---|---|
-| `grafikai.html` | Single-file PWA — all HTML, CSS, JS, schedule data |
-| `sw.js` | Cache-first Service Worker (offline support) |
-| `manifest.json` | PWA install configuration |
-| `icon-192.png` / `icon-512.png` | PWA icons |
+| `grafikai.html` | Single-file PWA — deployed to GitHub Pages |
 | `kaunas-juragiai_grafikas.md` | Canonical schedule source: Kaunas → Juragiai |
 | `juragiai-kaunas_grafikas.md` | Canonical schedule source: Juragiai → Kaunas |
+| `kaunas-juragiai_YYYY-MM-DD.md` | Dated snapshots (version history) |
+| `Kaunas-Juragiai_*.jpg` | Source photos from bus station |
+| `qr-paper.png` | QR code for production URL |
+| `README.md` | Documentation |
+
+### Experimental (`web/`)
+| File | Purpose |
+|---|---|
+| `grafikai-web.html` | Experimental PWA with web-scraped data |
+| `manifest-web.json` | Separate PWA manifest (start_url = ./grafikai-web.html) |
+| `106_*_pilnas.md` | Web-scraped 106 route data |
+| `tarpmiestiniai_*_pilnas.md` | Web-scraped intercity routes |
+| `qr-web.png` | QR code for experimental URL |
+| `README.md` | Documentation |
+
+### Core (Root)
+| File | Purpose |
+|---|---|
+| `sw.js` | Cache-first Service Worker — current: `tvarkarastis-v23` |
+| `manifest.json` | PWA manifest (points to `paper/grafikai.html`) |
+| `icon-192.png` / `icon-512.png` | PWA icons |
+| `qr.png` | Main QR code (production) |
+| `qr-codes.html` | Visual display of QR codes |
 
 ---
 
 ## Deployment & Updates
-1. Edit `grafikai.html`.
+1. Edit `paper/grafikai.html`.
 2. Bump `CACHE` version in `sw.js`.
-3. `git add grafikai.html sw.js && git commit -m "..." && git push`
+3. `git add paper/grafikai.html sw.js && git commit -m "..." && git push`
 4. GitHub Pages deploys in ~1 min.
 5. Verify: `gh api repos/gerimantas/BusRoutes/pages --jq '.status'`

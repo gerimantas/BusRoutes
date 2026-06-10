@@ -115,6 +115,7 @@ Fully automated schedule extraction from autobusubilietai.lt with periodicity de
 | File | Purpose |
 |---|---|
 | `grafikai-web.html` | **Experimental HTML** — for real-world testing |
+| `manifest-web.json` | **Separate PWA manifest** — start_url points to web version |
 | `106_kaunas-juragiai_pilnas.md` | Web-scraped 106 route: Kaunas → Juragiai |
 | `106_juragiai-kaunas_pilnas.md` | Web-scraped 106 route: Juragiai → Kaunas |
 | `tarpmiestiniai_kaunas-juragiai_pilnas.md` | Intercity routes via Juragiai (Kaunas → Marijampolė) |
@@ -123,7 +124,7 @@ Fully automated schedule extraction from autobusubilietai.lt with periodicity de
 | `qr-web.png` | QR code for experimental URL |
 | `README.md` | Documentation for web/ directory |
 
-**Scraper:** `notused/scrape_juragiai.py` — Playwright-based tool that compares workday/weekend trips to auto-determine periodicity (WORKDAYS / WEEKEND / ALL_DAYS).
+**Scraper:** `scripts/scrape_juragiai.py` — Playwright-based tool that compares workday/weekend trips to auto-determine periodicity (WORKDAYS / WEEKEND / ALL_DAYS).
 
 ---
 

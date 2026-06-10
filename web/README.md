@@ -25,7 +25,7 @@ Scan to test the web-scraped schedule on your mobile device:
 
 ### Data Source
 All data is automatically extracted from **autobusubilietai.lt** using the web scraper:
-- `../notused/scrape_juragiai.py`
+- `../scripts/scrape_juragiai.py`
 
 ### Scraper Features
 - **Playwright-based browser automation**
