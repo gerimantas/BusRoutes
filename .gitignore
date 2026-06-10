@@ -1,6 +1,7 @@
 # AI toolchain files — contain local paths, not for public repo
 SKILL.md
 CLAUDE.md
+references/
 
 # Unused source materials
 notused/
