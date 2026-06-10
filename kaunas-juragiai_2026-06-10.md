@@ -1,8 +1,24 @@
 # Kaunas → Juragiai — grafikas (2026-06-10)
 
-Šaltinis: `kaunas-juragiai_0522.pdf` ir `Kaunas-Juragiai_06092026.jpg`
+Šaltinis: `Kaunas-Juragiai_06092026.jpg`
 
 Periodiškumas: `12345` = Pr–Pn, `ŠS` = Š–S, `1234567` = visos
+
+## Pakeitimai lyginant su ankstesniu grafiku (tik 5 ir 6 aikštelės)
+
+### Panaikinti reisai (5 ir 6 aikštelės):
+- **04:30** (Pr–Pn, 5 aikštelė)
+- **09:25** (Pr–Pn, 5 aikštelė)
+- **11:55** (Pr–Pn, 5 aikštelė)
+- **13:00** (Pr–Pn, 6 aikštelė)
+
+### Nauji/pasikeitę reisai (5 ir 6 aikštelės):
+- **06:55** (Pr–Pn, 5 aikštelė) — naujas reisas.
+- **09:05** (Pr–Pn, 5 aikštelė) — naujas reisas.
+- **11:40** (Pr–Pn, 5 aikštelė) — naujas reisas.
+- **13:05** (Pr–Pn, 5 aikštelė) — reisas perkeltas iš senuoju laiku buvusio 13:00 (Pr–Pn, 6 aikštelė).
+
+---
 
 | Išvykimas | Periodiškumas | Dienos  | Aikštelė |
 |-----------|---------------|---------|----------|

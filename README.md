@@ -58,7 +58,7 @@ Gauss Easter algorithm + 14 statutory Lithuanian holidays (DK 160 str.) — auto
 ### PWA
 Installs to Android/iOS home screens, works 100% offline, auto-updates via service worker.
 
-Current cache key: `tvarkarastis-v21`.
+Current cache key: `tvarkarastis-v22`.
 
 ---
 
@@ -69,7 +69,7 @@ Current cache key: `tvarkarastis-v21`.
 | **Kaunas → Juragiai** | 20 trips | 6 trips |
 | **Juragiai → Kaunas** | 21 trips | 6 trips |
 
-*Source: `kaunas-juragiai_grafikas.md`, `juragiai-kaunas_grafikas.md` (verified 2026-05-22)*
+*Source: `kaunas-juragiai_grafikas.md`, `juragiai-kaunas_grafikas.md` (verified 2026-06-10)*
 
 ---
 

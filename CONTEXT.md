@@ -9,7 +9,7 @@ Suburban bus schedule Kaunas ↔ Juragiai / Jurginiškiai (Route 106) — single
 
 ## Technical Status
 - **Current Version:** **v6 (Accessibility & Visual Continuity Update)**
-- **Service Worker Cache:** **`tvarkarastis-v21`** (bump in `sw.js` on every HTML change)
+- **Service Worker Cache:** **`tvarkarastis-v22`** (bump in `sw.js` on every HTML change)
 
 ---
 
