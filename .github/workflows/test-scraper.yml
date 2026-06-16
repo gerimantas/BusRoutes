@@ -9,10 +9,10 @@ jobs:
     
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6.0.3
 
       - name: Setup Python
-        uses: actions/setup-python@v5.5.0
+        uses: actions/setup-python@v6.2.0
         with:
           python-version: '3.11'
       
@@ -29,7 +29,7 @@ jobs:
           python scripts/scrape_juragiai.py
       
       - name: Upload scraped schedules
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: scraped-schedules-${{ github.run_number }}
           path: web/*_pilnas.md
