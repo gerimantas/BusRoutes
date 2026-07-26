@@ -5,6 +5,10 @@ on:
     - cron: '0 6 * * 0'  # Every Sunday at 6:00 UTC (9:00 Vilnius summer, 8:00 winter)
   workflow_dispatch:     # Also allow manual trigger
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   scrape-and-pr:
     runs-on: ubuntu-latest
@@ -30,7 +34,15 @@ jobs:
       - name: Check for changes
         id: changes
         run: |
-          git diff --quiet web/ || echo "changed=true" >> $GITHUB_OUTPUT
+          if [ -n "$(git status --porcelain web/)" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Changes detected in web/:"
+            git status --porcelain web/
+            git diff --stat web/
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No changes in web/"
+          fi
       
       - name: Create Pull Request
         if: steps.changes.outputs.changed == 'true'

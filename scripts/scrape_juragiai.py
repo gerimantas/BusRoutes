@@ -131,12 +131,9 @@ def format_106_with_periodicity(trips, direction="Kaunas → Juragiai"):
     """
     Konvertuoja 106 maršruto duomenis į markdown SU PERIODIŠKUMU
     """
-    today = datetime.now().strftime('%Y-%m-%d')
-    
     md = f"""# 106 Maršrutas: {direction} (PILNAS TVARKARAŠTIS)
 
 Šaltinis: `autobusubilietai.lt`  
-Ištraukta: `{today}`  
 Maršrutas: Kaunas-Jonučiai-Jurginiškiai-Skriaudžiai  
 Vežėjas: Kautra
 
@@ -186,12 +183,9 @@ def format_tm_with_periodicity(trips, direction="Kaunas → Marijampolė/Vilkavi
     """
     Konvertuoja tarpmiestinių autobusų duomenis į markdown SU PERIODIŠKUMU
     """
-    today = datetime.now().strftime('%Y-%m-%d')
-    
     md = f"""# Tarpmiestiniai autobusai per Juragius (PILNAS TVARKARAŠTIS)
 
 Šaltinis: `autobusubilietai.lt`  
-Ištraukta: `{today}`  
 Kryptis: {direction}
 
 Periodiškumas nustatytas lyginant ketvirtadienį, šeštadienį ir sekmadienį.
@@ -240,12 +234,9 @@ def format_106_to_markdown(trips):
     """
     Konvertuoja 106 maršruto duomenis į markdown
     """
-    today = datetime.now().strftime('%Y-%m-%d')
-    
     md = f"""# 106 Maršrutas: Kaunas → Juragiai (WEB)
 
 Šaltinis: `autobusubilietai.lt`  
-Ištraukta: `{today}`  
 Maršrutas: Kaunas-Jonučiai-Jurginiškiai-Skriaudžiai  
 Vežėjas: Kautra
 
@@ -280,12 +271,9 @@ def format_tm_to_markdown(trips):
     """
     Konvertuoja tarpmiestinių autobusų duomenis į markdown
     """
-    today = datetime.now().strftime('%Y-%m-%d')
-    
     md = f"""# Tarpmiestiniai autobusai per Juragius (WEB)
 
 Šaltinis: `autobusubilietai.lt`  
-Ištraukta: `{today}`  
 Kryptis: Kaunas → Marijampolė / Vilkaviškis (sustoja Juragiuose)
 
 ## Tvarkaraštis
@@ -588,7 +576,8 @@ def main():
         print("IŠSAUGOJIMAS")
         print(f"{'='*70}\n")
         
-        output_dir = Path(__file__).parent.parent
+        output_dir = Path(__file__).parent.parent / 'web'
+        output_dir.mkdir(parents=True, exist_ok=True)
         
         # Kaunas → Juragiai
         if trips_with_periodicity:
