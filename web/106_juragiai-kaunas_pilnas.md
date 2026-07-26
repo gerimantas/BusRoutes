@@ -1,7 +1,6 @@
 # 106 Maršrutas: Juragiai → Kaunas (PILNAS TVARKARAŠTIS)
 
 Šaltinis: `autobusubilietai.lt`  
-Ištraukta: `2026-06-10`  
 Maršrutas: Kaunas-Jonučiai-Jurginiškiai-Skriaudžiai  
 Vežėjas: Kautra
 

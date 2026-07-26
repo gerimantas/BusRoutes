@@ -13,6 +13,53 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 
+def load_search_page(page, url, label=''):
+    """
+    Atidaro paieškos puslapį ir laukia, kol reisų sąrašas nustos augti.
+
+    Reisai kraunami JS'u, todėl fiksuotas laukimas nepatikimas: esant
+    lėtesniam tinklui nuskaitoma tik dalis rezultatų. Laukiame, kol
+    laiko antraščių skaičius stabilizuosis kelis patikrinimus iš eilės.
+    """
+    page.goto(url, wait_until='domcontentloaded')
+
+    # Palaukiame pirmojo rezultato arba aiškaus "nerasta" pranešimo
+    try:
+        page.wait_for_function(
+            """() => {
+                const body = document.body.innerText || '';
+                if (body.includes('reisų nerasta') || body.includes('Nerasta')) return true;
+                return [...document.querySelectorAll('h2, h3')]
+                    .some(h => /^\\d{2}:\\d{2}$/.test(h.textContent.trim()));
+            }""",
+            timeout=45000,
+        )
+    except Exception:
+        print(f"! {label}: nesulaukta rezultatų per 45s")
+        return False
+
+    # Laukiame, kol skaičius nustos keistis (3 vienodi matavimai po 1s)
+    stable = 0
+    previous = -1
+    for _ in range(30):
+        count = page.evaluate(
+            """() => [...document.querySelectorAll('h2, h3')]
+                .filter(h => /^\\d{2}:\\d{2}$/.test(h.textContent.trim())).length"""
+        )
+        if count == previous:
+            stable += 1
+            if stable >= 3:
+                break
+        else:
+            stable = 0
+            previous = count
+        page.wait_for_timeout(1000)
+    else:
+        print(f"! {label}: sąrašas nestabilizavosi, imamas paskutinis būvis ({previous})")
+
+    return True
+
+
 def extract_trips(page):
     """
     Ištraukia visus reisus iš search rezultatų puslapio
@@ -358,9 +405,8 @@ def main():
             print(f"Kraunamas: {label} ({date_str})")
             print(f"{'='*70}")
             
-            page.goto(search_url, wait_until='domcontentloaded')
-            page.wait_for_timeout(6000)
-            
+            load_search_page(page, search_url, f"{label} ({date_str})")
+
             trips_106, trips_tm = extract_trips(page)
             all_trips_kaunas_juragiai[label] = {
                 '106': trips_106,
@@ -385,9 +431,8 @@ def main():
             print(f"Kraunamas: {label} ({date_str})")
             print(f"{'='*70}")
             
-            page.goto(search_url, wait_until='domcontentloaded')
-            page.wait_for_timeout(6000)
-            
+            load_search_page(page, search_url, f"{label} ({date_str})")
+
             trips_106, trips_tm = extract_trips(page)
             all_trips_juragiai_kaunas[label] = {
                 '106': trips_106,

@@ -1,7 +1,6 @@
 # Tarpmiestiniai autobusai per Juragius (PILNAS TVARKARAŠTIS)
 
 Šaltinis: `autobusubilietai.lt`  
-Ištraukta: `2026-06-10`  
 Kryptis: Marijampolė/Vilkaviškis → Kaunas (per Juragius)
 
 Periodiškumas nustatytas lyginant ketvirtadienį, šeštadienį ir sekmadienį.
