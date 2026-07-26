@@ -6,7 +6,7 @@
 <title>Jurginiškiai — Tvarkaraštis</title>
 <meta name="description" content="Kauno ir Juragių priemiesčio autobusų (106 maršruto) tvarkaraštis. PWA programėlė greitam ir patogiam laiko sekimui telefone.">
 <meta name="theme-color" content="#1a1a1a">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; img-src 'self'; object-src 'none'; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; worker-src 'self'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self'; object-src 'none'; base-uri 'self'">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Tvarkaraštis">
@@ -1048,7 +1048,8 @@ function toggleFilter() {
   const header = document.querySelector("header");
   btn.classList.toggle("off", !filterOn);
   header.classList.toggle("filter-off", !filterOn);
-  btn.textContent = filterBtnLabel(new Date());
+  // refresh() rewrites the label via updateClock() with its own `now`,
+  // so don't create a second clock reading here.
   refresh();
   setTimeout(scrollToNext, 80);
 }
