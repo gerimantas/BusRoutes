@@ -10,7 +10,7 @@ Periodiškumas nustatytas lyginant ketvirtadienį, šeštadienį ir sekmadienį.
 
 | Kaunas | Juragiai | Periodiškumas | Dienos | Platforma | Kaina |
 |--------|----------|---------------|--------|-----------|-------|
-| 05:05 | 05:35 | WORKDAYS | 12345 | 106 | 1,55 € |
+| 04:04 | 04:44 | WORKDAYS | 12345 | 106 | 9,99 € |
 | 05:50 | 06:20 | WORKDAYS | 12345 | 106 | 1,55 € |
 | 05:55 | 06:25 | WORKDAYS | 12345 | 106 | 1,55 € |
 | 06:25 | 06:59 | WEEKEND | ŠS | 106 | 1,55 € |
