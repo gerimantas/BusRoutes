@@ -24,8 +24,8 @@ Periodiškumas nustatytas lyginant ketvirtadienį, šeštadienį ir sekmadienį.
 | 16:00 | ? | 16:00 | Unknown | ALL_DAYS | 1234567 | tm | ? € |
 | 16:50 | 17:12 | 16:50 - 17:12Trukmė:  22  min.Kaunas - Marijampolė | Kautra | ALL_DAYS | 1234567 | tm | 1,80 € |
 | 17:00 | ? | 17:00 | Unknown | ALL_DAYS | 1234567 | tm | ? € |
-| 18:00 | ? | 18:00 | Unknown | ALL_DAYS | 1234567 | tm | ? € |
-| 18:10 | 20:24 | 18:10 - 20:24Trukmė: 2 val. 14  min.Kaunas - Jurag | Unknown | WEEKEND | ŠS | tm | ? € |
+| 17:25 | 20:24 | 17:25 - 20:24Trukmė: 2 val. 59  min.Kaunas - Jurag | Unknown | WEEKEND | ŠS | tm | 12,00 € |
+| 18:00 | ? | 18:00 | Unknown | WORKDAYS | 12345 | tm | ? € |
 | 18:50 | 09:28 | 18:50 - 09:28 (+1d)Trukmė: 14 val. 38  min.Kaunas  | Unknown | WORKDAYS | 12345 | tm | 11,60 € |
 | 19:00 | ? | 19:00 | Unknown | WEEKEND | ŠS | tm | ? € |
 | 19:25 | 09:28 | 19:25 - 09:28 (+1d)Trukmė: 14 val. 3  min.Kaunas - | Unknown | WEEKEND | ŠS | tm | 12,00 € |
@@ -33,9 +33,9 @@ Periodiškumas nustatytas lyginant ketvirtadienį, šeštadienį ir sekmadienį.
 
 
 **Statistika:**
-- Tik darbo dienomis (Pr-Pn): 5 reisai
+- Tik darbo dienomis (Pr-Pn): 6 reisai
 - Tik savaitgaliais (Š-S): 3 reisai
-- Kasdien: 13 reisai
+- Kasdien: 12 reisai
 - **Iš viso:** 21 reisai
 
 ## Konvertavimas į grafikai.html formatą
