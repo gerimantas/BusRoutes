@@ -10,47 +10,46 @@ Periodiškumas nustatytas lyginant ketvirtadienį, šeštadienį ir sekmadienį.
 
 | Kaunas | Juragiai | Periodiškumas | Dienos | Platforma | Kaina |
 |--------|----------|---------------|--------|-----------|-------|
-| 05:05 | 05:35 | WORKDAYS | 12345 | 106 | 1,55 € |
-| 05:50 | 06:20 | WORKDAYS | 12345 | 106 | 1,55 € |
-| 05:55 | 06:25 | WORKDAYS | 12345 | 106 | 1,55 € |
-| 06:25 | 06:59 | WEEKEND | ŠS | 106 | 1,55 € |
-| 06:55 | 07:48 | WORKDAYS | 12345 | 106 | 1,55 € |
-| 08:15 | 08:50 | WORKDAYS | 12345 | 106 | 1,55 € |
+| 05:00 | 05:34 | WORKDAYS | 12345 | 106 | 1,55 € |
+| 05:50 | 06:24 | ALL_DAYS | 1234567 | 106 | 1,55 € |
+| 05:55 | 06:29 | WORKDAYS | 12345 | 106 | 1,55 € |
+| 06:45 | 07:25 | WORKDAYS | 12345 | 106 | 1,55 € |
+| 06:50 | 07:51 | WORKDAYS | 12345 | 106 | 1,55 € |
 | 08:30 | 09:07 | WEEKEND | ŠS | 106 | 1,55 € |
-| 09:05 | 09:40 | WORKDAYS | 12345 | 106 | 1,55 € |
-| 09:55 | 10:30 | WORKDAYS | 12345 | 106 | 1,55 € |
-| 10:50 | 11:25 | WORKDAYS | 12345 | 106 | 1,55 € |
+| 09:05 | 09:48 | WORKDAYS | 12345 | 106 | 1,55 € |
+| 09:55 | 10:38 | WORKDAYS | 12345 | 106 | 1,55 € |
+| 10:50 | 11:33 | WORKDAYS | 12345 | 106 | 1,55 € |
 | 10:55 | 11:32 | WEEKEND | ŠS | 106 | 1,55 € |
-| 11:40 | 12:15 | WORKDAYS | 12345 | 106 | 1,55 € |
-| 12:35 | 13:10 | WORKDAYS | 12345 | 106 | 1,55 € |
-| 13:00 | 13:37 | WEEKEND | ŠS | 106 | 1,55 € |
-| 13:05 | 13:40 | WORKDAYS | 12345 | 106 | 1,55 € |
-| 13:40 | 14:21 | WORKDAYS | 12345 | 106 | 1,55 € |
-| 14:35 | 15:11 | WORKDAYS | 12345 | 106 | 1,55 € |
-| 15:10 | 15:47 | WORKDAYS | 12345 | 106 | 1,55 € |
+| 12:10 | 12:53 | WORKDAYS | 12345 | 106 | 1,55 € |
+| 12:35 | 13:18 | ALL_DAYS | 1234567 | 106 | 1,55 € |
+| 13:30 | 14:13 | WORKDAYS | 12345 | 106 | 1,55 € |
+| 14:00 | 14:43 | WORKDAYS | 12345 | 106 | 1,55 € |
+| 14:50 | 15:34 | WORKDAYS | 12345 | 106 | 1,55 € |
 | 15:15 | 15:52 | WEEKEND | ŠS | 106 | 1,55 € |
-| 15:35 | 16:14 | WORKDAYS | 12345 | 106 | 1,55 € |
-| 16:25 | 17:09 | WORKDAYS | 12345 | 106 | 1,55 € |
-| 17:30 | 18:15 | WORKDAYS | 12345 | 106 | 1,55 € |
-| 18:40 | 19:17 | WORKDAYS | 12345 | 106 | 1,55 € |
+| 15:30 | 16:16 | WORKDAYS | 12345 | 106 | 1,55 € |
+| 16:00 | 16:48 | WORKDAYS | 12345 | 106 | 1,55 € |
+| 16:25 | 17:20 | WORKDAYS | 12345 | 106 | 1,55 € |
+| 17:30 | 18:25 | WORKDAYS | 12345 | 106 | 1,55 € |
+| 18:40 | 19:26 | WORKDAYS | 12345 | 106 | 1,55 € |
+| 19:30 | 20:13 | WORKDAYS | 12345 | 106 | 1,55 € |
 
 
 **Statistika:**
-- Tik darbo dienomis (Pr-Pn): 18 reisai
-- Tik savaitgaliais (Š-S): 5 reisai
-- Kasdien: 0 reisai
-- **Iš viso:** 23 reisai
+- Tik darbo dienomis (Pr-Pn): 17 reisai
+- Tik savaitgaliais (Š-S): 3 reisai
+- Kasdien: 2 reisai
+- **Iš viso:** 22 reisai
 
 ## Konvertavimas į grafikai.html formatą
 
 Pavyzdys:
 ```javascript
 // Darbo dienomis (platforma 106 = 5 aikštelė)
-["05:05", WORKDAYS, "106"],
+["05:00", WORKDAYS, "106"],
 
 // Savaitgaliais
-["06:25", WEEKEND, "106"],
+["08:30", WEEKEND, "106"],
 
 // Kasdien
-["00:00", ALL_DAYS, "106"],
+["05:50", ALL_DAYS, "106"],
 ```
