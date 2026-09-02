@@ -7,6 +7,16 @@ Cache `tvarkarastis-v25` live on GitHub Pages.
 ## Next Tasks
 - (none — the watcher opens an issue when the schedule moves; act on that)
 
+## Done Log
+
+### 2026-09-02
+- Timetable refreshed from live data; both directions verified against photos
+- Daily `schedule-watch.yml` replaces the unread weekly PR workflow
+- `parse_firecrawl.py` + `check_schedule.py` built and verified both ways
+- `web/`, the Playwright scraper and ~2.4 MB of dead files removed
+- QR codes regenerated against the production URL
+- README, CONTEXT, CLAUDE.md, paper/README.md and the grafikai skill rewritten
+
 ## Key Facts
 - Live: https://gerimantas.github.io/BusRoutes/paper/grafikai.html
 - Repo: https://github.com/gerimantas/BusRoutes
@@ -60,17 +70,67 @@ Full procedure: `.claude/skills/grafikai/SKILL.md`
 ## Archive
 
 ### Session 2026-09-02 — timetable refresh + change detection
-- Timetable had been stale since an August change nobody was told about
-- Refreshed both directions from autobusubilietai.lt via firecrawl, cross-checked
-  against station board and stop sign photos
-- MD records now carry arrival time, route, carrier and fare
-- Built `parse_firecrawl.py` and `check_schedule.py`; verified the checker both
-  reports no-change on correct data and detects an injected change
-- Replaced the weekly PR workflow with `schedule-watch.yml`, which emails via issues
-- Deleted `web/`, `scripts/scrape_juragiai.py`, `notused/`, `references/` and a stale
-  root `SKILL.md` (~2.4 MB); removed the two old workflows
-- Regenerated QR codes — the old pair predated the paper/web split
-- Rewrote `.claude/skills/grafikai/SKILL.md` around the verified refresh procedure
+
+The app had been serving a June timetable since an August change nobody was told
+about. Root cause was not the scraper failing but the notification going nowhere:
+the weekly workflow filed pull requests against `web/`, an experimental directory
+that is not deployed and that nobody watched. Two PRs sat open for weeks.
+
+The scraper was also wrong. `scrape_juragiai.py` read every `HH:MM` on the
+autobusubilietai.lt search page, including round-hour markers that carry no route,
+no carrier and no fare. Its intercity output listed 20 trips where 5 exist. Mid-
+session I offered the user a choice between "3 trustworthy trips" and "all 20" —
+that was the wrong move; the correct response to untrustworthy data is to go get
+trustworthy data, which is what firecrawl then did.
+
+Refreshed both directions from autobusubilietai.lt via the firecrawl CLI, scraped
+for Thursday, Saturday and Sunday, plus Monday as a consistency check. Cross-checked
+against a station board photo and a stop sign photo the user supplied. The photos
+confirmed the times but were cropped — they cut off `05:00` and `05:50`, which do
+run — so the live data won where they disagreed.
+
+Added `MON_SAT` and `SUNDAY` constants, then reverted them the same session: the
+two trips that seemed to need partial periodicity are single daily trips the
+operator routes through a different village on Sunday, visible as two route strings
+on one departure time. Back to 3 constants.
+
+Also found and fixed: `sw.js` was already at `v24` before my first bump, so that
+bump was a no-op and returning users would have kept the cached June schedule —
+now `v25`. README had been damaged by my own earlier edit (a table cut mid-row
+swallowed the following section); rewritten. `CLAUDE.md` pointed the skill at a
+`.gemini` path that does not exist.
+
+Deleting `web/` broke the user's phone shortcut — it pointed at the experimental
+build. I had asked whether the QR was in use and read "1" as consent without
+confirming what it meant. Regenerated both QR codes against the production URL.
+
+**Code:**
+- new `scripts/parse_firecrawl.py` (72 lines) — parses scraped search pages; requires
+  a route line and a fare before accepting a row
+- new `scripts/check_schedule.py` (239 lines) — live-vs-app comparison
+- new `.github/workflows/schedule-watch.yml` (105 lines) — daily watcher
+- rewrote `paper/grafikai.html` data arrays, both `paper/*_grafikas.md`, `README.md`,
+  `CONTEXT.md`, `CLAUDE.md`, `.claude/skills/grafikai/SKILL.md`, `qr-codes.html`
+- deleted `web/` (13 files), `scripts/scrape_juragiai.py`, `weekly-scraper.yml`,
+  `test-scraper.yml`, `paper/kaunas-juragiai_2026-06-10.md`, and untracked
+  `notused/`, `references/`, root `SKILL.md` (~2.4 MB)
+- regenerated `qr.png`, `paper/qr-paper.png`; `sw.js` → `tvarkarastis-v25`
+- 3 commits: `ea48dfe`, `4a6a0da`, `75420c5`
+
+**Entry point:**
+```bash
+python scripts/check_schedule.py          # exit 0 = same, 1 = changed, 2 = could not check
+gh workflow run schedule-watch.yml        # same check in CI
+```
+
+**Verified:** checker reports "no change (27 trips)" / "no change (29 trips)" against
+live data, and detects an injected time change (exit 1). CI run 33630847837 completed
+green and correctly opened no issue. QR codes decoded back to the production URL.
+
+**Not measured:** whether the daily cron actually fires at 04:00 UTC — only the manual
+dispatch has run. Whether `paper/README.md` still describes the removed `web/` split;
+it was not opened this session. The Node 20 deprecation warning on
+`actions/setup-node@v4` and `actions/upload-artifact@v4` was noted, not addressed.
 
 ### Session 2026-05-28 to 2026-06-10 — v6 release
 - Accessibility update: larger text, stronger font-weight, improved spacing
