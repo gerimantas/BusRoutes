@@ -1,35 +1,46 @@
-# Juragiai → Kaunas — grafikas (2026-05-22)
+# Juragiai → Kaunas — grafikas (2026-09-02)
 
-Šaltinis: `juragiai-kaunas_0522.pdf`
+Šaltinis: `autobusubilietai.lt` paieška, patikrinta trims dienoms
+(2026-09-03 ketvirtadienis, 2026-09-05 šeštadienis, 2026-09-06 sekmadienis).
+Kryžminė patikra: Juragių stotelės lenta.
 
-Periodiškumas: `12345` = Pr–Pn, `ŠS` = Š–S, `1234567` = visos
+Periodiškumas: `12345` = Pr–Pn (dd), `ŠS` = Š–S (šs), `1234567` = visos
 
-| Išvykimas | Periodiškumas | Dienos  | Tipas         |
-|-----------|---------------|---------|---------------|
-| 05:26     | 12345         | Pr–Pn   | 106           |
-| 07:14     | 12345         | Pr–Pn   | 106           |
-| 07:34     | ŠS            | Š, S    | 106           |
-| 08:05     | 12345         | Pr–Pn   | 106           |
-| 09:28     | 1234567       | visos   | tarpmiestinis |
-| 09:31     | 12345         | Pr–Pn   | 106           |
-| 09:44     | ŠS            | Š, S    | 106           |
-| 10:36     | 12345         | Pr–Pn   | 106           |
-| 11:06     | 1234567       | visos   | tarpmiestinis |
-| 11:06     | 12345         | Pr–Pn   | 106           |
-| 12:03     | ŠS            | Š, S    | 106           |
-| 12:06     | 12345         | Pr–Pn   | 106           |
-| 13:06     | 12345         | Pr–Pn   | 106           |
-| 14:01     | 12345         | Pr–Pn   | 106           |
-| 14:13     | ŠS            | Š, S    | 106           |
-| 14:16     | 12345         | Pr–Pn   | 106           |
-| 14:48     | 1234567       | visos   | tarpmiestinis |
-| 15:01     | 12345         | Pr–Pn   | 106           |
-| 15:52     | 12345         | Pr–Pn   | 106           |
-| 16:23     | ŠS            | Š, S    | 106           |
-| 16:26     | 12345         | Pr–Pn   | 106           |
-| 16:51     | 12345         | Pr–Pn   | 106           |
-| 17:06     | 1234567       | visos   | tarpmiestinis |
-| 17:41     | 12345         | Pr–Pn   | 106           |
-| 18:25     | 12345         | Pr–Pn   | 106           |
-| 19:39     | 12345         | Pr–Pn   | 106           |
-| 20:24     | 1234567       | visos   | tarpmiestinis |
+| Išvykimas | Atvykimas | Periodiškumas | Tipas | Maršrutas | Kaina |
+|-----------|-----------|---------------|-------|-----------|-------|
+| 06:03 | 06:41 | 12345   | 106 | Skriaudžiai-Jonučiai-Kaunas | 1,55 € |
+| 06:53 | 07:31 | 12345   | 106 | Skriaudžiai-Jonučiai-Kaunas | 1,55 € |
+| 06:55 | 07:32 | ŠS      | 106 | Skriaudžiai (Š) / Jurginiškiai (S) | 1,55 € |
+| 07:17 | 08:19 | 12345   | 106 | Skriaudžiai-Jurginiškiai-Jonučiai-Kaunas | 1,55 € |
+| 08:04 | 08:49 | 12345   | 106 | Skriaudžiai-Jurginiškiai-Jonučiai-Kaunas | 1,55 € |
+| 08:36 | 09:21 | 12345   | 106 | Jurginiškiai-Garliava-Jonučiai-Kaunas | 1,55 € |
+| 09:18 | 09:55 | ŠS      | 106 | Jurginiškiai-Garliava-Jonučiai-Kaunas | 1,55 € |
+| 09:28 | 09:50 | 1234567 | tm  | Vilkaviškis-Marijampolė-Kaunas | 1,80 € |
+| 10:06 | 10:50 | 12345   | 106 | Jurginiškiai-Garliava-Jonučiai-Kaunas | 1,55 € |
+| 10:56 | 11:40 | 12345   | 106 | Jurginiškiai-Garliava-Jonučiai-Kaunas | 1,55 € |
+| 11:06 | 11:30 | 1234567 | tm  | Marijampolė-Kaunas (Marijampolės AP) | 2,30 € |
+| 11:43 | 12:20 | ŠS      | 106 | Jurginiškiai-Garliava-Jonučiai-Kaunas | 1,55 € |
+| 11:46 | 12:30 | 12345   | 106 | Jurginiškiai-Garliava-Jonučiai-Kaunas | 1,55 € |
+| 13:33 | 14:17 | 12345   | 106 | Skriaudžiai-Jurginiškiai-Jonučiai-Kaunas | 1,55 € |
+| 13:58 | 14:55 | 12345   | 106 | Skriaudžiai-Jurginiškiai-Tirkiliškiai-Kaunas | 1,55 € |
+| 14:03 | 14:43 | ŠS      | 106 | Skriaudžiai (Š) / Jurginiškiai (S) | 1,55 € |
+| 14:48 | 15:10 | 1234567 | tm  | Vilkaviškis-Marijampolė-Kaunas (Kautra Plius) | 2,00 € |
+| 14:58 | 15:40 | 12345   | 106 | Skriaudžiai-Jurginiškiai-Jonučiai-Kaunas | 1,55 € |
+| 15:23 | 16:07 | 12345   | 106 | Skriaudžiai-Jurginiškiai-Jonučiai-Kaunas | 1,55 € |
+| 16:03 | 16:40 | ŠS      | 106 | Jurginiškiai-Garliava-Jonučiai-Kaunas | 1,55 € |
+| 16:13 | 16:59 | 12345   | 106 | Skriaudžiai-Jurginiškiai-Jonučiai-Kaunas | 1,55 € |
+| 16:53 | 17:40 | 12345   | 106 | Skriaudžiai-Jurginiškiai-Jonučiai-Kaunas | 1,55 € |
+| 17:01 | 17:48 | 12345   | 106 | Jurginiškiai-Garliava-Jonučiai-Kaunas | 1,55 € |
+| 17:06 | 17:30 | 1234567 | tm  | Vilkaviškis-Marijampolė-Kaunas | 1,80 € |
+| 17:46 | 18:33 | 12345   | 106 | Jurginiškiai-Garliava-Jonučiai-Kaunas | 1,55 € |
+| 19:03 | 19:47 | 12345   | 106 | Skriaudžiai-Jurginiškiai-Jonučiai-Kaunas | 1,55 € |
+| 20:03 | 20:46 | 12345   | 106 | Skriaudžiai-Jurginiškiai-Jonučiai-Kaunas | 1,55 € |
+| 20:24 | 20:45 | 1234567 | tm  | Vištytis-Kybartai-Vilkaviškis-Marijampolė-Kaunas | 1,80 € |
+| 20:26 | 21:09 | 12345   | 106 | Jurginiškiai-Garliava-Jonučiai-Kaunas | 1,55 € |
+
+**Iš viso:** 29 reisai — 24 vietiniai (106) + 5 tarpmiestiniai (tm)
+
+## Pastabos
+
+- `06:55` ir `14:03` važiuoja abi savaitgalio dienas, bet skirtingu maršrutu:
+  šeštadienį per Skriaudžius, sekmadienį per Jurginiškius. Abu sustoja Juragiuose.

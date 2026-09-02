@@ -7,11 +7,9 @@ Mobile-optimized bus schedule PWA for the Kaunas ↔ Juragiai / Jurginiškiai (R
 ### Quick Access QR Codes
 Scan to open on your mobile device:
 
-| Production | Experimental |
-|---|---|
-| ![Production QR](qr.png) | ![Experimental QR](web/qr-web.png) |
-| [paper/grafikai.html](https://gerimantas.github.io/BusRoutes/paper/grafikai.html) | [web/grafikai-web.html](https://gerimantas.github.io/BusRoutes/web/grafikai-web.html) |
-| Manual curation | Automated scraper |
+![QR code](qr.png)
+
+[paper/grafikai.html](https://gerimantas.github.io/BusRoutes/paper/grafikai.html)
 
 ---
 
@@ -104,28 +102,29 @@ Hand-curated schedule data from PDF timetables and photos of bus station display
 | `grafikai.html` | **Production PWA** — deployed to GitHub Pages |
 | `kaunas-juragiai_grafikas.md` | Canonical schedule source: Kaunas → Juragiai |
 | `juragiai-kaunas_grafikas.md` | Canonical schedule source: Juragiai → Kaunas |
-| `kaunas-juragiai_YYYY-MM-DD.md` | Dated snapshots preserving schedule change history |
 | `Kaunas-Juragiai_*.jpg` | Source photos of platform displays |
 | `qr-paper.png` | QR code for production URL |
 | `README.md` | Documentation for paper/ directory |
 
-### `web/` — Automated Web Scraper Data (Experimental)
-Fully automated schedule extraction from autobusubilietai.lt with periodicity detection.
+### `scripts/` — Schedule Tooling
 
 | File | Purpose |
 |---|---|
+| `check_schedule.py` | Compares the live timetable against the app; exit 1 = changed |
+| `parse_firecrawl.py` | Parses firecrawl-scraped search pages into a trip table |
+
+Data comes from `autobusubilietai.lt` via the firecrawl CLI, scraped for a workday,
+a Saturday and a Sunday so periodicity can be read off which days a trip appears on.
+A row without a route line and a price is a page marker, not a departure, and is
+discarded — see `.claude/skills/grafikai/SKILL.md`.
+
+The `web/` directory and its Playwright scraper were removed on 2026-09-02: the
+scraper counted round-hour page markers as departures, producing 20 intercity trips
+where 5 exist.
+
+---|---|
 | `grafikai-web.html` | **Experimental HTML** — for real-world testing |
 | `manifest-web.json` | **Separate PWA manifest** — start_url points to web version |
-| `106_kaunas-juragiai_pilnas.md` | Web-scraped 106 route: Kaunas → Juragiai |
-| `106_juragiai-kaunas_pilnas.md` | Web-scraped 106 route: Juragiai → Kaunas |
-| `tarpmiestiniai_kaunas-juragiai_pilnas.md` | Intercity routes via Juragiai (Kaunas → Marijampolė) |
-| `tarpmiestiniai_juragiai-kaunas_pilnas.md` | Intercity routes via Juragiai (Marijampolė → Kaunas) |
-| `*_web.md` | Other experimental scraped routes |
-| `qr-web.png` | QR code for experimental URL |
-| `README.md` | Documentation for web/ directory |
-
-**Scraper:** `scripts/scrape_juragiai.py` — Playwright-based tool that compares workday/weekend trips to auto-determine periodicity (WORKDAYS / WEEKEND / ALL_DAYS).
-
 ---
 
 ## Core Files (Root)

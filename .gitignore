@@ -5,3 +5,10 @@ references/
 
 # Unused source materials
 notused/
+
+# Firecrawl scrape output
+.firecrawl/
+
+# Python bytecode
+__pycache__/
+*.pyc

@@ -11,8 +11,8 @@ Paused. v6 live on GitHub Pages. No active work.
 - Repo: https://github.com/gerimantas/BusRoutes
 - Route 106: Kaunas ↔ Juragiai / Jurginiškiai — single-file PWA
 - Current version: v6 (Accessibility & Visual Continuity)
-- Service Worker cache: `tvarkarastis-v23` — bump in `sw.js` on every HTML change
-- Structure: `paper/` (production, manual) + `web/` (experimental scraper)
+- Service Worker cache: read the current value from `sw.js` line 1; bump on every HTML change
+- Structure: `paper/` (production) + `scripts/` (schedule tooling)
 
 ### Deploy workflow
 1. Edit `paper/grafikai.html`
@@ -29,8 +29,9 @@ Paused. v6 live on GitHub Pages. No active work.
 - `paper/juragiai-kaunas_grafikas.md` — canonical schedule Juragiai→Kaunas
 - `sw.js` — Service Worker (cache-first, bump version on each release)
 - `manifest.json` — PWA manifest
-- `web/grafikai-web.html` — experimental scraper-fed version
-- `notused/scrape_juragiai.py` — Playwright scraper (periodicity auto-detection)
+- `scripts/check_schedule.py` — daily live-vs-app timetable comparison
+- `scripts/parse_firecrawl.py` — parses firecrawl output into a trip table
+- `.github/workflows/schedule-watch.yml` — daily watcher, opens an issue on change
 
 ## Archive
 

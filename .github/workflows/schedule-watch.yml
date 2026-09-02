@@ -1,0 +1,105 @@
+name: Schedule Watch
+
+# Checks the live timetable against what the app ships.
+# Opens a GitHub issue ONLY when something differs — GitHub emails the issue
+# to the repo owner, so a quiet day sends nothing at all.
+
+on:
+  schedule:
+    - cron: '0 4 * * *'   # 07:00 Vilnius summer, 06:00 winter
+  workflow_dispatch:       # manual run from the Actions tab
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6.0.3
+
+      - uses: actions/setup-python@v6.2.0
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install firecrawl CLI
+        run: npm install -g firecrawl-cli
+
+      - name: Check the timetable
+        id: check
+        env:
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+        run: |
+          set +e
+          python scripts/check_schedule.py --json diff.json > report.txt 2>&1
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+          set -e
+          cat report.txt
+
+      - name: Open an issue when the timetable changed
+        if: steps.check.outputs.exit_code == '1'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          {
+            echo "The live timetable on autobusubilietai.lt no longer matches the app."
+            echo
+            echo '```'
+            cat report.txt
+            echo '```'
+            echo
+            echo "**To update:** open the project in Claude Code and say \`atnaujink grafikus\`."
+            echo
+            echo "Checked $(date -u '+%Y-%m-%d %H:%M UTC') by [Schedule Watch](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})."
+          } > body.md
+
+          gh issue create \
+            --title "Schedule changed — $(date -u '+%Y-%m-%d')" \
+            --body-file body.md \
+            --label "schedule-change" \
+            || gh issue create \
+                 --title "Schedule changed — $(date -u '+%Y-%m-%d')" \
+                 --body-file body.md
+
+      - name: Open an issue when the check itself failed
+        if: steps.check.outputs.exit_code == '2'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # A failed check is not an all-clear — silence here would be the exact
+          # failure mode this workflow exists to prevent.
+          if gh issue list --state open --search "Schedule Watch could not run in:title" \
+               --json number --jq 'length' | grep -qv '^0$'; then
+            echo "An open failure issue already exists — not filing another."
+            exit 0
+          fi
+
+          {
+            echo "Schedule Watch ran but could not complete the comparison."
+            echo "The timetable may or may not have changed — this is not an all-clear."
+            echo
+            echo '```'
+            cat report.txt
+            echo '```'
+            echo
+            echo "Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          } > body.md
+
+          gh issue create --title "Schedule Watch could not run" --body-file body.md
+
+      - name: Upload the report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: schedule-report
+          path: |
+            report.txt
+            diff.json
+          if-no-files-found: ignore
+          retention-days: 30
