@@ -3,6 +3,8 @@ name: Schedule Watch
 # Checks the live timetable against what the app ships.
 # Opens a GitHub issue ONLY when something differs — GitHub emails the issue
 # to the repo owner, so a quiet day sends nothing at all.
+# Every run also publishes its result to the `status` branch; the app reads it
+# and shows the rider when the timetable was last checked.
 
 on:
   schedule:
@@ -10,7 +12,7 @@ on:
   workflow_dispatch:       # manual run from the Actions tab
 
 permissions:
-  contents: read
+  contents: write         # push status.json to the `status` branch
   issues: write
 
 jobs:
@@ -92,6 +94,33 @@ jobs:
           } > body.md
 
           gh issue create --title "Schedule Watch could not run" --body-file body.md
+
+      - name: Publish the result for the app
+        if: always()
+        env:
+          CODE: ${{ steps.check.outputs.exit_code }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Anything other than a clean 0 or 1 (including a step that never ran)
+          # is reported as a failed check, never as all-clear.
+          case "$CODE" in
+            0) result=ok ;;
+            1) result=changed ;;
+            *) result=failed ;;
+          esac
+          dir="$RUNNER_TEMP/status"
+          mkdir -p "$dir" && cd "$dir"
+          printf '{"checked":"%s","result":"%s"}\n' \
+            "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$result" > status.json
+          # One orphan commit, force-pushed: the branch holds only the latest result.
+          git init -q -b status
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add status.json
+          git commit -q -m "Schedule check: $result"
+          git push -q --force \
+            "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" status
+          cat status.json
 
       - name: Upload the report
         if: always()
