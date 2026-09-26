@@ -1,13 +1,23 @@
 # Grafikai — CONTEXT
 
 ## Status
-Active. Timetable refreshed 2026-09-02 and a daily watcher now reports changes.
-Cache `tvarkarastis-v25` live on GitHub Pages.
+Active. The app carries the September and October route 106 timetables and switches
+on its own at 2026-10-01 00:00 (`SWITCH_DATE`). The daily watcher reports changes
+and publishes its result, which the app shows under the tabs ("Tikrinta …").
+Cache `tvarkarastis-v27` live on GitHub Pages.
 
 ## Next Tasks
-- (none — the watcher opens an issue when the schedule moves; act on that)
+- After 2026-10-01: check krs.lt for the October 106 PDF and compare it with the app,
+  then delete `dataKaunasBefore`/`dataJurginiskaiBefore` and `SWITCH_DATE`
+  (SKILL.md → "A timetable that starts on a future date").
 
 ## Done Log
+
+### 2026-09-26
+- October timetable shipped with a dated switch; issue #4 closed
+- Last-check line in the app, fed by the watcher via the `status` branch
+- Watcher: 3-day lead, `SWITCH_DATE`-aware, one issue per change
+- App name Juragiai; READMEs updated; session-start idle-gap fix
 
 ### 2026-09-02
 - Timetable refreshed from live data; both directions verified against photos
@@ -21,7 +31,10 @@ Cache `tvarkarastis-v25` live on GitHub Pages.
 - Live: https://gerimantas.github.io/BusRoutes/paper/grafikai.html
 - Repo: https://github.com/gerimantas/BusRoutes
 - Route 106 plus intercity services stopping at Juragiai — single-file PWA
-- Trips: Kaunas→Juragiai 27 (22 local + 5 intercity), Juragiai→Kaunas 29 (24 + 5)
+- Trips from 2026-10-01: Kaunas→Juragiai 25 (20 local + 5 intercity), Juragiai→Kaunas 27 (22 + 5);
+  until 09-30: 27 and 29
+- Official timetable PDFs: https://www.krs.lt/gyventojams/viesasis-transportas/priemiestiniai-autobusu-marsrutai/
+- Route 106 terminates at Skriaudžiai; trips via Garliava end at Jurginiškiai
 - Service Worker cache: read the current value from `sw.js` line 1; bump on every HTML change
 - Structure: `paper/` (production) + `scripts/` (schedule tooling)
 - Schedule source is autobusubilietai.lt via firecrawl, not the MD files —
@@ -65,9 +78,18 @@ Full procedure: `.claude/skills/grafikai/SKILL.md`
 - `manifest.json` — PWA manifest
 - `scripts/check_schedule.py` — live-vs-app comparison; exit 1 = changed, 2 = could not check
 - `scripts/parse_firecrawl.py` — parses firecrawl output into a trip table
-- `.github/workflows/schedule-watch.yml` — daily watcher, opens an issue on change
+- `.github/workflows/schedule-watch.yml` — daily watcher, opens an issue on change,
+  force-pushes `status.json` to the `status` branch (read by the app)
 
 ## Archive
+
+### Session 2026-09-26 — October timetable with dated switch, last-check line in app
+
+- **Done:** Watcher issue #4 was real: route 106 gets a new timetable on 2026-10-01 (autobusubilietai.lt, verified on two October weeks). App carries both timetables and switches at midnight on `SWITCH_DATE`. Watcher publishes `status.json` to the orphan `status` branch; app shows "Tikrinta … — grafikas sutampa", red on change/failure/>48 h. Watcher now checks 3+ days ahead, reads `SWITCH_DATE`, keeps one issue per change. App name Juragiai (106 now terminates at Skriaudžiai; only Garliava trips end at Jurginiškiai). session-start no longer flags an idle project as a gap (ai-skills `2a3fe45`).
+- **Decided / overturned:** watcher only reports, never edits the app (a scrape can return a partial list — 2026-09-27 listed no 106 trips). krs.lt PDFs are the official cross-check; they matched the September timetable to the minute. No route 106A exists.
+- **Code:** `paper/grafikai.html` (`dataKaunasBefore`/`dataJurginiskaiBefore`, `SWITCH_DATE`, `#check-status`, CSP allows raw.githubusercontent.com), both `paper/*_grafikas.md`, `scripts/check_schedule.py`, `.github/workflows/schedule-watch.yml`, `manifest.json`, `README.md`, `paper/README.md`, `sw.js` → v27. Commits `023cb62`, `46e315b`, `fd2c91c`. Local only: `CLAUDE.md`, grafikai `SKILL.md` (PDF source, Node Playwright + fake-clock test recipe).
+- **Entry point:** `gh workflow run schedule-watch.yml` (run 36254744357: ok, status published); `curl -s https://raw.githubusercontent.com/gerimantas/BusRoutes/status/status.json`
+- **Not measured:** the October timetable against an official PDF (none published by 09-26); the midnight switch on a real phone; the dedupe path of the issue step (no change has occurred since).
 
 ### Session 2026-09-02 — timetable refresh + change detection
 
@@ -142,7 +164,7 @@ it was not opened this session. The Node 20 deprecation warning on
 ### Key decisions
 - Accessibility over decorative effects: bigger text/weight in all critical UI zones
 - Single `new Date()` per `refresh()` cycle, passed as `now` to all subfunctions
-- CSP meta: connect-src none, object-src none, base-uri self
+- CSP meta: connect-src self + raw.githubusercontent.com (status fetch), object-src none, base-uri self
 - SKILL.md and CLAUDE.md removed from git history via git filter-repo
 - A failed schedule check must never report all-clear — the direction that failed
   may be the one that moved
