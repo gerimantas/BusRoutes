@@ -36,6 +36,7 @@ APP = os.path.join(ROOT, 'paper', 'grafikai.html')
 RETRIES = 3    # attempts per scrape when the API rate-limits us
 BACKOFF = 20   # seconds to wait after a rate-limit refusal
 PACE = 7       # seconds between successful scrapes, to stay under ~10/min
+LEAD = 3       # days ahead of today the checked week starts; see next_dates()
 
 ROUTES = {
     'kaunas-juragiai': dict(
@@ -64,13 +65,34 @@ def app_schedule(array_name):
     return {m.group(1): m.group(2) for m in TRIP.finditer(html[start:end])}
 
 
-def next_dates(today=None):
-    """Next Thursday, Saturday and Sunday — always a full future week."""
+def switch_date():
+    """Return the app's SWITCH_DATE as a date, or None when it has none.
+
+    `new Date(2026, 9, 1)` in JS: the month is zero-based.
+    """
+    with open(APP, encoding='utf-8') as fh:
+        m = re.search(r'const SWITCH_DATE = new Date\((\d{4}),\s*(\d{1,2}),\s*(\d{1,2})\)', fh.read())
+    return dt.date(int(m.group(1)), int(m.group(2)) + 1, int(m.group(3))) if m else None
+
+
+def next_dates(today=None, switch=None):
+    """A Thursday, Saturday and Sunday starting at least LEAD days ahead.
+
+    The search returns incomplete lists for the next day or two (2026-09-27, the
+    day after a check, listed no route 106 trips at all), which the old
+    tomorrow-onwards window reported as a timetable change.
+
+    When the app carries a dated switch, all three dates must fall on one side
+    of it — the comparison is against one timetable. A switch inside the
+    window moves the window to start on it.
+    """
     today = today or dt.date.today()
+    start = today + dt.timedelta(days=LEAD)
+    if switch and start < switch <= start + dt.timedelta(days=7):
+        start = switch
     out = {}
     for label, weekday in (('WD', 3), ('SAT', 5), ('SUN', 6)):
-        delta = (weekday - today.weekday()) % 7 or 7
-        out[label] = today + dt.timedelta(days=delta)
+        out[label] = start + dt.timedelta(days=(weekday - start.weekday()) % 7)
     return out
 
 
@@ -184,14 +206,20 @@ def main():
     ap.add_argument('--json', metavar='PATH', help='also write the diff as JSON')
     args = ap.parse_args()
 
-    dates = next_dates()
+    switch = switch_date()
+    dates = next_dates(switch=switch)
+    # A switch more than a week out leaves the whole window on the old timetable.
+    suffix = 'Before' if switch and max(dates.values()) < switch else ''
     print("Checking against:", ", ".join(f"{k} {v}" for k, v in dates.items()))
+    if switch:
+        print(f"App switches timetable on {switch}; comparing with the "
+              f"{'old' if suffix else 'new'} one")
 
     report, failed, any_change = {}, [], False
     with tempfile.TemporaryDirectory() as workdir:
         for name, cfg in ROUTES.items():
             print(f"\n{name}")
-            app = app_schedule(cfg['array'])
+            app = app_schedule(cfg['array'] + suffix)
             live = live_schedule(cfg['url'], dates, workdir, name)
 
             if live is None:

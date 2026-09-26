@@ -49,6 +49,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Identify the difference itself, not the run: the dates line moves daily.
+          diff_id=$(grep -v -e '^Checking against' -e '^App switches' -e 'rate limited' report.txt \
+                      | sha1sum | cut -c1-12)
           {
             echo "The live timetable on autobusubilietai.lt no longer matches the app."
             echo
@@ -59,7 +62,23 @@ jobs:
             echo "**To update:** open the project in Claude Code and say \`atnaujink grafikus\`."
             echo
             echo "Checked $(date -u '+%Y-%m-%d %H:%M UTC') by [Schedule Watch](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})."
+            echo
+            echo "<!-- diff:$diff_id -->"
           } > body.md
+
+          # One open issue per change. A later run with the same difference adds
+          # nothing; a different difference is added to the open issue as a comment.
+          open=$(gh issue list --state open --search "Schedule changed in:title" \
+                   --json number --jq '.[0].number // empty')
+          if [ -n "$open" ]; then
+            if gh issue view "$open" --json body,comments --jq '.body, .comments[].body' \
+                 | grep -q "diff:$diff_id"; then
+              echo "Issue #$open already reports this difference — nothing to add."
+            else
+              gh issue comment "$open" --body-file body.md
+            fi
+            exit 0
+          fi
 
           gh issue create \
             --title "Schedule changed — $(date -u '+%Y-%m-%d')" \
