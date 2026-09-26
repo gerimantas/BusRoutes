@@ -1,7 +1,10 @@
-# BusRoutes — Kaunas ↔ Juragiai / Jurginiškiai
+# BusRoutes — Kaunas ↔ Juragiai
 
-Mobile-optimized bus schedule PWA for the Kaunas ↔ Juragiai / Jurginiškiai suburban
-line (route 106 plus the intercity services that stop at Juragiai).
+Mobile-optimized bus schedule PWA for travel between Kaunas and the Juragiai stop:
+suburban route 106 plus the intercity services that stop at Juragiai.
+
+Route 106 runs on to **Skriaudžiai**, its terminus for most trips. Only the trips
+routed via Garliava still end at Jurginiškiai.
 
 **Live:** https://gerimantas.github.io/BusRoutes/paper/grafikai.html
 
@@ -13,30 +16,65 @@ Scan to open on a phone, or print [qr-codes.html](qr-codes.html).
 
 ## Schedule
 
-| Direction | Workdays | Weekends | Intercity | Total |
-|---|---|---|---|---|
-| **Kaunas → Juragiai** | 24 | 10 | 5 | 27 |
-| **Juragiai → Kaunas** | 24 | 10 | 5 | 29 |
+Route 106 gets a new timetable on **2026-10-01**. The app carries both and switches
+at midnight on its own.
 
-Workday and weekend columns include the all-day trips, so they overlap; the total
-is the number of distinct entries.
+| Direction | Until 2026-09-30 | From 2026-10-01 |
+|---|---|---|
+| **Kaunas → Juragiai** | 27 trips | 25 trips |
+| **Juragiai → Kaunas** | 29 trips | 27 trips |
 
-Source: [paper/kaunas-juragiai_grafikas.md](paper/kaunas-juragiai_grafikas.md) and
-[paper/juragiai-kaunas_grafikas.md](paper/juragiai-kaunas_grafikas.md), verified
-2026-09-02 against autobusubilietai.lt and station photos.
+Both timetables have 24 workday and 10 weekend departures per direction, 5 of them
+intercity; daily trips count in both columns. October merges several separate
+workday and weekend trips into single daily ones, hence the lower totals.
+
+Sources:
+
+- **October timetable** — autobusubilietai.lt, checked 2026-09-26 for 10-01, 10-03
+  and 10-04, then confirmed against 10-05, 10-10 and 10-11. Recorded in
+  [paper/kaunas-juragiai_grafikas.md](paper/kaunas-juragiai_grafikas.md) and
+  [paper/juragiai-kaunas_grafikas.md](paper/juragiai-kaunas_grafikas.md).
+- **September timetable** — matches the
+  [Kaunas district municipality PDFs](https://www.krs.lt/gyventojams/viesasis-transportas/priemiestiniai-autobusu-marsrutai/)
+  in force from 08-31 (workdays), 09-05 (Saturdays) and 09-06 (Sundays).
+  The municipality had not yet published an October PDF on 2026-09-26.
 
 ### Keeping it current
 
 [.github/workflows/schedule-watch.yml](.github/workflows/schedule-watch.yml) runs
-daily at 04:00 UTC. It compares the live timetable against the app and opens an
-issue **only** when they differ — a quiet day sends nothing. A check that fails to
-complete opens a separate issue rather than reporting all-clear.
+daily at 04:00 UTC:
+
+- Compares a Thursday, a Saturday and a Sunday **at least 3 days ahead** against the
+  app. Nearer dates can come back from the search incomplete.
+- Opens an issue **only** when they differ, and keeps one open issue per change.
+  The same difference on a later day adds nothing; a different one is added as a
+  comment. A check that fails to complete opens a separate issue and never reports
+  all-clear.
+- Publishes its result (`ok`, `changed` or `failed`, with the time) to the `status`
+  branch. The app shows it to the rider, see [Last check line](#last-check-line).
+
+The watcher only reports. It never edits the app, because a scrape can return a
+partial list. To apply a change, open the project in Claude Code and say
+`atnaujink grafikus`.
 
 Requires the `FIRECRAWL_API_KEY` repository secret.
 
 ---
 
 ## Features
+
+### Last check line
+Under the tabs: `Tikrinta 09-26 19:15 — grafikas sutampa`, the last watcher run and
+its result, fetched from the `status` branch every 30 minutes while the app is open.
+It turns red when the check found a change, failed, or is older than 48 hours,
+which means the watcher stopped. Offline, the app shows the last result it
+received.
+
+### Dated timetable switch
+A timetable announced for a future date ships before that date. The old arrays
+stay in the app as `dataKaunasBefore` / `dataJurginiskaiBefore` until
+`SWITCH_DATE`, and the app picks one by the phone's date every minute. The watcher
+reads `SWITCH_DATE` too, so a pending switch never shows up as a change.
 
 ### Dual route colour palette
 Two independent themes. Every element in a card — time, day labels, badges, borders,
@@ -118,6 +156,12 @@ and is discarded — see [.claude/skills/grafikai/SKILL.md](.claude/skills/grafi
 | `qr.png` | QR code for the production URL |
 | `qr-codes.html` | Printable QR page |
 
+### `status` branch
+
+Holds a single `status.json` (`{"checked": "<UTC time>", "result": "ok"}`), which
+the watcher force-pushes on every run. It is not deployed. The app reads it from
+`raw.githubusercontent.com`.
+
 ---
 
 ## Update & deploy
@@ -127,7 +171,7 @@ and is discarded — see [.claude/skills/grafikai/SKILL.md](.claude/skills/grafi
 # 2. Bump the cache version — read the current one first
 sed -n '1p' sw.js
 
-git add paper/grafikai.html sw.js
+git add paper/grafikai.html paper/*_grafikas.md sw.js
 git commit -m "..."
 git push
 # GitHub Pages publishes in about a minute
