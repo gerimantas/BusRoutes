@@ -336,7 +336,9 @@ class ExitCodes(unittest.TestCase):
 
         def fake_pdfs(switch):
             if pdf == 'fail':
-                raise OSError('krs.lt unreachable')
+                raise ValueError('expected paired stop rows')
+            if pdf == 'unreachable':
+                raise TimeoutError('timed out')
             diff = ['05:05'] if pdf == 'changed' else []
             return [dict(pdf='dd from 2026-10-01', day='WD', direction='kaunas-juragiai',
                          trips=19, added=diff, removed=[])], []
@@ -362,6 +364,14 @@ class ExitCodes(unittest.TestCase):
     def test_failed_source_is_never_all_clear(self):
         self.assertEqual(self.run_main(live='fail')[0], 2)
         self.assertEqual(self.run_main(pdf='fail')[0], 2)
+
+    def test_unreachable_krs_is_skipped_not_failed(self):
+        # krs.lt blocks foreign IPs; the GitHub runner cannot reach it.
+        code, report = self.run_main(pdf='unreachable')
+        self.assertEqual(code, 0)
+        self.assertIn('not reachable from here', report)
+        self.assertEqual(self.run_main(live='changed', pdf='unreachable')[0], 1)
+        self.assertEqual(self.run_main(live='fail', pdf='unreachable')[0], 2)
 
     def test_change_wins_over_a_failed_source(self):
         self.assertEqual(self.run_main(live='fail', pdf='changed')[0], 1)

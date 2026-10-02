@@ -320,7 +320,14 @@ def main(argv=None):
     print("\nkrs.lt (municipality PDFs, route 106 trips only)")
     try:
         results, notes = check_pdfs(switch)
-    except Exception as exc:   # network, missing PDF, unreadable layout
+    except OSError as exc:
+        # krs.lt drops connections from outside Lithuania: the GitHub runner
+        # times out, firecrawl only gets through with --country LT (2026-10-02).
+        # The PDFs are a second source, so an unreachable krs.lt must not turn
+        # the app's status red; autobusubilietai.lt still decides all-clear.
+        print(f"  . not reachable from here, skipped: {exc}")
+        report['krs.lt'] = dict(skipped=str(exc))
+    except Exception as exc:   # reachable, but a PDF is missing or unreadable
         print(f"  ! could not check: {exc}")
         failed.append('krs.lt')
     else:
