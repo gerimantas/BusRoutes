@@ -41,20 +41,25 @@ Sources:
 ### Keeping it current
 
 [.github/workflows/schedule-watch.yml](.github/workflows/schedule-watch.yml) runs
-daily at 04:00 UTC:
+daily at 04:00 UTC. It reads two sources, in order of priority:
 
-- Compares a Thursday, a Saturday and a Sunday **at least 3 days ahead** against the
-  app. Nearer dates can come back from the search incomplete.
-- Compares the route 106 PDFs on krs.lt with the app's local trips: the PDF in force
+- **Primary — autobusubilietai.lt.** Compares a Thursday, a Saturday and a Sunday
+  **at least 3 days ahead** against the app. Nearer dates can come back from the
+  search incomplete. Only this source decides what the app shows the rider, and the
+  app is updated from it.
+- **Secondary — krs.lt.** Compares the route 106 PDFs with the app's local trips: the PDF in force
   now, and every PDF announced for a later date before it starts. krs.lt blocks
   non-Lithuanian IPs, so on GitHub the PDFs are fetched through firecrawl from a
-  Lithuanian IP (as raw files, read with pypdf).
-- Opens an issue **only** when they differ, and keeps one open issue per change.
-  The same difference on a later day adds nothing; a different one is added as a
-  comment. A check that fails to complete opens a separate issue and never reports
-  all-clear.
-- Publishes its result (`ok`, `changed` or `failed`, with the time) to the `status`
-  branch. The app shows it to the rider, see [Last check line](#last-check-line).
+  Lithuanian IP (as raw files, read with pypdf). A route 106 PDF whose file name
+  the check cannot read fails the check, because it may be the new timetable.
+- Opens an issue **only** when something needs a look, and keeps one open issue
+  per kind. The same difference on a later day adds nothing; a different one is
+  added as a comment. A primary difference opens "Schedule changed"; a primary check
+  that fails to complete opens "Schedule Watch could not run" and never reports
+  all-clear. A krs.lt difference or failed krs.lt check opens "krs.lt PDFs …" and
+  leaves the app status as the primary source set it.
+- Publishes the primary result (`ok`, `changed` or `failed`, with the time) to the
+  `status` branch. The app shows it to the rider, see [Last check line](#last-check-line).
 
 The watcher only reports. It never edits the app, because a scrape can return a
 partial list. To apply a change, open the project in Claude Code and say

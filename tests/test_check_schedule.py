@@ -222,6 +222,27 @@ class KrsPage(unittest.TestCase):
         self.assertEqual([(p['kind'], p['start']) for p in krs_pdf.list_pdfs(html)],
                          [('šs', D(2026, 11, 7))])
 
+    def test_prefix_variants_on_the_page_are_read(self):
+        # The page spells the prefix several ways for other routes.
+        html = ''.join(f'<a href="/media/1/{n}">x</a>' for n in (
+            '106-dd-nuo-2026-11-02.pdf', 'internetas106-%C5%A1s-nuo-2026-11-07.pdf',
+            'intenetas-106-s-nuo-2026-11-08.pdf'))
+        self.assertEqual(sorted((p['kind'], p['start']) for p in krs_pdf.list_pdfs(html)),
+                         [('dd', D(2026, 11, 2)), ('s', D(2026, 11, 8)), ('šs', D(2026, 11, 7))])
+        self.assertEqual(krs_pdf.unrecognised(html), [])
+
+    def test_route_106_pdf_with_another_name_is_flagged(self):
+        names = ['internetas-106-dd-%C5%BEiema-nuo-2026-11-01.pdf',
+                 'internetas-tvarkara%C5%A1tis-106-dd.pdf', 'internetas-106-a-dd-nuo-2026-11-02.pdf']
+        others = ['internetas-1060-dd-nuo-2026-11-02.pdf', 'internetas-140-dd-nuo-2026-10-06.pdf']
+        html = ''.join(f'<a href="/media/1/{n}">x</a>' for n in names + others)
+        self.assertEqual(krs_pdf.unrecognised(html),
+                         [urllib.parse.unquote(n) for n in names])
+        self.assertEqual(krs_pdf.list_pdfs(html), [])
+
+    def test_real_page_has_no_unrecognised_route_106_pdf(self):
+        self.assertEqual(krs_pdf.unrecognised(read_fixture('krs_page_2026-10-02.html', 'r')), [])
+
     def test_pdf_in_force_is_the_newest_started(self):
         pdfs = krs_pdf.list_pdfs(read_fixture('krs_page_2026-10-02.html', 'r'))
         pick = lambda label, d: (lambda p: p and (p['kind'], p['start']))(krs_pdf.pdf_for(pdfs, label, d))
@@ -317,21 +338,21 @@ class KrsPdfParser(unittest.TestCase):
 class CheckPdfs(unittest.TestCase):
     def test_october_app_matches_the_october_pdfs(self):
         with october_app():
-            results, notes = cs.check_pdfs(None, today=D(2026, 10, 2), fetch=fake_fetch())
+            results, notes, _ = cs.check_pdfs(None, today=D(2026, 10, 2), fetch=fake_fetch())
         self.assertEqual(len(results), 6)   # WD, SAT, SUN x two directions
         self.assertEqual(changes(results), [])
         self.assertEqual(notes, [])
 
     def test_a_changed_trip_is_reported_on_the_right_day_and_direction(self):
         with october_app([('["05:00", WORKDAYS, "5"]', '["05:05", WORKDAYS, "5"]')]):
-            results, _ = cs.check_pdfs(None, today=D(2026, 10, 2), fetch=fake_fetch())
+            results, _, _ = cs.check_pdfs(None, today=D(2026, 10, 2), fetch=fake_fetch())
         self.assertEqual([(r['day'], r['direction'], r['added'], r['removed'])
                           for r in changes(results)],
                          [('WD', 'kaunas-juragiai', ['05:00'], ['05:05'])])
 
     def test_intercity_trips_are_not_compared_with_the_pdf(self):
         with october_app([('["08:00", ALL_DAYS, "12"]', '["08:01", ALL_DAYS, "12"]')]):
-            results, _ = cs.check_pdfs(None, today=D(2026, 10, 2), fetch=fake_fetch())
+            results, _, _ = cs.check_pdfs(None, today=D(2026, 10, 2), fetch=fake_fetch())
         self.assertEqual(changes(results), [])
 
     def test_announced_pdf_is_checked_before_it_starts(self):
@@ -345,7 +366,7 @@ class CheckPdfs(unittest.TestCase):
             ('const dataJurginiskaiBefore = [', 'const dataJurginiskai = ['),
         ]
         with app_file(os.path.join(FIX, 'grafikai_with_switch.html'), replace=september_only):
-            results, _ = cs.check_pdfs(None, today=D(2026, 9, 30), fetch=fake_fetch())
+            results, _, _ = cs.check_pdfs(None, today=D(2026, 9, 30), fetch=fake_fetch())
         self.assertEqual({r['pdf'] for r in changes(results)},
                          {'dd from 2026-10-01', 'šs from 2026-10-03'})
 
@@ -353,7 +374,7 @@ class CheckPdfs(unittest.TestCase):
         # The app as shipped on 2026-09-26: September arrays until 2026-10-01,
         # October after. On 2026-09-30 every PDF lines up with its own arrays.
         with app_file(os.path.join(FIX, 'grafikai_with_switch.html')):
-            results, notes = cs.check_pdfs(D(2026, 10, 1), today=D(2026, 9, 30),
+            results, notes, _ = cs.check_pdfs(D(2026, 10, 1), today=D(2026, 9, 30),
                                            fetch=fake_fetch())
         self.assertEqual(changes(results), [])
         self.assertEqual(notes, [])
@@ -363,12 +384,26 @@ class CheckPdfs(unittest.TestCase):
     def test_missing_pdf_for_the_new_timetable_is_a_note_not_a_change(self):
         # 2026-09-26: autobusubilietai.lt showed October, krs.lt had no PDF yet.
         with app_file(os.path.join(FIX, 'grafikai_with_switch.html')):
-            results, notes = cs.check_pdfs(D(2026, 10, 1), today=D(2026, 9, 26),
+            results, notes, _ = cs.check_pdfs(D(2026, 10, 1), today=D(2026, 9, 26),
                                            fetch=fake_fetch(page_without('2026-10')))
         self.assertEqual(changes(results), [])
         self.assertTrue(results)
         self.assertTrue(notes)
         self.assertTrue(all('2026-10-01' in n for n in notes), notes)
+
+    def test_unrecognised_pdf_is_returned_and_the_rest_still_checked(self):
+        page = read_fixture('krs_page_2026-10-02.html', 'r') +             '<a href="/media/9/internetas-106-dd-%C5%BEiema-nuo-2026-11-02.pdf">x</a>'
+        with october_app():
+            results, _, unknown = cs.check_pdfs(None, today=D(2026, 10, 2),
+                                                fetch=fake_fetch(page))
+        self.assertEqual(unknown, ['internetas-106-dd-žiema-nuo-2026-11-02.pdf'])
+        self.assertEqual(changes(results), [])
+        self.assertTrue(results)
+
+    def test_only_unrecognised_pdfs_fail_and_name_them(self):
+        page = '<a href="/media/9/internetas-106-dd-vasara.pdf">x</a>'
+        with self.assertRaisesRegex(ValueError, 'internetas-106-dd-vasara.pdf'):
+            cs.check_pdfs(None, today=D(2026, 10, 2), fetch=fake_fetch(page))
 
     def test_page_without_route_106_fails(self):
         with self.assertRaises(ValueError):
@@ -378,9 +413,12 @@ class CheckPdfs(unittest.TestCase):
 # --- exit codes ------------------------------------------------------------------
 
 class ExitCodes(unittest.TestCase):
-    """0 = all clear, 1 = changed, 2 = could not check and nothing checked differs."""
+    """The exit code follows autobusubilietai.lt only: 0 = all clear, 1 = changed,
+    2 = could not check and nothing checked differs. krs.lt is the secondary
+    source; its result goes to the JSON report as krs.lt.result."""
 
     def run_main(self, live='same', pdf='same'):
+        """Return (exit code, krs.lt result, printed report)."""
         def fake_live(url, dates, workdir, name):
             if live == 'fail' and name == 'juragiai-kaunas':
                 return None
@@ -394,49 +432,63 @@ class ExitCodes(unittest.TestCase):
                 raise ValueError('expected paired stop rows')
             if pdf == 'unreachable':
                 raise TimeoutError('timed out')
-            diff = ['05:05'] if pdf == 'changed' else []
+            diff = ['05:05'] if pdf in ('changed', 'changed+unknown') else []
+            unknown = ['internetas-106-dd-vasara.pdf'] if 'unknown' in pdf else []
             return [dict(pdf='dd from 2026-10-01', day='WD', direction='kaunas-juragiai',
-                         trips=19, added=diff, removed=[])], []
+                         trips=19, added=diff, removed=[])], [], unknown
 
         out = io.StringIO()
-        with mock.patch.object(cs, 'live_schedule', fake_live), \
+        with tempfile.TemporaryDirectory() as tmp, \
+             mock.patch.object(cs, 'live_schedule', fake_live), \
              mock.patch.object(cs, 'check_pdfs', fake_pdfs), \
              contextlib.redirect_stdout(out), contextlib.redirect_stderr(io.StringIO()):
-            code = cs.main([])
-        return code, out.getvalue()
+            path = os.path.join(tmp, 'diff.json')
+            code = cs.main(['--json', path])
+            with open(path, encoding='utf-8') as fh:
+                krs = json.load(fh)['krs.lt']['result']
+        return code, krs, out.getvalue()
 
     def test_all_clear(self):
-        self.assertEqual(self.run_main()[0], 0)
+        self.assertEqual(self.run_main()[:2], (0, 'ok'))
 
     def test_change_on_the_search_page(self):
-        self.assertEqual(self.run_main(live='changed')[0], 1)
+        self.assertEqual(self.run_main(live='changed')[:2], (1, 'ok'))
 
-    def test_change_in_the_pdf(self):
-        code, report = self.run_main(pdf='changed')
-        self.assertEqual(code, 1)
-        self.assertIn('in PDF only 05:05', report)
-
-    def test_failed_source_is_never_all_clear(self):
+    def test_failed_search_is_never_all_clear(self):
         self.assertEqual(self.run_main(live='fail')[0], 2)
-        self.assertEqual(self.run_main(pdf='fail')[0], 2)
 
-    def test_unreachable_krs_is_skipped_not_failed(self):
-        # krs.lt blocks foreign IPs; the GitHub runner cannot reach it.
-        code, report = self.run_main(pdf='unreachable')
-        self.assertEqual(code, 0)
+    def test_pdf_change_is_reported_without_changing_the_exit_code(self):
+        code, krs, report = self.run_main(pdf='changed')
+        self.assertEqual((code, krs), (0, 'changed'))
+        self.assertIn('in PDF only 05:05', report)
+        self.assertIn('krs.lt: differs from the app', report)
+
+    def test_failed_pdf_check_is_reported_without_changing_the_exit_code(self):
+        self.assertEqual(self.run_main(pdf='fail')[:2], (0, 'failed'))
+
+    def test_unrecognised_pdf_name_fails_the_pdf_check(self):
+        # It may be the new timetable under a new name; the old PDF still matches.
+        code, krs, report = self.run_main(pdf='unknown')
+        self.assertEqual((code, krs), (0, 'failed'))
+        self.assertIn('cannot read: internetas-106-dd-vasara.pdf', report)
+        # A difference in the PDFs that were read is still the stronger finding.
+        self.assertEqual(self.run_main(pdf='changed+unknown')[1], 'changed')
+
+    def test_unreachable_krs_is_skipped(self):
+        code, krs, report = self.run_main(pdf='unreachable')
+        self.assertEqual((code, krs), (0, 'skipped'))
         self.assertIn('not reachable from here', report)
-        self.assertEqual(self.run_main(live='changed', pdf='unreachable')[0], 1)
-        self.assertEqual(self.run_main(live='fail', pdf='unreachable')[0], 2)
 
-    def test_change_wins_over_a_failed_source(self):
-        self.assertEqual(self.run_main(live='fail', pdf='changed')[0], 1)
-        self.assertEqual(self.run_main(live='changed', pdf='fail')[0], 1)
+    def test_the_search_alone_sets_the_exit_code(self):
+        for pdf in ('same', 'changed', 'fail', 'unknown', 'unreachable'):
+            self.assertEqual(self.run_main(live='changed', pdf=pdf)[0], 1, pdf)
+            self.assertEqual(self.run_main(live='fail', pdf=pdf)[0], 2, pdf)
 
     def test_report_lines_carry_no_check_date(self):
         # The workflow hashes the report (minus the "Checking against" line) to
         # tell one difference from another; a date in it would file a new
         # comment every day for the same difference.
-        _, report = self.run_main(pdf='changed')
+        _, _, report = self.run_main(pdf='changed')
         today = dt.date.today()
         body = [l for l in report.splitlines() if not l.startswith('Checking against')]
         for d in cs.next_dates().values():

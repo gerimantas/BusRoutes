@@ -2,17 +2,21 @@
 Checks the live timetable against what the app currently ships.
 
 Reads the departure/periodicity pairs out of paper/grafikai.html and compares them
-with two sources:
+with two sources, in order of priority:
 
-- autobusubilietai.lt search results for a workday, a Saturday and a Sunday —
-  every trip, intercity included, and the first place a new timetable shows up;
-- the route 106 PDFs on krs.lt — the municipality's own timetable, local trips
-  only, each named with the date it takes effect (see krs_pdf.py).
+1. autobusubilietai.lt search results for a workday, a Saturday and a Sunday —
+   every trip, intercity included, and the first place a new timetable shows up.
+   The primary source: it alone sets the exit code, and with it the status the
+   app shows riders.
+2. the route 106 PDFs on krs.lt — the municipality's own timetable, local trips
+   only, each named with the date it takes effect (see krs_pdf.py). The
+   secondary source: its result (ok, changed, failed, skipped) goes into the
+   --json report as krs.lt.result, and the workflow files its own issue for it.
 
-Exit codes:
-    0 - no change in either source
-    1 - a source differs from the app
-    2 - a source could not be checked, and nothing that was checked differs
+Exit codes (primary source only):
+    0 - no change
+    1 - the search differs from the app
+    2 - a direction could not be checked, and the other does not differ
 
 Requires the `firecrawl` CLI on PATH, FIRECRAWL_API_KEY in the environment, and pypdf.
 
@@ -229,13 +233,16 @@ def check_pdfs(switch, today=None, fetch=krs_pdf.fetch):
 
     Checks the PDF in force on the next workday, Saturday and Sunday, and the
     first day of every PDF that starts later — an announced timetable is worth
-    knowing about before it runs. Returns (results, notes); raises when the page
-    or a PDF cannot be read, which the caller reports as a failed check.
+    knowing about before it runs. Returns (results, notes, unknown), where unknown
+    lists route 106 PDFs whose file name this check cannot read; the caller reports
+    those as a failed check. Raises when the page or a PDF cannot be read.
     """
     today = today or dt.date.today()
-    pdfs = krs_pdf.list_pdfs(fetch(krs_pdf.PAGE).decode('utf-8', 'replace'))
+    html = fetch(krs_pdf.PAGE).decode('utf-8', 'replace')
+    pdfs, unknown = krs_pdf.list_pdfs(html), krs_pdf.unrecognised(html)
     if not pdfs:
-        raise ValueError('no route 106 PDFs linked from krs.lt')
+        raise ValueError('no route 106 PDFs krs.lt names in a known way'
+                         + (f"; unrecognised: {', '.join(unknown)}" if unknown else ''))
 
     starts = {today} | {p['start'] for p in pdfs if p['start'] > today}
     if switch and switch > today:
@@ -269,7 +276,15 @@ def check_pdfs(switch, today=None, fetch=krs_pdf.fetch):
                                 direction=direction, trips=len(pdf_times),
                                 added=sorted(pdf_times - app_times),
                                 removed=sorted(app_times - pdf_times)))
-    return results, sorted(set(notes))
+    return results, sorted(set(notes)), unknown
+
+
+SECONDARY = {
+    'ok': 'matches the app',
+    'changed': 'differs from the app (secondary source; does not change the app status)',
+    'failed': 'could not be checked (secondary source; does not change the app status)',
+    'skipped': 'skipped, no way to reach it from here',
+}
 
 
 def main(argv=None):
@@ -317,48 +332,58 @@ def main(argv=None):
 
     # Lines below carry PDF start dates only, never the check date: the workflow
     # hashes this report to tell one difference from another.
-    print("\nkrs.lt (municipality PDFs, route 106 trips only)")
+    print("\nkrs.lt (municipality PDFs, route 106 trips only — secondary source)")
     try:
-        results, notes = check_pdfs(switch)
+        results, notes, unknown = check_pdfs(switch)
     except OSError as exc:
         # krs.lt drops connections from outside Lithuania; krs_pdf.fetch then
         # goes through firecrawl, and raises OSError only when there is no
-        # FIRECRAWL_API_KEY to do so. The PDFs are a second source, so that
-        # must not turn the app's status red; autobusubilietai.lt still decides.
+        # FIRECRAWL_API_KEY to do so.
         print(f"  . not reachable from here, skipped: {exc}")
-        report['krs.lt'] = dict(skipped=str(exc))
+        krs = dict(result='skipped', error=str(exc))
     except Exception as exc:   # reachable, but a PDF is missing or unreadable
         print(f"  ! could not check: {exc}")
-        failed.append('krs.lt')
+        krs = dict(result='failed', error=str(exc))
     else:
-        report['krs.lt'] = dict(results=results, notes=notes)
+        krs = dict(result='ok', results=results, notes=notes, unrecognised=unknown)
         for r in results:
             where = f"{r['pdf']}, {r['day']}, {r['direction']}"
             if not (r['added'] or r['removed']):
                 print(f"  {where}: no change ({r['trips']} trips)")
                 continue
-            any_change = True
+            krs['result'] = 'changed'
             print(f"  ~ {where}: in PDF only {', '.join(r['added']) or '-'}; "
                   f"in app only {', '.join(r['removed']) or '-'}")
         for note in notes:
             print(f"  . {note}")
+        # A route 106 PDF under a new naming style may be the new timetable; the
+        # rows above would then compare the app with the old one.
+        for name in unknown:
+            print(f"  ! route 106 PDF with a name this check cannot read: {name}")
+        if unknown and krs['result'] == 'ok':
+            krs['result'] = 'failed'
+    report['krs.lt'] = krs
 
     if args.json:
         with open(args.json, 'w', encoding='utf-8') as fh:
             json.dump(report, fh, ensure_ascii=False, indent=2)
 
+    # The secondary source never changes the exit code: the workflow reads its
+    # result from the JSON report and files a separate issue.
+    print(f"\nkrs.lt: {SECONDARY[krs['result']]}")
+
     # A partial run cannot prove "no change": the direction that failed may be
     # the one that moved. Only a complete comparison may report all-clear.
     if failed:
-        print(f"\nCould not check: {', '.join(failed)}", file=sys.stderr)
+        print(f"Could not check: {', '.join(failed)}", file=sys.stderr)
         if any_change:
             print("Schedule changed in the directions that were checked.")
             return 1
         return 2
     if any_change:
-        print("\nSchedule changed.")
+        print("Schedule changed.")
         return 1
-    print("\nNo changes.")
+    print("No changes.")
     return 0
 
 

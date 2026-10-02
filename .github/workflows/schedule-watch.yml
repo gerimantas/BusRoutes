@@ -1,11 +1,15 @@
 name: Schedule Watch
 
-# Checks the live timetable (autobusubilietai.lt search, krs.lt PDFs) against
-# what the app ships.
-# Opens a GitHub issue ONLY when something differs — GitHub emails the issue
-# to the repo owner, so a quiet day sends nothing at all.
-# Every run also publishes its result to the `status` branch; the app reads it
-# and shows the rider when the timetable was last checked.
+# Checks the live timetable against what the app ships, from two sources in
+# order of priority:
+#   1. autobusubilietai.lt search — the primary source. Its result is what the
+#      app shows riders, and a change opens a "Schedule changed" issue.
+#   2. krs.lt route 106 PDFs — the secondary source. A difference or a failed
+#      check opens its own "krs.lt PDFs" issue and never touches the app status.
+# Opens a GitHub issue ONLY when something needs a look — GitHub emails the
+# issue to the repo owner, so a quiet day sends nothing at all.
+# Every run also publishes the primary result to the `status` branch; the app
+# reads it and shows the rider when the timetable was last checked.
 
 on:
   schedule:
@@ -44,6 +48,10 @@ jobs:
           set +e
           python scripts/check_schedule.py --json diff.json > report.txt 2>&1
           echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+          # The exit code covers autobusubilietai.lt only; krs.lt's result is in
+          # the JSON report (ok, changed, failed or skipped).
+          krs=$(jq -r '."krs.lt".result // "unknown"' diff.json 2>/dev/null || echo unknown)
+          echo "krs=$krs" >> "$GITHUB_OUTPUT"
           set -e
           cat report.txt
 
@@ -53,10 +61,12 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Identify the difference itself, not the run: the dates line moves daily.
-          diff_id=$(grep -v -e '^Checking against' -e '^App switches' -e 'rate limited' report.txt \
+          # Only the primary section counts; krs.lt has its own issue.
+          diff_id=$(sed '/^krs\.lt (municipality/,$d' report.txt \
+                      | grep -v -e '^Checking against' -e '^App switches' -e 'rate limited' \
                       | sha1sum | cut -c1-12)
           {
-            echo "A timetable source no longer matches the app: autobusubilietai.lt (search) or krs.lt (municipality PDFs) — see the section with the difference."
+            echo "autobusubilietai.lt (the primary source) no longer matches the app — see the direction with the difference."
             echo
             echo '```'
             cat report.txt
@@ -116,6 +126,49 @@ jobs:
           } > body.md
 
           gh issue create --title "Schedule Watch could not run" --body-file body.md
+
+      - name: Open an issue when the krs.lt PDFs need a look
+        if: steps.check.outputs.krs == 'changed' || steps.check.outputs.krs == 'failed'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          KRS: ${{ steps.check.outputs.krs }}
+        run: |
+          # The secondary source: worth an email, never the app's status.
+          sed -n '/^krs\.lt (municipality/,/^krs\.lt: /p' report.txt > krs.txt
+          diff_id=$(sha1sum < krs.txt | cut -c1-12)
+          if [ "$KRS" = changed ]; then
+            what="differ from the app"
+          else
+            what="could not be checked"
+          fi
+          {
+            echo "The krs.lt route 106 PDFs (the secondary source) $what."
+            echo "autobusubilietai.lt, the primary source, decides what the app shows; this does not change the app status."
+            echo
+            echo '```'
+            cat krs.txt
+            echo '```'
+            echo
+            echo "**To look into it:** open the project in Claude Code and say \`atnaujink grafikus\`."
+            echo
+            echo "Checked $(date -u '+%Y-%m-%d %H:%M UTC') by [Schedule Watch](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})."
+            echo
+            echo "<!-- diff:$diff_id -->"
+          } > body.md
+
+          # One open issue at a time, as for the primary source.
+          open=$(gh issue list --state open --search "krs.lt PDFs in:title" \
+                   --json number --jq '.[0].number // empty')
+          if [ -n "$open" ]; then
+            if gh issue view "$open" --json body,comments --jq '.body, .comments[].body' \
+                 | grep -q "diff:$diff_id"; then
+              echo "Issue #$open already reports this — nothing to add."
+            else
+              gh issue comment "$open" --body-file body.md
+            fi
+            exit 0
+          fi
+          gh issue create --title "krs.lt PDFs $what — $(date -u '+%Y-%m-%d')" --body-file body.md
 
       - name: Publish the result for the app
         if: always()

@@ -32,8 +32,13 @@ PAGE = 'https://www.krs.lt/gyventojams/viesasis-transportas/priemiestiniai-autob
 # PDF day type -> the check labels it covers (WD, SAT, SUN as in check_schedule.py)
 KINDS = {'dd': ('WD',), 'š': ('SAT',), 's': ('SUN',), 'šs': ('SAT', 'SUN')}
 
-HREF = re.compile(r'href="([^"]*internetas-106-[^"]*\.pdf)"', re.I)
-NAME = re.compile(r'internetas-106-(dd|šs|š|s)-nuo-(\d{4})-(\d{2})-(\d{2})\.pdf$', re.I)
+HREF = re.compile(r'href="([^"]*\.pdf)"', re.I)
+# Any PDF whose file name carries the number 106 is taken to be about this route.
+ROUTE = re.compile(r'(?<!\d)106(?!\d)')
+# The prefix varies across the page (internetas-, intenetas-, internetas, none), so
+# only "106-<day type>-nuo-<date>.pdf" is required. Season words (vasara, žiema),
+# letter variants (106-a) and anything else do not match: see unrecognised().
+NAME = re.compile(r'(?<!\d)106-(dd|šs|š|s)-nuo-(\d{4})-(\d{2})-(\d{2})\.pdf$', re.I)
 CLOCK = re.compile(r'\b\d{2}:\d{2}\b')
 
 KAUNAS_ROW = 'Kauno autobusų stotis'
@@ -99,15 +104,33 @@ def fetch(url):
     return fetch_firecrawl(url)
 
 
-def list_pdfs(html):
-    """Return [{kind, start, url}] for every route 106 PDF linked from the page."""
-    out, seen = [], set()
+def route_links(html):
+    """Return the unquoted path of every route 106 PDF linked from the page, once each."""
+    out = []
     for href in HREF.findall(html):
         path = urllib.parse.unquote(href)
-        m = NAME.search(path)
-        if not m or path in seen:
+        if ROUTE.search(path.rsplit('/', 1)[-1]) and path not in out:
+            out.append(path)
+    return out
+
+
+def unrecognised(html):
+    """Return the file names of route 106 PDFs whose name NAME cannot read.
+
+    Such a PDF may be the new timetable under a new naming style; skipping it would
+    keep comparing the app with the old PDF and report all-clear.
+    """
+    return [path.rsplit('/', 1)[-1] for path in route_links(html)
+            if not NAME.search(path.rsplit('/', 1)[-1])]
+
+
+def list_pdfs(html):
+    """Return [{kind, start, url}] for every route 106 PDF whose name NAME reads."""
+    out = []
+    for path in route_links(html):
+        m = NAME.search(path.rsplit('/', 1)[-1])
+        if not m:
             continue
-        seen.add(path)
         y, mo, d = (int(x) for x in m.group(2, 3, 4))
         out.append(dict(kind=m.group(1).lower(), start=dt.date(y, mo, d),
                         url=urllib.parse.urljoin(PAGE, path)))
