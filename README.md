@@ -46,7 +46,9 @@ daily at 04:00 UTC:
 - Compares a Thursday, a Saturday and a Sunday **at least 3 days ahead** against the
   app. Nearer dates can come back from the search incomplete.
 - Compares the route 106 PDFs on krs.lt with the app's local trips: the PDF in force
-  now, and every PDF announced for a later date before it starts.
+  now, and every PDF announced for a later date before it starts. krs.lt blocks
+  non-Lithuanian IPs, so on GitHub this part is skipped with a note; it runs from a
+  Lithuanian connection (a local run).
 - Opens an issue **only** when they differ, and keeps one open issue per change.
   The same difference on a later day adds nothing; a different one is added as a
   comment. A check that fails to complete opens a separate issue and never reports

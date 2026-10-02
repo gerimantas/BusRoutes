@@ -1,17 +1,26 @@
 # Grafikai — CONTEXT
 
 ## Status
-Active. The app carries the September and October route 106 timetables and switches
-on its own at 2026-10-01 00:00 (`SWITCH_DATE`). The daily watcher reports changes
-and publishes its result, which the app shows under the tabs ("Tikrinta …").
-Cache `tvarkarastis-v27` live on GitHub Pages.
+Active. The app carries only the October route 106 timetable (no dated switch
+pending); it matches the krs.lt PDFs to the minute. The watcher compares two
+sources — autobusubilietai.lt and the krs.lt PDFs, including PDFs announced for a
+later date — and publishes its result, shown under the tabs ("Tikrinta …").
+krs.lt blocks non-Lithuanian IPs, so on GitHub the PDF check is skipped (a note,
+not a failure); it runs only locally. CI therefore still checks one source.
+33 offline tests in `tests/` run on GitHub on every watcher/app change.
+Cache `tvarkarastis-v28` live on GitHub Pages.
 
 ## Next Tasks
-- After 2026-10-01: check krs.lt for the October 106 PDF and compare it with the app,
-  then delete `dataKaunasBefore`/`dataJurginiskaiBefore` and `SWITCH_DATE`
-  (SKILL.md → "A timetable that starts on a future date").
+- Make the krs.lt PDF check run in CI: krs.lt drops GitHub runner connections.
+  firecrawl `--country LT` reaches it, but its PDF parse misaligns stop rows, so
+  PDF bytes must come another way (an LT proxy, or a raw-file option). Archive 2026-10-02.
 
 ## Done Log
+
+### 2026-10-02
+- October timetable verified against krs.lt PDFs; September arrays and `SWITCH_DATE` removed
+- Watcher checks krs.lt PDFs as a second source (`scripts/krs_pdf.py`); skipped in CI (geo-block)
+- 33 offline tests with real fixtures + `tests.yml` CI
 
 ### 2026-09-26
 - October timetable shipped with a dated switch; issue #4 closed
@@ -19,20 +28,11 @@ Cache `tvarkarastis-v27` live on GitHub Pages.
 - Watcher: 3-day lead, `SWITCH_DATE`-aware, one issue per change
 - App name Juragiai; READMEs updated; session-start idle-gap fix
 
-### 2026-09-02
-- Timetable refreshed from live data; both directions verified against photos
-- Daily `schedule-watch.yml` replaces the unread weekly PR workflow
-- `parse_firecrawl.py` + `check_schedule.py` built and verified both ways
-- `web/`, the Playwright scraper and ~2.4 MB of dead files removed
-- QR codes regenerated against the production URL
-- README, CONTEXT, CLAUDE.md, paper/README.md and the grafikai skill rewritten
-
 ## Key Facts
 - Live: https://gerimantas.github.io/BusRoutes/paper/grafikai.html
 - Repo: https://github.com/gerimantas/BusRoutes
 - Route 106 plus intercity services stopping at Juragiai — single-file PWA
-- Trips from 2026-10-01: Kaunas→Juragiai 25 (20 local + 5 intercity), Juragiai→Kaunas 27 (22 + 5);
-  until 09-30: 27 and 29
+- Trips from 2026-10-01: Kaunas→Juragiai 25 (20 local + 5 intercity), Juragiai→Kaunas 27 (22 + 5)
 - Official timetable PDFs: https://www.krs.lt/gyventojams/viesasis-transportas/priemiestiniai-autobusu-marsrutai/
 - Route 106 terminates at Skriaudžiai; trips via Garliava end at Jurginiškiai
 - Service Worker cache: read the current value from `sw.js` line 1; bump on every HTML change
@@ -66,6 +66,8 @@ Full procedure: `.claude/skills/grafikai/SKILL.md`
 - **Bash heredocs for edit scripts.** Regex backslashes (`\\-`, `\s`) get mangled by
   the shell; the pattern then matches nothing and the script reports zero results
   as though the data were empty. Write the script to a file first.
+- **firecrawl for krs.lt PDFs (2026-10-02).** Reaches krs.lt only with `--country LT`,
+  and its PDF-to-markdown output shifts stop rows by one. Read PDFs with pypdf.
 - **Partial periodicity constants.** `SUNDAY` and `MON_SAT` were added and reverted
   the same session: the trips that appeared to need them are single daily trips the
   operator routes through a different village on Sunday.
@@ -78,10 +80,23 @@ Full procedure: `.claude/skills/grafikai/SKILL.md`
 - `manifest.json` — PWA manifest
 - `scripts/check_schedule.py` — live-vs-app comparison; exit 1 = changed, 2 = could not check
 - `scripts/parse_firecrawl.py` — parses firecrawl output into a trip table
+- `scripts/krs_pdf.py` — finds and reads the route 106 PDFs on krs.lt
+- `tests/test_check_schedule.py` + `tests/fixtures/` — offline watcher tests;
+  fixtures test logic, keep them when the timetable changes
 - `.github/workflows/schedule-watch.yml` — daily watcher, opens an issue on change,
   force-pushes `status.json` to the `status` branch (read by the app)
+- `.github/workflows/tests.yml` — runs the tests on changes to scripts, tests, app
 
 ## Archive
+
+### Session 2026-10-02 — September timetable removed, krs.lt PDFs in the watcher, tests
+
+- **Done:** krs.lt October 106 PDFs (dd from 10-01, šs from 10-03) match the app to the minute (19+19 workday, 5+5 weekend). Removed `dataKaunasBefore`/`dataJurginiskaiBefore`/`SWITCH_DATE`; cache v28 live. Watcher now compares krs.lt PDFs with the app's local trips: PDF in force now + every PDF announced for a later date; a missing PDF for a timetable the app already switched to is a note, not a change. 32 offline tests with real fixtures; `tests.yml` passed on GitHub.
+- **Found:** krs.lt blocks non-Lithuanian IPs. CI run 36975699351 timed out on it, turned the app status red and opened issue #5 (closed). firecrawl fails without `--country LT`; with it, the page loads but its PDF-to-markdown parse shifts stop rows (Juragiai row carries Stanaičiai times) — unusable for times.
+- **Decided / overturned:** an unreachable krs.lt (OSError) is skipped with a note; a reachable krs.lt with a missing/unreadable PDF still fails. Tests run against a fixture copy of the app (`grafikai_with_switch.html`) so a timetable change does not break them. pypdf pinned to 6.19.0 in CI.
+- **Code:** new `scripts/krs_pdf.py`, `tests/test_check_schedule.py` (33 tests), `tests/fixtures/` (5 PDFs, krs.lt page, one scraped search page, app at 7de485b), `.github/workflows/tests.yml`; changed `scripts/check_schedule.py` (`check_pdfs`, `periodicity`, `main(argv)`), `scripts/parse_firecrawl.py` (closes file), `schedule-watch.yml` (pypdf, issue text), `paper/grafikai.html`, `sw.js`, READMEs, both `paper/*_grafikas.md`. Commits `7c7c10f`, `3b5bc49`, `524c0e4`. Local only: `CLAUDE.md`, grafikai `SKILL.md`.
+- **Entry point:** `python scripts/check_schedule.py`; `python -m unittest discover -s tests -v`
+- **Not measured:** a real change flowing through the PDF path into an issue; the Node 20 deprecation on `setup-node@v4`/`upload-artifact@v4`.
 
 ### Session 2026-09-26 — October timetable with dated switch, last-check line in app
 
