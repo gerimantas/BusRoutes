@@ -4,14 +4,25 @@
 
 Runs daily at 04:00 UTC (07:00 Vilnius summer, 06:00 winter) and on manual dispatch.
 
-Compares the departure times in `paper/grafikai.html` against live
-`autobusubilietai.lt` results for a workday, a Saturday and a Sunday, then:
+Compares the departure times in `paper/grafikai.html` with two sources, in order
+of priority:
 
-- **no change** — finishes silently, sends nothing
-- **changed** — opens an issue listing the differences; GitHub emails it to the owner
-- **check failed** — opens a "could not run" issue, unless one is already open
+1. **autobusubilietai.lt (primary)** — a workday, a Saturday and a Sunday at least
+   3 days ahead. Its result is what the app shows riders ("Tikrinta …"):
+   - **no change** — finishes silently, sends nothing
+   - **changed** — opens a "Schedule changed" issue; GitHub emails it to the owner
+   - **check failed** — opens a "Schedule Watch could not run" issue, unless one is
+     already open. A failed check never reports all-clear.
+2. **krs.lt route 106 PDFs (secondary)** — fetched through firecrawl from a
+   Lithuanian IP, since krs.lt blocks GitHub's runners. A difference, a failed
+   check or a route 106 PDF with an unreadable file name opens a "krs.lt PDFs …"
+   issue. It never changes the status the app shows.
 
-A failed check never reports all-clear. Silence means the check ran and found nothing.
+Each kind keeps one open issue: the same difference adds nothing, a different one is
+added as a comment. Silence means the check ran and found nothing.
+
+Every run force-pushes the primary result to the `status` branch as `status.json`;
+the app reads it from there.
 
 ### Required secret
 
@@ -22,6 +33,12 @@ Without it every run files a "could not run" issue.
 
 Open the project in Claude Code and say `atnaujink grafikus`. The skill at
 `.claude/skills/grafikai/SKILL.md` describes the refresh procedure.
+
+## tests.yml
+
+Runs the offline watcher tests (`python -m unittest discover -s tests -v`) on pushes
+that change `scripts/`, `tests/`, `paper/grafikai.html` or `tests.yml`, on every pull
+request, and on manual dispatch.
 
 ## Removed workflows
 

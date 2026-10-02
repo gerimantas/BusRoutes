@@ -1,32 +1,31 @@
 # Grafikai — CONTEXT
 
 ## Status
-Active. The app carries only the October route 106 timetable (no dated switch
-pending); it matches the krs.lt PDFs to the minute. The watcher compares two
-sources — autobusubilietai.lt and the krs.lt PDFs, including PDFs announced for a
-later date — and publishes its result, shown under the tabs ("Tikrinta …").
-krs.lt blocks non-Lithuanian IPs, so on GitHub the PDF check is skipped (a note,
-not a failure); it runs only locally. CI therefore still checks one source.
-33 offline tests in `tests/` run on GitHub on every watcher/app change.
-Cache `tvarkarastis-v28` live on GitHub Pages.
+Active. The app carries only the October route 106 timetable; both sources match it.
+The daily watcher checks both in CI, ranked: autobusubilietai.lt is primary (exit
+code, app status "Tikrinta …", the data the app is updated from); the krs.lt PDFs
+are secondary, fetched via firecrawl from an LT IP, and open their own "krs.lt PDFs"
+issue without touching the app status. A route 106 PDF with an unreadable file name
+fails the krs.lt check. 43 offline tests pass on GitHub. Header redesigned (one-line
+status with icon, transparent tabs, thin glow). Cache `tvarkarastis-v30` live.
 
 ## Next Tasks
-- Make the krs.lt PDF check run in CI: krs.lt drops GitHub runner connections.
-  firecrawl `--country LT` reaches it, but its PDF parse misaligns stop rows, so
-  PDF bytes must come another way (an LT proxy, or a raw-file option). Archive 2026-10-02.
+- Decide whether the watcher should draft the timetable update as a pull request
+  (user approves by merging, no PC needed). Proposed 2026-10-02, not yet agreed;
+  needs a script that turns the scrape into data arrays. Archive S4.
+- Move `setup-node@v4` / `upload-artifact@v4` off the deprecated Node 20 runtime.
 
 ## Done Log
+
+### 2026-10-02 (S4)
+- krs.lt PDFs checked in CI through firecrawl `rawBase64`; unreadable 106 PDF names flagged
+- Source priority: autobusubilietai.lt primary, krs.lt secondary with its own issue
+- App header: icon status line, transparent tabs, thinner glow, red filter button (v30)
 
 ### 2026-10-02
 - October timetable verified against krs.lt PDFs; September arrays and `SWITCH_DATE` removed
 - Watcher checks krs.lt PDFs as a second source (`scripts/krs_pdf.py`); skipped in CI (geo-block)
 - 33 offline tests with real fixtures + `tests.yml` CI
-
-### 2026-09-26
-- October timetable shipped with a dated switch; issue #4 closed
-- Last-check line in the app, fed by the watcher via the `status` branch
-- Watcher: 3-day lead, `SWITCH_DATE`-aware, one issue per change
-- App name Juragiai; READMEs updated; session-start idle-gap fix
 
 ## Key Facts
 - Live: https://gerimantas.github.io/BusRoutes/paper/grafikai.html
@@ -65,9 +64,11 @@ Full procedure: `.claude/skills/grafikai/SKILL.md`
   issues, which email the owner.
 - **Bash heredocs for edit scripts.** Regex backslashes (`\\-`, `\s`) get mangled by
   the shell; the pattern then matches nothing and the script reports zero results
-  as though the data were empty. Write the script to a file first.
-- **firecrawl for krs.lt PDFs (2026-10-02).** Reaches krs.lt only with `--country LT`,
-  and its PDF-to-markdown output shifts stop rows by one. Read PDFs with pypdf.
+  as though the data were empty. Hit again 2026-10-02 with Python `\\n` and `\`
+  line continuations. Write the script with the Write tool, then run it.
+- **firecrawl's own PDF parse for krs.lt (2026-10-02).** Its PDF-to-markdown output
+  shifts stop rows by one. Take the raw bytes (API format `rawBase64`,
+  `location: LT`) and read them with pypdf — that is what `krs_pdf.fetch` does.
 - **Partial periodicity constants.** `SUNDAY` and `MON_SAT` were added and reverted
   the same session: the trips that appeared to need them are single daily trips the
   operator routes through a different village on Sunday.
@@ -78,16 +79,26 @@ Full procedure: `.claude/skills/grafikai/SKILL.md`
 - `paper/juragiai-kaunas_grafikas.md` — schedule record Juragiai→Kaunas
 - `sw.js` — Service Worker (cache-first, bump version on each release)
 - `manifest.json` — PWA manifest
-- `scripts/check_schedule.py` — live-vs-app comparison; exit 1 = changed, 2 = could not check
+- `scripts/check_schedule.py` — live-vs-app comparison; exit code from autobusubilietai.lt
+  only (1 = changed, 2 = could not check); krs.lt verdict in `--json` as `krs.lt.result`
 - `scripts/parse_firecrawl.py` — parses firecrawl output into a trip table
 - `scripts/krs_pdf.py` — finds and reads the route 106 PDFs on krs.lt
 - `tests/test_check_schedule.py` + `tests/fixtures/` — offline watcher tests;
   fixtures test logic, keep them when the timetable changes
-- `.github/workflows/schedule-watch.yml` — daily watcher, opens an issue on change,
-  force-pushes `status.json` to the `status` branch (read by the app)
+- `.github/workflows/schedule-watch.yml` — daily watcher: "Schedule changed" / "could
+  not run" issues (primary), "krs.lt PDFs" issue (secondary); force-pushes
+  `status.json` to the `status` branch (read by the app)
 - `.github/workflows/tests.yml` — runs the tests on changes to scripts, tests, app
 
 ## Archive
+
+### Session 2026-10-02 (S4) — krs.lt PDFs checked in CI, source priority, header redesign
+
+- **Done:** krs.lt PDFs now reach CI: on a failed direct fetch `krs_pdf.fetch` uses the firecrawl API (`location: LT`, format `rawBase64`, bytes identical to a direct download) and pypdf; CI run 37007057318 read all PDFs, status ok. Any krs.lt PDF whose name carries 106 counts; names `NAME` cannot read fail the krs.lt check. Status line is one line: tick/cross + "Tikrinta MM-DD HH:MM", reason in tooltip. Tabs transparent without frame, header glow thinner/stronger, filter button red when off. Cache v30 live. Grafikai skill: stale `web/`/scraper parts removed, "atnaujink grafikus" playbook added.
+- **Decided / overturned:** source priority (user): autobusubilietai.lt is primary — sets exit code, app status, update data; krs.lt is secondary — own "krs.lt PDFs" issue, never the app status. Overturns S3's "skip krs.lt in CI". 05:50 vs 05:55 Kaunas→Juragiai are two buses (05:55 via Jurginiškiai) — data correct.
+- **Code:** `scripts/krs_pdf.py` (`fetch_direct`, `fetch_firecrawl`, `route_links`, `unrecognised`), `scripts/check_schedule.py` (`check_pdfs` returns unknown; `SECONDARY`; `krs.lt.result` in JSON), `tests/test_check_schedule.py` (43), `schedule-watch.yml` (krs issue step), `paper/grafikai.html`, `sw.js`, `README.md`, `.github/workflows/README.md`. Commits `36fb7ff`, `81cdfef`, `22fd08f`, `0f14e32`. Local only: `CLAUDE.md`, grafikai `SKILL.md`.
+- **Entry point:** `python scripts/check_schedule.py --json out.json`; `gh workflow run schedule-watch.yml`
+- **Not measured:** the krs.lt issue step firing for real; Node 20 deprecation on `setup-node@v4`/`upload-artifact@v4`.
 
 ### Session 2026-10-02 — September timetable removed, krs.lt PDFs in the watcher, tests
 
