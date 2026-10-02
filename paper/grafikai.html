@@ -84,12 +84,12 @@
 
   header.theme-kaunas {
     background: linear-gradient(180deg, #153149 0%, #0a1727 62%);
-    box-shadow: inset 0 18px 40px rgba(126, 200, 255, 0.25), inset 18px 0 34px rgba(126, 200, 255, 0.14), inset -18px 0 34px rgba(126, 200, 255, 0.14);
+    box-shadow: inset 0 6px 12px rgba(126, 200, 255, 0.4), inset 6px 0 12px rgba(126, 200, 255, 0.22), inset -6px 0 12px rgba(126, 200, 255, 0.22);
   }
 
   header.theme-jurginiskai {
     background: linear-gradient(180deg, #3a2206 0%, #1c0f00 62%);
-    box-shadow: inset 0 18px 40px rgba(245, 158, 11, 0.25), inset 18px 0 34px rgba(245, 158, 11, 0.14), inset -18px 0 34px rgba(245, 158, 11, 0.14);
+    box-shadow: inset 0 6px 12px rgba(245, 158, 11, 0.4), inset 6px 0 12px rgba(245, 158, 11, 0.22), inset -6px 0 12px rgba(245, 158, 11, 0.22);
   }
 
   #clock-bar {
@@ -180,15 +180,13 @@
     gap: 0;
     border-radius: 0;
     overflow: hidden;
-    border: 1px solid var(--border-subtle);
-    border-bottom: none;
   }
 
   .tab-btn {
     flex: 1;
     padding: 12px 8px;
     border: none;
-    background: var(--bg-surface);
+    background: transparent;
     color: var(--text-secondary);
     font-size: 17px;
     font-weight: 800;
@@ -199,18 +197,12 @@
     transition: background 0.15s, color 0.15s;
   }
 
-  .tab-btn:first-child {
-    border-right: 1px solid var(--border-subtle);
-  }
-
   .tab-btn.active-blue {
-    background: #1c2d42;
     color: #82cbff;
     border-bottom: 2px solid #82cbff;
   }
 
   .tab-btn.active-orange {
-    background: #38210b;
     color: #ff9d5c;
     border-bottom: 2px solid #ff9d5c;
   }
@@ -652,7 +644,8 @@
     background: rgba(245, 158, 11, 0.07);
   }
 
-  #filter-btn.off {
+  /* Must outrank the header.theme-* #filter-btn rules above. */
+  header.filter-off #filter-btn.off {
     background: #270808;
     color: var(--accent-stop);
     border-color: var(--accent-stop);
@@ -660,12 +653,12 @@
 
   header.theme-kaunas.filter-off {
     background: #0f0714 !important;
-    box-shadow: inset 0 18px 40px rgba(239, 68, 68, 0.42), inset 18px 0 34px rgba(126, 200, 255, 0.12), inset -18px 0 34px rgba(126, 200, 255, 0.12) !important;
+    box-shadow: inset 0 6px 12px rgba(239, 68, 68, 0.65), inset 6px 0 12px rgba(126, 200, 255, 0.2), inset -6px 0 12px rgba(126, 200, 255, 0.2) !important;
   }
 
   header.theme-jurginiskai.filter-off {
     background: #180500 !important;
-    box-shadow: inset 0 18px 40px rgba(239, 68, 68, 0.42), inset 18px 0 34px rgba(245, 158, 11, 0.12), inset -18px 0 34px rgba(245, 158, 11, 0.12) !important;
+    box-shadow: inset 0 6px 12px rgba(239, 68, 68, 0.65), inset 6px 0 12px rgba(245, 158, 11, 0.2), inset -6px 0 12px rgba(245, 158, 11, 0.2) !important;
   }
 
 
