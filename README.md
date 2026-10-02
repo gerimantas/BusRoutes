@@ -47,8 +47,8 @@ daily at 04:00 UTC:
   app. Nearer dates can come back from the search incomplete.
 - Compares the route 106 PDFs on krs.lt with the app's local trips: the PDF in force
   now, and every PDF announced for a later date before it starts. krs.lt blocks
-  non-Lithuanian IPs, so on GitHub this part is skipped with a note; it runs from a
-  Lithuanian connection (a local run).
+  non-Lithuanian IPs, so on GitHub the PDFs are fetched through firecrawl from a
+  Lithuanian IP (as raw files, read with pypdf).
 - Opens an issue **only** when they differ, and keeps one open issue per change.
   The same difference on a later day adds nothing; a different one is added as a
   comment. A check that fails to complete opens a separate issue and never reports

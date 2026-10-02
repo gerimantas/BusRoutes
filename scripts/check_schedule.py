@@ -321,10 +321,10 @@ def main(argv=None):
     try:
         results, notes = check_pdfs(switch)
     except OSError as exc:
-        # krs.lt drops connections from outside Lithuania: the GitHub runner
-        # times out, firecrawl only gets through with --country LT (2026-10-02).
-        # The PDFs are a second source, so an unreachable krs.lt must not turn
-        # the app's status red; autobusubilietai.lt still decides all-clear.
+        # krs.lt drops connections from outside Lithuania; krs_pdf.fetch then
+        # goes through firecrawl, and raises OSError only when there is no
+        # FIRECRAWL_API_KEY to do so. The PDFs are a second source, so that
+        # must not turn the app's status red; autobusubilietai.lt still decides.
         print(f"  . not reachable from here, skipped: {exc}")
         report['krs.lt'] = dict(skipped=str(exc))
     except Exception as exc:   # reachable, but a PDF is missing or unreadable

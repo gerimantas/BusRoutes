@@ -12,10 +12,17 @@ Each PDF holds two tables, one per direction. Every table has a "Kauno autobusų
 stotis" row and a "Juragiai" row with one time per trip. Column for column, the
 stop with the earlier time is where that trip departs from. The weekend PDF prints
 both tables side by side on one line, which the same rule handles.
+
+krs.lt drops connections from outside Lithuania, so a GitHub runner cannot reach
+it. fetch() then goes through the firecrawl API from a Lithuanian IP and takes the
+original bytes (rawBase64), not firecrawl's own PDF parse, which shifts stop rows.
 """
 
+import base64
 import datetime as dt
 import io
+import json
+import os
 import re
 import urllib.parse
 import urllib.request
@@ -33,13 +40,63 @@ KAUNAS_ROW = 'Kauno autobusų stotis'
 JURAGIAI_ROW = 'Juragiai'
 
 
-def fetch(url):
-    """Return the bytes at url. Non-ASCII characters in the path are encoded."""
+FIRECRAWL = 'https://api.firecrawl.dev/v2/scrape'
+
+# Cleared after the first direct fetch fails: every later fetch in the run then
+# goes through firecrawl instead of waiting out another timeout.
+_direct = True
+
+
+def quote_url(url):
+    """Return url with non-ASCII characters in the path percent-encoded."""
     parts = urllib.parse.urlsplit(url)
-    url = parts._replace(path=urllib.parse.quote(urllib.parse.unquote(parts.path))).geturl()
-    req = urllib.request.Request(url, headers={'User-Agent': 'BusRoutes schedule watch'})
-    with urllib.request.urlopen(req, timeout=60) as resp:
+    return parts._replace(path=urllib.parse.quote(urllib.parse.unquote(parts.path))).geturl()
+
+
+def fetch_direct(url):
+    """Return the bytes at url, fetched from this machine."""
+    req = urllib.request.Request(quote_url(url),
+                                 headers={'User-Agent': 'BusRoutes schedule watch'})
+    with urllib.request.urlopen(req, timeout=20) as resp:
         return resp.read()
+
+
+def fetch_firecrawl(url):
+    """Return the bytes at url, fetched by firecrawl from a Lithuanian IP.
+
+    Raises RuntimeError, not OSError: krs.lt being out of reach from here is
+    expected, but firecrawl failing too means the check did not run.
+    """
+    body = json.dumps({'url': quote_url(url), 'formats': ['rawBase64'], 'parsers': [],
+                       'location': {'country': 'LT'}, 'timeout': 120000}).encode()
+    req = urllib.request.Request(FIRECRAWL, data=body, headers={
+        'Authorization': 'Bearer ' + os.environ['FIRECRAWL_API_KEY'],
+        'Content-Type': 'application/json'})
+    try:
+        with urllib.request.urlopen(req, timeout=180) as resp:
+            data = json.load(resp).get('data') or {}
+    except (OSError, ValueError) as exc:
+        raise RuntimeError(f'firecrawl could not fetch {url}: {exc}') from exc
+    status = (data.get('metadata') or {}).get('statusCode')
+    if status != 200 or not data.get('rawBase64'):
+        raise RuntimeError(f'firecrawl got HTTP {status} for {url}')
+    return base64.b64decode(data['rawBase64'])
+
+
+def fetch(url):
+    """Return the bytes at url: directly, or through firecrawl once direct fails.
+
+    Without FIRECRAWL_API_KEY the direct error is raised as it is.
+    """
+    global _direct
+    if _direct:
+        try:
+            return fetch_direct(url)
+        except OSError:
+            if not os.environ.get('FIRECRAWL_API_KEY'):
+                raise
+            _direct = False
+    return fetch_firecrawl(url)
 
 
 def list_pdfs(html):

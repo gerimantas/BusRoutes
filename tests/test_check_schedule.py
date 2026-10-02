@@ -12,9 +12,11 @@ Nothing here touches the network. The fixtures are real downloads:
 Run:  python -m unittest discover -s tests -v
 """
 
+import base64
 import contextlib
 import datetime as dt
 import io
+import json
 import os
 import re
 import shutil
@@ -229,6 +231,59 @@ class KrsPage(unittest.TestCase):
         self.assertEqual(pick('SAT', D(2026, 10, 3)), ('šs', D(2026, 10, 3)))
         self.assertEqual(pick('SUN', D(2026, 10, 4)), ('šs', D(2026, 10, 3)))
         self.assertIsNone(pick('WD', D(2026, 8, 1)))
+
+
+class KrsFetch(unittest.TestCase):
+    """krs.lt blocks foreign IPs; fetch() falls back to firecrawl from Lithuania."""
+
+    URL = 'https://www.krs.lt/media/89573/internetas-106-šs-nuo-2026-10-03.pdf'
+
+    def setUp(self):
+        patches = [mock.patch.object(krs_pdf, '_direct', True),
+                   mock.patch.dict(os.environ, {'FIRECRAWL_API_KEY': 'fc-test'})]
+        for p in patches:
+            p.start()
+            self.addCleanup(p.stop)
+
+    def firecrawl_reply(self, status=200, raw=b'%PDF-1.7 bytes'):
+        reply = {'success': True, 'data': {'rawBase64': base64.b64encode(raw).decode(),
+                                           'metadata': {'statusCode': status}}}
+        resp = mock.MagicMock()
+        resp.__enter__.return_value = io.BytesIO(json.dumps(reply).encode())
+        return resp
+
+    def test_direct_failure_switches_to_firecrawl_for_the_rest_of_the_run(self):
+        sent = []
+
+        def urlopen(req, timeout):
+            if not req.full_url.startswith(krs_pdf.FIRECRAWL):
+                raise TimeoutError('timed out')
+            sent.append(json.loads(req.data))
+            return self.firecrawl_reply()
+
+        with mock.patch.object(krs_pdf.urllib.request, 'urlopen', side_effect=urlopen) as op:
+            self.assertEqual(krs_pdf.fetch(self.URL), b'%PDF-1.7 bytes')
+            self.assertEqual(krs_pdf.fetch(krs_pdf.PAGE), b'%PDF-1.7 bytes')
+        self.assertEqual(op.call_count, 3)   # one direct attempt, then firecrawl only
+        self.assertEqual(sent[0]['formats'], ['rawBase64'])
+        self.assertEqual(sent[0]['location'], {'country': 'LT'})
+        self.assertNotIn('š', sent[0]['url'])  # path is percent-encoded
+
+    def test_without_an_api_key_the_direct_error_is_raised(self):
+        with mock.patch.dict(os.environ, {'FIRECRAWL_API_KEY': ''}),              mock.patch.object(krs_pdf, 'fetch_direct', side_effect=TimeoutError):
+            with self.assertRaises(OSError):
+                krs_pdf.fetch(self.URL)
+
+    def test_firecrawl_failure_is_not_an_unreachable_site(self):
+        # OSError means "skipped"; a failing fallback must fail the check instead.
+        with mock.patch.object(krs_pdf, 'fetch_direct', side_effect=TimeoutError),              mock.patch.object(krs_pdf.urllib.request, 'urlopen',
+                               return_value=self.firecrawl_reply(status=404)):
+            with self.assertRaises(RuntimeError):
+                krs_pdf.fetch(self.URL)
+        with mock.patch.object(krs_pdf, 'fetch_direct', side_effect=TimeoutError),              mock.patch.object(krs_pdf.urllib.request, 'urlopen',
+                               side_effect=TimeoutError('timed out')):
+            with self.assertRaises(RuntimeError):
+                krs_pdf.fetch(self.URL)
 
 
 class KrsPdfParser(unittest.TestCase):
