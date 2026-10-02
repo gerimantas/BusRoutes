@@ -1,9 +1,10 @@
-# Juragiai → Kaunas — grafikas (galioja nuo 2026-10-01, patikrinta 2026-09-26)
+# Juragiai → Kaunas — grafikas (galioja nuo 2026-10-01, patikrinta 2026-10-02)
 
 Šaltinis: `autobusubilietai.lt` paieška, patikrinta trims dienoms
 (2026-10-01 ketvirtadienis, 2026-10-03 šeštadienis, 2026-10-04 sekmadienis).
 Tie patys reisai sutapo ir su 2026-10-05, 2026-10-10, 2026-10-11.
 Kryžminė patikra: Juragių stotelės lenta.
+krs.lt route 106 PDF (dd from 2026-10-01, šs from 2026-10-03): matches, checked 2026-10-02.
 
 Periodiškumas: `12345` = Pr–Pn (dd), `ŠS` = Š–S (šs), `1234567` = visos
 

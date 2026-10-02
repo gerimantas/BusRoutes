@@ -16,17 +16,16 @@ Scan to open on a phone, or print [qr-codes.html](qr-codes.html).
 
 ## Schedule
 
-Route 106 gets a new timetable on **2026-10-01**. The app carries both and switches
-at midnight on its own.
+The route 106 timetable in force since **2026-10-01** (weekend timetable from
+2026-10-03), verified against the Kaunas district municipality PDFs on 2026-10-02.
 
-| Direction | Until 2026-09-30 | From 2026-10-01 |
-|---|---|---|
-| **Kaunas → Juragiai** | 27 trips | 25 trips |
-| **Juragiai → Kaunas** | 29 trips | 27 trips |
+| Direction | Trips |
+|---|---|
+| **Kaunas → Juragiai** | 25 |
+| **Juragiai → Kaunas** | 27 |
 
-Both timetables have 24 workday and 10 weekend departures per direction, 5 of them
-intercity; daily trips count in both columns. October merges several separate
-workday and weekend trips into single daily ones, hence the lower totals.
+Each direction has 24 workday and 10 weekend departures, 5 of them intercity;
+daily trips count once.
 
 Sources:
 
@@ -34,10 +33,10 @@ Sources:
   and 10-04, then confirmed against 10-05, 10-10 and 10-11. Recorded in
   [paper/kaunas-juragiai_grafikas.md](paper/kaunas-juragiai_grafikas.md) and
   [paper/juragiai-kaunas_grafikas.md](paper/juragiai-kaunas_grafikas.md).
-- **September timetable** — matches the
+- **Municipality PDFs** — the
   [Kaunas district municipality PDFs](https://www.krs.lt/gyventojams/viesasis-transportas/priemiestiniai-autobusu-marsrutai/)
-  in force from 08-31 (workdays), 09-05 (Saturdays) and 09-06 (Sundays).
-  The municipality had not yet published an October PDF on 2026-09-26.
+  in force from 10-01 (workdays) and 10-03 (weekends) match the app to the minute
+  (checked 2026-10-02).
 
 ### Keeping it current
 
@@ -46,6 +45,8 @@ daily at 04:00 UTC:
 
 - Compares a Thursday, a Saturday and a Sunday **at least 3 days ahead** against the
   app. Nearer dates can come back from the search incomplete.
+- Compares the route 106 PDFs on krs.lt with the app's local trips: the PDF in force
+  now, and every PDF announced for a later date before it starts.
 - Opens an issue **only** when they differ, and keeps one open issue per change.
   The same difference on a later day adds nothing; a different one is added as a
   comment. A check that fails to complete opens a separate issue and never reports
@@ -74,7 +75,8 @@ received.
 A timetable announced for a future date ships before that date. The old arrays
 stay in the app as `dataKaunasBefore` / `dataJurginiskaiBefore` until
 `SWITCH_DATE`, and the app picks one by the phone's date every minute. The watcher
-reads `SWITCH_DATE` too, so a pending switch never shows up as a change.
+reads `SWITCH_DATE` too, so a pending switch never shows up as a change. Both are
+removed once the date has passed; no switch is pending now.
 
 ### Dual route colour palette
 Two independent themes. Every element in a card — time, day labels, badges, borders,
@@ -140,6 +142,11 @@ deploy that touches the app.
 |---|---|
 | `check_schedule.py` | Compares the live timetable against the app; exit 1 = changed, 2 = could not check |
 | `parse_firecrawl.py` | Parses scraped search pages into a trip table |
+| `krs_pdf.py` | Finds and reads the route 106 PDFs on krs.lt |
+
+Offline tests for all three live in `tests/` with real downloaded pages and PDFs as
+fixtures: `python -m unittest discover -s tests -v`. GitHub runs them
+([tests.yml](.github/workflows/tests.yml)) whenever the scripts, tests or app data change.
 
 Data comes from `autobusubilietai.lt` through the firecrawl CLI, scraped for a
 workday, a Saturday and a Sunday so periodicity follows from which days a trip

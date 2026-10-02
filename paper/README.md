@@ -24,9 +24,9 @@ The `*_grafikas.md` files are a **record of the last refresh, not a live source*
 each carries the date it was verified. To answer "did the schedule change?", run
 `scripts/check_schedule.py`, which fetches live data and compares.
 
-The records currently describe the timetable **from 2026-10-01**. The September
-timetable it replaces lives only in `grafikai.html` (`dataKaunasBefore`,
-`dataJurginiskaiBefore`) and matches the Kaunas district municipality PDFs.
+The records describe the timetable **from 2026-10-01**. On 2026-10-02 they matched
+the Kaunas district municipality PDFs to the minute (workdays from 2026-10-01,
+weekends from 2026-10-03).
 
 Photos are a cross-check, not the source. A station board photo is cropped and a
 stop sign omits route information, so where a photo and the live data disagree, the
