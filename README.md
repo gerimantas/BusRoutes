@@ -72,11 +72,11 @@ Requires the `FIRECRAWL_API_KEY` repository secret.
 ## Features
 
 ### Last check line
-Under the tabs: `Tikrinta 09-26 19:15 — grafikas sutampa`, the last watcher run and
-its result, fetched from the `status` branch every 30 minutes while the app is open.
-It turns red when the check found a change, failed, or is older than 48 hours,
-which means the watcher stopped. Offline, the app shows the last result it
-received.
+Under the tabs: a tick and `Tikrinta 09-26 19:15` in green, the last watcher run,
+fetched from the `status` branch every 30 minutes while the app is open. It turns
+into a red cross when the check found a change, failed, or is older than 48 hours,
+which means the watcher stopped; the reason is in the tooltip and the screen-reader
+label. Offline, the app shows the last result it received.
 
 ### Dated timetable switch
 A timetable announced for a future date ships before that date. The old arrays

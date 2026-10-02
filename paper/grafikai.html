@@ -547,19 +547,25 @@
   }
 
   #check-status {
-    text-align: center;
-    padding: 3px 12px 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    /* The header's own 12px bottom padding sits below this line; matching it on
+       top centres the text between the tabs and the header's edge. */
+    padding: 12px 12px 0;
+    line-height: 1;
     font-size: 13px;
     font-weight: 600;
     letter-spacing: 0.3px;
+    white-space: nowrap;
+    color: var(--accent-go);
   }
 
-  header.theme-kaunas #check-status {
-    color: rgba(126, 200, 255, 0.6);
-  }
-
-  header.theme-jurginiskai #check-status {
-    color: rgba(245, 158, 11, 0.6);
+  #check-status svg {
+    width: 14px;
+    height: 14px;
+    flex: none;
   }
 
   header #check-status.warn {
@@ -1111,6 +1117,9 @@ const STATUS_URL = "https://raw.githubusercontent.com/gerimantas/BusRoutes/statu
 const STATUS_KEY = "checkStatus";
 const STATUS_STALE_H = 48;        // no run for two days means the watcher stopped
 const STATUS_REFETCH_MS = 30 * 60 * 1000;
+// Drawn inline so every phone shows the same mark (a text ✓ or ⚠ can turn into an emoji).
+const ICON_TICK = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.8"/></svg>';
+const ICON_CROSS = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>';
 let checkStatus = null;
 let statusFetchedAt = 0;
 try { checkStatus = JSON.parse(localStorage.getItem(STATUS_KEY)); } catch (e) {}
@@ -1132,29 +1141,35 @@ function loadCheckStatus(now) {
 function renderCheckStatus(now) {
   const el = document.getElementById("check-status");
   if (!el) return;
+  // One short line: an icon and when it was checked. The reason for a red line
+  // stays in the tooltip and for screen readers, not on screen.
+  const show = (label, reason, warn) => {
+    el.innerHTML = (warn ? ICON_CROSS : ICON_TICK) + `<span>${label}</span>`;
+    el.title = reason;
+    el.setAttribute("aria-label", `${label}: ${reason}`);
+    el.className = warn ? "warn" : "";
+  };
   if (!checkStatus) {
-    el.textContent = "Tikrinimo duomenų dar nėra";
-    el.className = "warn";
+    show("Netikrinta", "tikrinimo duomenų dar nėra", true);
     return;
   }
   const t = new Date(checkStatus.checked);
   const pad = n => String(n).padStart(2, "0");
   const when = `${pad(t.getMonth() + 1)}-${pad(t.getDate())} ${pad(t.getHours())}:${pad(t.getMinutes())}`;
-  let text = "grafikas sutampa";
+  let reason = "grafikas sutampa";
   let warn = false;
   if (checkStatus.result === "changed") {
-    text = "rastas pokytis, grafikas gali būti pasenęs";
+    reason = "rastas pokytis, grafikas gali būti pasenęs";
     warn = true;
   } else if (checkStatus.result !== "ok") {
-    text = "patikrinti nepavyko";
+    reason = "patikrinti nepavyko";
     warn = true;
   }
   if ((now - t) / 3600000 > STATUS_STALE_H) {
-    text += " · tikrinimas senas";
+    reason += " · tikrinimas senas";
     warn = true;
   }
-  el.textContent = `Tikrinta ${when} — ${text}`;
-  el.className = warn ? "warn" : "";
+  show(`Tikrinta ${when}`, reason, warn);
 }
 
 let lastVibratedTrip = "";
