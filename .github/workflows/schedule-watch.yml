@@ -1,6 +1,7 @@
 name: Schedule Watch
 
-# Checks the live timetable against what the app ships.
+# Checks the live timetable (autobusubilietai.lt search, krs.lt PDFs) against
+# what the app ships.
 # Opens a GitHub issue ONLY when something differs — GitHub emails the issue
 # to the repo owner, so a quiet day sends nothing at all.
 # Every run also publishes its result to the `status` branch; the app reads it
@@ -30,8 +31,10 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install firecrawl CLI
-        run: npm install -g firecrawl-cli
+      - name: Install firecrawl CLI and pypdf
+        run: |
+          npm install -g firecrawl-cli
+          pip install pypdf==6.19.0
 
       - name: Check the timetable
         id: check
@@ -53,7 +56,7 @@ jobs:
           diff_id=$(grep -v -e '^Checking against' -e '^App switches' -e 'rate limited' report.txt \
                       | sha1sum | cut -c1-12)
           {
-            echo "The live timetable on autobusubilietai.lt no longer matches the app."
+            echo "A timetable source no longer matches the app: autobusubilietai.lt (search) or krs.lt (municipality PDFs) — see the section with the difference."
             echo
             echo '```'
             cat report.txt

@@ -1,16 +1,20 @@
 """
 Checks the live timetable against what the app currently ships.
 
-Reads the departure/periodicity pairs out of paper/grafikai.html, fetches the same
-route from autobusubilietai.lt for a workday, a Saturday and a Sunday, and reports
-the difference.
+Reads the departure/periodicity pairs out of paper/grafikai.html and compares them
+with two sources:
+
+- autobusubilietai.lt search results for a workday, a Saturday and a Sunday —
+  every trip, intercity included, and the first place a new timetable shows up;
+- the route 106 PDFs on krs.lt — the municipality's own timetable, local trips
+  only, each named with the date it takes effect (see krs_pdf.py).
 
 Exit codes:
-    0 - no change (or the fetch produced nothing usable; see stderr)
-    1 - the live timetable differs from the app
-    2 - the fetch failed and no comparison could be made
+    0 - no change in either source
+    1 - a source differs from the app
+    2 - a source could not be checked, and nothing that was checked differs
 
-Requires the `firecrawl` CLI on PATH and FIRECRAWL_API_KEY in the environment.
+Requires the `firecrawl` CLI on PATH, FIRECRAWL_API_KEY in the environment, and pypdf.
 
 Usage:
     python scripts/check_schedule.py                 # human-readable report
@@ -28,6 +32,7 @@ import tempfile
 import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import krs_pdf  # noqa: E402
 from parse_firecrawl import parse  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -55,14 +60,21 @@ ROUTES = {
 
 TRIP = re.compile(r'\["(\d{2}:\d{2})",\s*(WORKDAYS|WEEKEND|ALL_DAYS),\s*"([^"]+)"\]')
 
+LOCAL = ('5', '106')   # platforms of route 106 trips; '12' and 'tm' are intercity
+RUNS_ON = {'WD': ('WORKDAYS', 'ALL_DAYS'),
+           'SAT': ('WEEKEND', 'ALL_DAYS'),
+           'SUN': ('WEEKEND', 'ALL_DAYS')}
+WEEKDAYS = {'WD': (0, 1, 2, 3, 4), 'SAT': (5,), 'SUN': (6,)}
 
-def app_schedule(array_name):
+
+def app_schedule(array_name, local_only=False):
     """Return {departure: periodicity} for one data array in grafikai.html."""
     with open(APP, encoding='utf-8') as fh:
         html = fh.read()
     start = html.index(f'const {array_name} = [')
     end = html.index('];', start)
-    return {m.group(1): m.group(2) for m in TRIP.finditer(html[start:end])}
+    return {m.group(1): m.group(2) for m in TRIP.finditer(html[start:end])
+            if not local_only or m.group(3) in LOCAL}
 
 
 def switch_date():
@@ -171,7 +183,11 @@ def live_schedule(url, dates, workdir, prefix):
 
     if not any(days.values()):
         return None
+    return periodicity(days)
 
+
+def periodicity(days):
+    """Return {departure: periodicity} from {'WD'|'SAT'|'SUN': parse() output}."""
     # A departure can appear under two route strings on different days
     # (the operator swaps the village it serves). Collapse to the time.
     by_time = {}
@@ -201,10 +217,65 @@ def diff(app, live):
     return added, removed, changed
 
 
-def main():
+def first_day(label, start):
+    """The first date on or after start that is a WD / SAT / SUN day."""
+    while start.weekday() not in WEEKDAYS[label]:
+        start += dt.timedelta(days=1)
+    return start
+
+
+def check_pdfs(switch, today=None, fetch=krs_pdf.fetch):
+    """Compare the krs.lt route 106 PDFs with the app's local trips.
+
+    Checks the PDF in force on the next workday, Saturday and Sunday, and the
+    first day of every PDF that starts later — an announced timetable is worth
+    knowing about before it runs. Returns (results, notes); raises when the page
+    or a PDF cannot be read, which the caller reports as a failed check.
+    """
+    today = today or dt.date.today()
+    pdfs = krs_pdf.list_pdfs(fetch(krs_pdf.PAGE).decode('utf-8', 'replace'))
+    if not pdfs:
+        raise ValueError('no route 106 PDFs linked from krs.lt')
+
+    starts = {today} | {p['start'] for p in pdfs if p['start'] > today}
+    if switch and switch > today:
+        starts.add(switch)
+    checks = sorted({(first_day(label, s), label) for s in starts for label in WEEKDAYS})
+
+    parsed, results, notes, done = {}, [], [], set()
+    for date, label in checks:
+        pdf = krs_pdf.pdf_for(pdfs, label, date)
+        if pdf is None:
+            raise ValueError(f'no PDF in force for {label} on {date}')
+        # The app shows its *Before arrays until SWITCH_DATE.
+        suffix = 'Before' if switch and date < switch else ''
+        if (pdf['url'], label, suffix) in done:
+            continue
+        done.add((pdf['url'], label, suffix))
+
+        if switch and date >= switch and pdf['start'] < switch:
+            # autobusubilietai.lt gets a new timetable before the municipality
+            # publishes its PDF; the PDF still in force describes the old one.
+            notes.append(f"no PDF yet for the timetable the app shows from {switch} ({label})")
+            continue
+
+        if pdf['url'] not in parsed:
+            parsed[pdf['url']] = krs_pdf.read_pdf(fetch(pdf['url']))
+        for direction, cfg in ROUTES.items():
+            app = app_schedule(cfg['array'] + suffix, local_only=True)
+            app_times = {t for t, per in app.items() if per in RUNS_ON[label]}
+            pdf_times = set(parsed[pdf['url']][direction])
+            results.append(dict(pdf=f"{pdf['kind']} from {pdf['start']}", day=label,
+                                direction=direction, trips=len(pdf_times),
+                                added=sorted(pdf_times - app_times),
+                                removed=sorted(app_times - pdf_times)))
+    return results, sorted(set(notes))
+
+
+def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument('--json', metavar='PATH', help='also write the diff as JSON')
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
 
     switch = switch_date()
     dates = next_dates(switch=switch)
@@ -243,6 +314,27 @@ def main():
                 print(f"  - {t}  gone (was {app[t]})")
             for t, was, now in changed:
                 print(f"  ~ {t}  {was} -> {now}")
+
+    # Lines below carry PDF start dates only, never the check date: the workflow
+    # hashes this report to tell one difference from another.
+    print("\nkrs.lt (municipality PDFs, route 106 trips only)")
+    try:
+        results, notes = check_pdfs(switch)
+    except Exception as exc:   # network, missing PDF, unreadable layout
+        print(f"  ! could not check: {exc}")
+        failed.append('krs.lt')
+    else:
+        report['krs.lt'] = dict(results=results, notes=notes)
+        for r in results:
+            where = f"{r['pdf']}, {r['day']}, {r['direction']}"
+            if not (r['added'] or r['removed']):
+                print(f"  {where}: no change ({r['trips']} trips)")
+                continue
+            any_change = True
+            print(f"  ~ {where}: in PDF only {', '.join(r['added']) or '-'}; "
+                  f"in app only {', '.join(r['removed']) or '-'}")
+        for note in notes:
+            print(f"  . {note}")
 
     if args.json:
         with open(args.json, 'w', encoding='utf-8') as fh:

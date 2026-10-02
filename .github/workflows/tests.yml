@@ -1,0 +1,34 @@
+name: Tests
+
+# Offline tests for the schedule watcher (tests/). Runs when the watcher, its
+# fixtures or the app data it reads change. No network, no secrets.
+
+on:
+  push:
+    paths:
+      - 'scripts/**'
+      - 'tests/**'
+      - 'paper/grafikai.html'
+      - '.github/workflows/tests.yml'
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6.0.3
+
+      - uses: actions/setup-python@v6.2.0
+        with:
+          python-version: '3.12'
+
+      # Pinned: the PDF tests compare against text this version extracts.
+      - name: Install pypdf
+        run: pip install pypdf==6.19.0
+
+      - name: Run tests
+        run: python -m unittest discover -s tests -v

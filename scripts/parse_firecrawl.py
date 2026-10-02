@@ -25,7 +25,8 @@ TIME = re.compile(r'^\*\*(\d{2}:\d{2})\*\* \\- (\d{2}:\d{2})$')
 
 def parse(path):
     """Return {(departure, route): record} for every real trip card in the page."""
-    lines = [l.rstrip('\n') for l in io.open(path, encoding='utf-8')]
+    with io.open(path, encoding='utf-8') as fh:
+        lines = [l.rstrip('\n') for l in fh]
     trips = {}
     for i, line in enumerate(lines):
         m = TIME.match(line.strip())
