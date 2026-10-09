@@ -707,10 +707,72 @@ const WORKDAYS = [true,  true,  true,  true,  true,  false, false];
 const WEEKEND  = [false, false, false, false, false, true,  true ];
 const ALL_DAYS = [true,  true,  true,  true,  true,  true,  true ];
 
+// Timetable in force until SWITCH_DATE; the arrays below it apply from that date.
+// Delete the *Before arrays and SWITCH_DATE at the next timetable refresh.
+const SWITCH_DATE = new Date(2026, 9, 12);  // 2026-10-12 00:00 local time
+
+const dataKaunasBefore = [
+  ["05:00", WORKDAYS, "5"],    // Skriaudziai
+  ["05:50", ALL_DAYS, "5"],    // Skriaudziai
+  ["05:55", WORKDAYS, "5"],    // Jurginiskiai-Skriaudziai
+  ["06:50", WORKDAYS, "5"],    // Tirkiliskiai-Jurginiskiai
+  ["08:00", ALL_DAYS, "12"],   // tarpmiestinis, Marijampole-Vilkaviskis-Kybartai-Vistytis
+  ["08:30", WEEKEND,  "5"],    // Garliava-Jurginiskiai
+  ["09:05", WORKDAYS, "5"],    // Garliava-Jurginiskiai
+  ["09:55", WORKDAYS, "5"],    // Jurginiskiai-Skriaudziai
+  ["10:50", ALL_DAYS, "5"],    // Garliava-Jurginiskiai
+  ["11:35", ALL_DAYS, "12"],   // tarpmiestinis, Marijampole-Vilkaviskis
+  ["12:00", ALL_DAYS, "12"],   // tarpmiestinis, Marijampole
+  ["12:15", WORKDAYS, "5"],    // Jurginiskiai-Skriaudziai
+  ["12:35", ALL_DAYS, "5"],    // Jurginiskiai-Skriaudziai (Pr-Pn) / Garliava-Jurginiskiai (S-S)
+  ["12:40", ALL_DAYS, "12"],   // tarpmiestinis, Marijampole-Vilkaviskis
+  ["13:30", WORKDAYS, "5"],    // Jurginiskiai-Skriaudziai
+  ["14:00", WORKDAYS, "5"],    // Jurginiskiai-Skriaudziai
+  ["14:50", WORKDAYS, "5"],    // Jurginiskiai-Skriaudziai
+  ["15:30", ALL_DAYS, "5"],    // Jurginiskiai-Skriaudziai
+  ["16:00", WORKDAYS, "5"],    // Garliava-Jurginiskiai
+  ["16:25", WORKDAYS, "5"],    // Garliava-Jurginiskiai
+  ["16:50", ALL_DAYS, "12"],   // tarpmiestinis, Marijampole-Vilkaviskis
+  ["17:30", WORKDAYS, "5"],    // Jurginiskiai-Skriaudziai
+  ["18:40", WORKDAYS, "5"],    // Jurginiskiai-Skriaudziai
+  ["19:30", WORKDAYS, "5"],    // Garliava-Jurginiskiai
+];
+
+const dataJurginiskaiBefore = [
+  ["06:03", WORKDAYS, "106"],   // Skriaudziai
+  ["06:53", WORKDAYS, "106"],   // Skriaudziai
+  ["06:57", WEEKEND,  "106"],   // Skriaudziai-Jurginiskiai
+  ["07:17", WORKDAYS, "106"],   // Skriaudziai-Jurginiskiai
+  ["08:04", WORKDAYS, "106"],   // Skriaudziai-Jurginiskiai
+  ["08:36", WORKDAYS, "106"],   // Jurginiskiai-Garliava
+  ["09:20", WEEKEND,  "106"],   // Jurginiskiai-Garliava
+  ["09:28", ALL_DAYS, "tm"],    // tarpmiestinis, Vilkaviskis-Marijampole
+  ["10:06", WORKDAYS, "106"],   // Jurginiskiai-Garliava
+  ["11:06", ALL_DAYS, "tm"],    // tarpmiestinis, Marijampole
+  ["11:18", WORKDAYS, "106"],   // Skriaudziai-Jurginiskiai
+  ["11:45", WEEKEND,  "106"],   // Jurginiskiai-Garliava
+  ["11:46", WORKDAYS, "106"],   // Jurginiskiai-Garliava
+  ["13:38", ALL_DAYS, "106"],   // Skriaudziai-Jurginiskiai (Pr-Pn) / Jurginiskiai-Garliava (S-S)
+  ["14:03", WORKDAYS, "106"],   // Skriaudziai-Jurginiskiai-Tirkiliskiai
+  ["14:48", ALL_DAYS, "tm"],    // tarpmiestinis, Vilkaviskis-Marijampole
+  ["14:58", WORKDAYS, "106"],   // Skriaudziai-Jurginiskiai
+  ["15:23", WORKDAYS, "106"],   // Skriaudziai-Jurginiskiai
+  ["16:13", WORKDAYS, "106"],   // Skriaudziai-Jurginiskiai
+  ["16:53", ALL_DAYS, "106"],   // Skriaudziai-Jurginiskiai
+  ["17:01", WORKDAYS, "106"],   // Jurginiskiai-Garliava
+  ["17:06", ALL_DAYS, "tm"],    // tarpmiestinis, Vilkaviskis-Marijampole
+  ["17:46", WORKDAYS, "106"],   // Jurginiskiai-Garliava
+  ["19:03", WORKDAYS, "106"],   // Skriaudziai-Jurginiskiai
+  ["20:03", WORKDAYS, "106"],   // Skriaudziai-Jurginiskiai
+  ["20:24", ALL_DAYS, "tm"],    // tarpmiestinis, Vistytis-Kybartai-Vilkaviskis-Marijampole
+  ["20:26", WORKDAYS, "106"],   // Jurginiskiai-Garliava
+];
+
 const dataKaunas = [
   ["05:00", WORKDAYS, "5"],    // Skriaudziai
   ["05:50", ALL_DAYS, "5"],    // Skriaudziai
   ["05:55", WORKDAYS, "5"],    // Jurginiskiai-Skriaudziai
+  ["06:45", WORKDAYS, "5"],    // Jurginiskiai-Skriaudziai
   ["06:50", WORKDAYS, "5"],    // Tirkiliskiai-Jurginiskiai
   ["08:00", ALL_DAYS, "12"],   // tarpmiestinis, Marijampole-Vilkaviskis-Kybartai-Vistytis
   ["08:30", WEEKEND,  "5"],    // Garliava-Jurginiskiai
@@ -812,6 +874,8 @@ function precalculateTripMinutes(data) {
 }
 precalculateTripMinutes(dataKaunas);
 precalculateTripMinutes(dataJurginiskai);
+precalculateTripMinutes(dataKaunasBefore);
+precalculateTripMinutes(dataJurginiskaiBefore);
 
 // Gauss algorithm — returns [month, day] of Easter Sunday for given year
 function easterDate(year) {
@@ -1170,8 +1234,9 @@ function refresh() {
   const now = new Date();
   checkYearUpdate(now);
   updateClock(now);
-  renderList(dataKaunas, "list-kaunas", now);
-  renderList(dataJurginiskai, "list-jurginiskai", now);
+  const beforeSwitch = now < SWITCH_DATE;
+  renderList(beforeSwitch ? dataKaunasBefore : dataKaunas, "list-kaunas", now);
+  renderList(beforeSwitch ? dataJurginiskaiBefore : dataJurginiskai, "list-jurginiskai", now);
   renderCheckStatus(now);
   loadCheckStatus(now);
   

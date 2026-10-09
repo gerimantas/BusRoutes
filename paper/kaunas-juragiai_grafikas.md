@@ -1,10 +1,8 @@
-# Kaunas → Juragiai — grafikas (galioja nuo 2026-10-01, patikrinta 2026-10-02)
+# Kaunas → Juragiai — grafikas (galioja nuo 2026-10-12, patikrinta 2026-10-09)
 
-Šaltinis: `autobusubilietai.lt` paieška, patikrinta trims dienoms
-(2026-10-01 ketvirtadienis, 2026-10-03 šeštadienis, 2026-10-04 sekmadienis).
-Tie patys reisai sutapo ir su 2026-10-05, 2026-10-10, 2026-10-11.
-Kryžminė patikra: Kauno autobusų stoties tablo nuotrauka (5 aikštelė).
-krs.lt route 106 PDF (dd from 2026-10-01, šs from 2026-10-03): matches, checked 2026-10-02.
+Source: `autobusubilietai.lt` search, scraped by Schedule Watch for WD 2026-10-15, SAT 2026-10-17, SUN 2026-10-18 and the week after (2026-10-09).
+Start date: 2026-10-12, the first day the search shows it (no earlier day showed the old one in full, so it may have started sooner); no krs.lt PDF names it yet.
+Not cross-checked against a photo.
 
 Periodiškumas: `12345` = Pr–Pn, `ŠS` = Š–S, `1234567` = visos
 
@@ -36,7 +34,7 @@ Periodiškumas: `12345` = Pr–Pn, `ŠS` = Š–S, `1234567` = visos
 | 18:40 | 19:26 | 12345   | 5  | Kaunas-Jonučiai-Jurginiškiai-Skriaudžiai | 1,55 € |
 | 19:30 | 20:13 | 12345   | 5  | Kaunas-Jonučiai-Garliava-Jurginiškiai | 1,55 € |
 
-**Iš viso:** 25 reisai — 20 vietiniai (5 aikštelė) + 5 tarpmiestiniai (12 aikštelė)
+**Iš viso:** 25 reisai — 20 vietinių (5 aikštelė) + 5 tarpmiestiniai (12 aikštelė)
 
 ## Pastabos
 
