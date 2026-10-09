@@ -176,8 +176,13 @@ def scrape(url, date, workdir, tag):
     return None
 
 
-def live_schedule(url, dates, workdir, prefix):
-    """Return {departure: periodicity} derived from three scraped days."""
+def live_schedule(url, dates, workdir, prefix, keep=None):
+    """Return {departure: periodicity} derived from three scraped days.
+
+    keep, when given, receives each day's trips as {label: {date, trips}}, with
+    trips as [departure, arrival, route, price] — draft_update.py builds the
+    data arrays from them.
+    """
     days = {}
     for label, date in dates.items():
         path = scrape(url, date, workdir, f'{prefix}-{label}')
@@ -187,6 +192,11 @@ def live_schedule(url, dates, workdir, prefix):
 
     if not any(days.values()):
         return None
+    if keep is not None:
+        for label, trips in days.items():
+            keep[label] = dict(date=str(dates[label]),
+                               trips=[[r['dep'], r['arr'], r['route'], r['price']]
+                                      for r in trips.values()])
     return periodicity(days)
 
 
@@ -301,12 +311,15 @@ def main(argv=None):
         print(f"App switches timetable on {switch}; comparing with the "
               f"{'old' if suffix else 'new'} one")
 
-    report, failed, any_change = {}, [], False
+    report = dict(dates={k: str(v) for k, v in dates.items()},
+                  switch=str(switch) if switch else None)
+    failed, any_change = [], False
     with tempfile.TemporaryDirectory() as workdir:
         for name, cfg in ROUTES.items():
             print(f"\n{name}")
             app = app_schedule(cfg['array'] + suffix)
-            live = live_schedule(cfg['url'], dates, workdir, name)
+            days = {}
+            live = live_schedule(cfg['url'], dates, workdir, name, days)
 
             if live is None:
                 print("  ! could not fetch — skipped")
@@ -316,7 +329,8 @@ def main(argv=None):
             added, removed, changed = diff(app, live)
             report[name] = dict(app_count=len(app), live_count=len(live),
                                 added=added, removed=removed,
-                                changed=[dict(time=t, was=w, now=n) for t, w, n in changed])
+                                changed=[dict(time=t, was=w, now=n) for t, w, n in changed],
+                                days=days)
 
             if not (added or removed or changed):
                 print(f"  no change ({len(app)} trips)")

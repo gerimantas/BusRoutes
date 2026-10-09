@@ -419,7 +419,7 @@ class ExitCodes(unittest.TestCase):
 
     def run_main(self, live='same', pdf='same'):
         """Return (exit code, krs.lt result, printed report)."""
-        def fake_live(url, dates, workdir, name):
+        def fake_live(url, dates, workdir, name, keep=None):
             if live == 'fail' and name == 'juragiai-kaunas':
                 return None
             app = cs.app_schedule(cs.ROUTES[name]['array'])

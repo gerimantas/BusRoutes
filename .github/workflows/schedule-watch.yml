@@ -8,17 +8,27 @@ name: Schedule Watch
 #      check opens its own "krs.lt PDFs" issue and never touches the app status.
 # Opens a GitHub issue ONLY when something needs a look — GitHub emails the
 # issue to the repo owner, so a quiet day sends nothing at all.
+# A primary-source change is also drafted as a pull request (scripts/draft_update.py)
+# when the data passes its checks: the owner merges it to publish, from any device.
+# The watcher itself never pushes to main.
 # Every run also publishes the primary result to the `status` branch; the app
 # reads it and shows the rider when the timetable was last checked.
 
 on:
   schedule:
     - cron: '0 4 * * *'   # 07:00 Vilnius summer, 06:00 winter
+  push:                    # re-check at once when an update is merged
+    branches: [main]
+    paths: ['paper/grafikai.html']
   workflow_dispatch:       # manual run from the Actions tab
 
 permissions:
-  contents: write         # push status.json to the `status` branch
+  contents: write         # push status.json and the schedule-update branch
   issues: write
+  pull-requests: write
+
+concurrency:
+  group: schedule-watch
 
 jobs:
   check:
@@ -52,19 +62,22 @@ jobs:
           # the JSON report (ok, changed, failed or skipped).
           krs=$(jq -r '."krs.lt".result // "unknown"' diff.json 2>/dev/null || echo unknown)
           echo "krs=$krs" >> "$GITHUB_OUTPUT"
-          set -e
-          cat report.txt
-
-      - name: Open an issue when the timetable changed
-        if: steps.check.outputs.exit_code == '1'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
           # Identify the difference itself, not the run: the dates line moves daily.
           # Only the primary section counts; krs.lt has its own issue.
           diff_id=$(sed '/^krs\.lt (municipality/,$d' report.txt \
                       | grep -v -e '^Checking against' -e '^App switches' -e 'rate limited' \
                       | sha1sum | cut -c1-12)
+          echo "diff_id=$diff_id" >> "$GITHUB_OUTPUT"
+          set -e
+          cat report.txt
+
+      - name: Open an issue when the timetable changed
+        id: issue
+        if: steps.check.outputs.exit_code == '1'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          diff_id: ${{ steps.check.outputs.diff_id }}
+        run: |
           {
             echo "autobusubilietai.lt (the primary source) no longer matches the app — see the direction with the difference."
             echo
@@ -84,6 +97,7 @@ jobs:
           open=$(gh issue list --state open --search "Schedule changed in:title" \
                    --json number --jq '.[0].number // empty')
           if [ -n "$open" ]; then
+            echo "number=$open" >> "$GITHUB_OUTPUT"
             if gh issue view "$open" --json body,comments --jq '.body, .comments[].body' \
                  | grep -q "diff:$diff_id"; then
               echo "Issue #$open already reports this difference — nothing to add."
@@ -93,13 +107,82 @@ jobs:
             exit 0
           fi
 
-          gh issue create \
-            --title "Schedule changed — $(date -u '+%Y-%m-%d')" \
-            --body-file body.md \
-            --label "schedule-change" \
-            || gh issue create \
-                 --title "Schedule changed — $(date -u '+%Y-%m-%d')" \
-                 --body-file body.md
+          url=$(gh issue create \
+                  --title "Schedule changed — $(date -u '+%Y-%m-%d')" \
+                  --body-file body.md \
+                  --label "schedule-change" \
+                || gh issue create \
+                     --title "Schedule changed — $(date -u '+%Y-%m-%d')" \
+                     --body-file body.md)
+          echo "number=${url##*/}" >> "$GITHUB_OUTPUT"
+
+      - name: Draft the update as a pull request
+        if: steps.check.outputs.exit_code == '1' && steps.issue.outputs.number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+          ISSUE: ${{ steps.issue.outputs.number }}
+          DIFF_ID: ${{ steps.check.outputs.diff_id }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          # Each attempt costs a dozen scrapes, so a difference already drafted or
+          # already refused is not tried again; a different one is.
+          pr=$(gh pr list --state open --head schedule-update --json number --jq '.[0].number // empty')
+          if [ -n "$pr" ] && gh pr view "$pr" --json body --jq .body | grep -q "diff:$DIFF_ID"; then
+            echo "Pull request #$pr already carries this update."
+            exit 0
+          fi
+          if gh issue view "$ISSUE" --json comments --jq '.comments[].body' | grep -q "draft:$DIFF_ID"; then
+            echo "Drafting this difference was refused before; see issue #$ISSUE."
+            exit 0
+          fi
+
+          set +e
+          python scripts/draft_update.py diff.json --body pr.md --issue "$ISSUE" --diff-id "$DIFF_ID"
+          code=$?
+          if [ "$code" = 0 ]; then
+            # The checks a person runs before a deploy: the app script parses and
+            # the watcher's tests still pass against the edited app.
+            python scripts/draft_update.py --extract-js app.js \
+              && node --check app.js \
+              && python -m unittest discover -s tests
+            if [ $? != 0 ]; then
+              code=4
+              echo "The drafted app failed its checks; see [the run]($RUN_URL)." > pr.md
+            fi
+          fi
+          set -e
+
+          if [ "$code" != 0 ]; then
+            {
+              echo "Could not draft the update as a pull request:"
+              echo
+              cat pr.md 2>/dev/null
+              echo
+              echo "**To update by hand:** open the project in Claude Code and say \`atnaujink grafikus\`."
+              echo
+              echo "<!-- draft:$DIFF_ID -->"
+            } > note.md
+            gh issue comment "$ISSUE" --body-file note.md
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -q -B schedule-update
+          git add paper/grafikai.html paper/kaunas-juragiai_grafikas.md \
+                  paper/juragiai-kaunas_grafikas.md sw.js
+          start=$(grep -o -m1 'Starts [0-9-]*' pr.md | cut -d' ' -f2)
+          git commit -q -m "Timetable update from $start, drafted by Schedule Watch"
+          git push -q --force origin schedule-update
+          if [ -n "$pr" ]; then
+            gh pr edit "$pr" --title "Timetable update from $start" --body-file pr.md
+          else
+            url=$(gh pr create --base main --head schedule-update \
+                    --title "Timetable update from $start" --body-file pr.md)
+            pr=${url##*/}
+          fi
+          gh issue comment "$ISSUE" --body "The update is ready as pull request #$pr. Look over its table and merge it to publish; the app switches to the new timetable on $start by itself."
 
       - name: Open an issue when the check itself failed
         if: steps.check.outputs.exit_code == '2'

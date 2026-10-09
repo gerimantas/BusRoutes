@@ -2,7 +2,9 @@
 
 ## schedule-watch.yml
 
-Runs daily at 04:00 UTC (07:00 Vilnius summer, 06:00 winter) and on manual dispatch.
+Runs daily at 04:00 UTC (07:00 Vilnius summer, 06:00 winter), on manual dispatch,
+and on a push to main that changes `paper/grafikai.html` (so a merged update is
+re-checked at once).
 
 Compares the departure times in `paper/grafikai.html` with two sources, in order
 of priority:
@@ -31,8 +33,22 @@ Without it every run files a "could not run" issue.
 
 ### Acting on a change
 
-Open the project in Claude Code and say `atnaujink grafikus`. The skill at
+A primary change is also drafted as a pull request: `scripts/draft_update.py`
+rebuilds the data arrays from the scrape, scrapes the week after to confirm it,
+scans the search day by day for the start date, and keeps the current timetable
+until then (`SWITCH_DATE`). The drafted app must pass `node --check` and the tests
+before the branch `schedule-update` is force-pushed and the PR opened or updated;
+the issue gets a comment with its number. Merging the PR publishes the app and
+closes the issue. A difference already drafted or refused is not tried again (each
+try costs about a dozen scrapes).
+
+When the draft is refused, the issue comment says why. Then open the project in
+Claude Code and say `atnaujink grafikus`; the skill at
 `.claude/skills/grafikai/SKILL.md` describes the refresh procedure.
+
+PRs opened with `GITHUB_TOKEN` do not trigger `tests.yml`, which is why the watcher
+runs the tests itself before opening one. Needs "Allow GitHub Actions to create and
+approve pull requests" in the repo's Actions settings (on as of 2026-10-09).
 
 ## tests.yml
 

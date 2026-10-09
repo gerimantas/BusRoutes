@@ -61,9 +61,13 @@ daily at 04:00 UTC. It reads two sources, in order of priority:
 - Publishes the primary result (`ok`, `changed` or `failed`, with the time) to the
   `status` branch. The app shows it to the rider, see [Last check line](#last-check-line).
 
-The watcher only reports. It never edits the app, because a scrape can return a
-partial list. To apply a change, open the project in Claude Code and say
-`atnaujink grafikus`.
+A primary difference is also drafted as a pull request (`scripts/draft_update.py`)
+when the data passes its checks: the same timetable a week later, 5 intercity trips
+each way, only the three periodicities, and a start date found by scanning the
+search day by day. The draft keeps the current timetable until that date
+(`SWITCH_DATE`), so merging it early is safe. The watcher never pushes to main —
+a scrape can return a partial list, so a person merges. When it refuses, the issue
+says why; then open the project in Claude Code and say `atnaujink grafikus`.
 
 Requires the `FIRECRAWL_API_KEY` repository secret.
 
