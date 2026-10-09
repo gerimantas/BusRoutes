@@ -6,26 +6,28 @@ The daily watcher checks both in CI, ranked: autobusubilietai.lt is primary (exi
 code, app status "Tikrinta …", the data the app is updated from); the krs.lt PDFs
 are secondary, fetched via firecrawl from an LT IP, and open their own "krs.lt PDFs"
 issue without touching the app status. A route 106 PDF with an unreadable file name
-fails the krs.lt check. 43 offline tests pass on GitHub. Header redesigned (one-line
-status with icon, transparent tabs, thin glow). Cache `tvarkarastis-v30` live.
+fails the krs.lt check. Cache `tvarkarastis-v30` live.
+
+On a primary change the watcher also drafts the update as a pull request
+(`scripts/draft_update.py`, branch `schedule-update`): arrays rebuilt from the
+scrape, confirmed a week later, start date found by a day-by-day scan and set as
+`SWITCH_DATE`. The user merges it from any device; a refusal is commented on the
+issue. Tested end to end on GitHub 2026-10-09 (PR #8, cleaned up). 58 offline tests.
 
 ## Next Tasks
-- Decide whether the watcher should draft the timetable update as a pull request
-  (user approves by merging, no PC needed). Proposed 2026-10-02, not yet agreed;
-  needs a script that turns the scrape into data arrays. Archive S4.
-- Move `setup-node@v4` / `upload-artifact@v4` off the deprecated Node 20 runtime.
+- Move `setup-node@v4` / `upload-artifact@v4` off the deprecated Node 20 runtime
+  (`.github/workflows/schedule-watch.yml`).
 
 ## Done Log
+
+### 2026-10-09 (S5)
+- Watcher drafts a timetable change as a PR (`draft_update.py`); tested on GitHub
+- `tests.yml` no longer runs on pull requests
 
 ### 2026-10-02 (S4)
 - krs.lt PDFs checked in CI through firecrawl `rawBase64`; unreadable 106 PDF names flagged
 - Source priority: autobusubilietai.lt primary, krs.lt secondary with its own issue
 - App header: icon status line, transparent tabs, thinner glow, red filter button (v30)
-
-### 2026-10-02
-- October timetable verified against krs.lt PDFs; September arrays and `SWITCH_DATE` removed
-- Watcher checks krs.lt PDFs as a second source (`scripts/krs_pdf.py`); skipped in CI (geo-block)
-- 33 offline tests with real fixtures + `tests.yml` CI
 
 ## Key Facts
 - Live: https://gerimantas.github.io/BusRoutes/paper/grafikai.html
@@ -61,7 +63,11 @@ Full procedure: `.claude/skills/grafikai/SKILL.md`
 - **PR-based change notification (removed 2026-09-02).** The weekly workflow filed
   pull requests against `web/`, which is not deployed and which nobody watched. Two
   August schedule changes went unnoticed. Notification now goes through GitHub
-  issues, which email the owner.
+  issues, which email the owner. (The 2026-10-09 PR draft is not a return to this:
+  the issue still notifies, and the PR targets `paper/` on main.)
+- **`pull_request` trigger in `tests.yml` (2026-10-09).** On the PR the watcher opened
+  with `GITHUB_TOKEN`, GitHub created a run that failed at start-up with no jobs. The
+  watcher runs the tests itself; do not add the trigger back.
 - **Bash heredocs for edit scripts.** Regex backslashes (`\\-`, `\s`) get mangled by
   the shell; the pattern then matches nothing and the script reports zero results
   as though the data were empty. Hit again 2026-10-02 with Python `\\n` and `\`
@@ -83,14 +89,24 @@ Full procedure: `.claude/skills/grafikai/SKILL.md`
   only (1 = changed, 2 = could not check); krs.lt verdict in `--json` as `krs.lt.result`
 - `scripts/parse_firecrawl.py` — parses firecrawl output into a trip table
 - `scripts/krs_pdf.py` — finds and reads the route 106 PDFs on krs.lt
-- `tests/test_check_schedule.py` + `tests/fixtures/` — offline watcher tests;
-  fixtures test logic, keep them when the timetable changes
+- `scripts/draft_update.py` — turns a watcher report into the edited app, records and
+  `sw.js` for a PR; exit 0 drafted, 2 nothing to draft, 3 refused
+- `tests/test_check_schedule.py`, `tests/test_draft_update.py` + `tests/fixtures/` —
+  offline tests; fixtures test logic, keep them when the timetable changes
 - `.github/workflows/schedule-watch.yml` — daily watcher: "Schedule changed" / "could
   not run" issues (primary), "krs.lt PDFs" issue (secondary); force-pushes
-  `status.json` to the `status` branch (read by the app)
-- `.github/workflows/tests.yml` — runs the tests on changes to scripts, tests, app
+  `status.json` to the `status` branch (read by the app); drafts the update PR
+- `.github/workflows/tests.yml` — runs the tests on pushes changing scripts, tests, app
 
 ## Archive
+
+### Session 2026-10-09 (S5) — watcher drafts the timetable update as a pull request
+
+- **Done:** live check: no change (both sources match); stale krs.lt issue #6 (one-off firecrawl 500) closed. New `draft_update.py`: on a primary change it rebuilds the arrays from the scrape, confirms them a week later, scans the search day by day for the start date (krs.lt PDF date when it fits), keeps current arrays as `*Before` + `SWITCH_DATE`, edits records + `sw.js`. Workflow runs `node --check` + tests, force-pushes `schedule-update`, opens/updates the PR ("Closes #N"), comments on the issue; refusals go to the issue. Watcher re-runs on a push to main touching the app. 58 tests.
+- **Decided / overturned:** user agreed to the PR draft (S4 proposal). Overturns "watcher only reports": it still never pushes to main; the user merges. `tests.yml` lost its `pull_request` trigger (bot PR got a start-up-failed run, cause not established).
+- **Code:** `scripts/draft_update.py` (new), `scripts/check_schedule.py` (`live_schedule(keep=)`, report `dates`/`switch`/`days`), `tests/test_draft_update.py` (15), 2 record fixtures, `schedule-watch.yml`, `tests.yml`, READMEs. Commits `c6b732e`, `5535e01`. Local only: `CLAUDE.md`, grafikai `SKILL.md` (PR flow, unmerged-PR behaviour, end-to-end test recipe).
+- **Entry point:** `python scripts/draft_update.py diff.json --body pr.md`; GitHub e2e: throwaway branch + `gh workflow run schedule-watch.yml --ref <branch>` (run 37892208195 → issue #7, PR #8; repeat run added nothing; cleaned up, status ok).
+- **Not measured:** a real timetable change through the PR path; a refusal comment on GitHub; Node 20 deprecation.
 
 ### Session 2026-10-02 (S4) — krs.lt PDFs checked in CI, source priority, header redesign
 
