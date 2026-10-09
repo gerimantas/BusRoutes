@@ -10,7 +10,11 @@ on:
       - 'tests/**'
       - 'paper/grafikai.html'
       - '.github/workflows/tests.yml'
-  pull_request:
+  # No pull_request trigger: the only pull requests here are the ones Schedule
+  # Watch opens with GITHUB_TOKEN, and on those GitHub creates a run that fails
+  # at start-up with no jobs (2026-10-09, PR #8) — a red mark on a good draft.
+  # The watcher runs these tests itself before opening the PR, and the merge
+  # push runs them again.
   workflow_dispatch:
 
 permissions:

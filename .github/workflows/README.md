@@ -46,15 +46,19 @@ When the draft is refused, the issue comment says why. Then open the project in
 Claude Code and say `atnaujink grafikus`; the skill at
 `.claude/skills/grafikai/SKILL.md` describes the refresh procedure.
 
-PRs opened with `GITHUB_TOKEN` do not trigger `tests.yml`, which is why the watcher
-runs the tests itself before opening one. Needs "Allow GitHub Actions to create and
-approve pull requests" in the repo's Actions settings (on as of 2026-10-09).
+On a PR opened with `GITHUB_TOKEN`, GitHub creates a `tests.yml` run that fails at
+start-up with no jobs (seen 2026-10-09 on test PR #8; cause not established), so
+`tests.yml` has no `pull_request` trigger and the watcher runs the tests itself
+before opening one. Needs "Allow GitHub Actions to create and approve pull
+requests" in the repo's Actions settings (on as of 2026-10-09). Tested end to end
+on 2026-10-09 from a throwaway branch with one trip removed: issue, PR, a repeat
+run that added nothing, then cleaned up.
 
 ## tests.yml
 
 Runs the offline watcher tests (`python -m unittest discover -s tests -v`) on pushes
-that change `scripts/`, `tests/`, `paper/grafikai.html` or `tests.yml`, on every pull
-request, and on manual dispatch.
+that change `scripts/`, `tests/`, `paper/grafikai.html` or `tests.yml`, and on manual
+dispatch. Not on pull requests — see "Acting on a change" above.
 
 ## Removed workflows
 
