@@ -2,11 +2,12 @@
 
 ## Status
 Active. The app carries only the October route 106 timetable; both sources match it.
-The daily watcher checks both in CI, ranked: autobusubilietai.lt is primary (exit
-code, app status "Tikrinta …", the data the app is updated from); the krs.lt PDFs
-are secondary, fetched via firecrawl from an LT IP, and open their own "krs.lt PDFs"
-issue without touching the app status. A route 106 PDF with an unreadable file name
-fails the krs.lt check. Cache `tvarkarastis-v30` live.
+The watcher runs monthly (1st, 04:00 UTC; since 2026-10-18, was daily) and checks
+both sources in CI, ranked: autobusubilietai.lt is primary (exit code, app status
+"Tikrinta …", red after 35 days without a run, the data the app is updated from);
+the krs.lt PDFs are secondary, fetched via firecrawl from an LT IP, and open their
+own "krs.lt PDFs" issue without touching the app status. A route 106 PDF with an
+unreadable file name fails the krs.lt check. Cache `tvarkarastis-v31` live.
 
 On a primary change the watcher also drafts the update as a pull request
 (`scripts/draft_update.py`, branch `schedule-update`): arrays rebuilt from the
@@ -20,14 +21,12 @@ issue. Tested end to end on GitHub 2026-10-09 (PR #8, cleaned up). 58 offline te
 
 ## Done Log
 
+### 2026-10-18 (S6)
+- Watcher monthly (1st, 04:00 UTC); app status stale after 35 days; cache v31
+
 ### 2026-10-09 (S5)
 - Watcher drafts a timetable change as a PR (`draft_update.py`); tested on GitHub
 - `tests.yml` no longer runs on pull requests
-
-### 2026-10-02 (S4)
-- krs.lt PDFs checked in CI through firecrawl `rawBase64`; unreadable 106 PDF names flagged
-- Source priority: autobusubilietai.lt primary, krs.lt secondary with its own issue
-- App header: icon status line, transparent tabs, thinner glow, red filter button (v30)
 
 ## Key Facts
 - Live: https://gerimantas.github.io/BusRoutes/paper/grafikai.html
@@ -93,12 +92,20 @@ Full procedure: `.claude/skills/grafikai/SKILL.md`
   `sw.js` for a PR; exit 0 drafted, 2 nothing to draft, 3 refused
 - `tests/test_check_schedule.py`, `tests/test_draft_update.py` + `tests/fixtures/` —
   offline tests; fixtures test logic, keep them when the timetable changes
-- `.github/workflows/schedule-watch.yml` — daily watcher: "Schedule changed" / "could
+- `.github/workflows/schedule-watch.yml` — monthly watcher: "Schedule changed" / "could
   not run" issues (primary), "krs.lt PDFs" issue (secondary); force-pushes
   `status.json` to the `status` branch (read by the app); drafts the update PR
 - `.github/workflows/tests.yml` — runs the tests on pushes changing scripts, tests, app
 
 ## Archive
+
+### Session 2026-10-18 (S6) — watcher runs monthly instead of daily
+
+- **Done:** Schedule Watch cron moved from daily to the 1st of each month, 04:00 UTC (user request). App's "Tikrinta" line turns red after 35 days instead of 48 h, so a normal month between runs stays green. Cache v31 live. Docs (READMEs, `CLAUDE.md`, grafikai `SKILL.md`) say monthly. Push-triggered run on e0f9173: tests, watcher and Pages all success, `status.json` ok.
+- **Decided / overturned:** overturns "daily watcher". Trade-off accepted: a timetable change is noticed up to a month late; a manual run (Actions → Schedule Watch → Run workflow) stays available.
+- **Code:** `.github/workflows/schedule-watch.yml` (cron), `paper/grafikai.html` (`STATUS_STALE_H = 35 * 24`), `sw.js` → v31, `README.md`, `.github/workflows/README.md`. Commit `e0f9173`. Local only: `CLAUDE.md`, grafikai `SKILL.md`.
+- **Entry point:** `gh workflow run schedule-watch.yml`
+- **Not measured:** the first monthly cron run (2026-11-01); whether GitHub's 60-day inactivity rule disables a monthly schedule; Node 20 deprecation still open.
 
 ### Session 2026-10-09 (S5) — watcher drafts the timetable update as a pull request
 
