@@ -7,7 +7,7 @@ name: Schedule Watch
 #   2. krs.lt route 106 PDFs — the secondary source. A difference or a failed
 #      check opens its own "krs.lt PDFs" issue and never touches the app status.
 # Opens a GitHub issue ONLY when something needs a look — GitHub emails the
-# issue to the repo owner, so a quiet day sends nothing at all.
+# issue to the repo owner, so a quiet month sends nothing at all.
 # A primary-source change is also drafted as a pull request (scripts/draft_update.py)
 # when the data passes its checks: the owner merges it to publish, from any device.
 # The watcher itself never pushes to main.
@@ -16,7 +16,7 @@ name: Schedule Watch
 
 on:
   schedule:
-    - cron: '0 4 * * *'   # 07:00 Vilnius summer, 06:00 winter
+    - cron: '0 4 1 * *'   # 1st of each month, 07:00 Vilnius summer, 06:00 winter
   push:                    # re-check at once when an update is merged
     branches: [main]
     paths: ['paper/grafikai.html']

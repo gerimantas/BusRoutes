@@ -41,7 +41,7 @@ Sources:
 ### Keeping it current
 
 [.github/workflows/schedule-watch.yml](.github/workflows/schedule-watch.yml) runs
-daily at 04:00 UTC. It reads two sources, in order of priority:
+monthly, on the 1st at 04:00 UTC. It reads two sources, in order of priority:
 
 - **Primary — autobusubilietai.lt.** Compares a Thursday, a Saturday and a Sunday
   **at least 3 days ahead** against the app. Nearer dates can come back from the
@@ -78,7 +78,7 @@ Requires the `FIRECRAWL_API_KEY` repository secret.
 ### Last check line
 Under the tabs: a tick and `Tikrinta 09-26 19:15` in green, the last watcher run,
 fetched from the `status` branch every 30 minutes while the app is open. It turns
-into a red cross when the check found a change, failed, or is older than 48 hours,
+into a red cross when the check found a change, failed, or is older than 35 days,
 which means the watcher stopped; the reason is in the tooltip and the screen-reader
 label. Offline, the app shows the last result it received.
 

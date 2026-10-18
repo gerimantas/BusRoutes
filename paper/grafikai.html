@@ -1104,11 +1104,11 @@ function updateClock(now) {
   }
 }
 
-// Result of the daily Schedule Watch run, published to the `status` branch.
+// Result of the monthly Schedule Watch run, published to the `status` branch.
 // Shown so the rider can tell the timetable on screen was checked recently.
 const STATUS_URL = "https://raw.githubusercontent.com/gerimantas/BusRoutes/status/status.json";
 const STATUS_KEY = "checkStatus";
-const STATUS_STALE_H = 48;        // no run for two days means the watcher stopped
+const STATUS_STALE_H = 35 * 24;   // no run for 35 days means the monthly watcher stopped
 const STATUS_REFETCH_MS = 30 * 60 * 1000;
 // Drawn inline so every phone shows the same mark (a text ✓ or ⚠ can turn into an emoji).
 const ICON_TICK = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.8"/></svg>';

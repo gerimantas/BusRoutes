@@ -2,7 +2,7 @@
 
 ## schedule-watch.yml
 
-Runs daily at 04:00 UTC (07:00 Vilnius summer, 06:00 winter), on manual dispatch,
+Runs monthly, on the 1st at 04:00 UTC (07:00 Vilnius summer, 06:00 winter), on manual dispatch,
 and on a push to main that changes `paper/grafikai.html` (so a merged update is
 re-checked at once).
 
